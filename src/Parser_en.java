@@ -1,10 +1,7 @@
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
-
 import opennlp.tools.cmdline.parser.ParserTool; 
 import opennlp.tools.parser.Parse; 
 import opennlp.tools.parser.Parser; 
@@ -25,7 +22,6 @@ public class Parser_en {
    }
    
    public static Parse[] parse(String eingabe) throws IOException{
-	   Parser_en pars = new Parser_en();
 			//System.out.println(System.getProperty("user.dir"));
 
 	   //Laedt das Parser model aus FileInputStream

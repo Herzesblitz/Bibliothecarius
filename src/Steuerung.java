@@ -2,7 +2,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-import net.didion.jwnl.JWNL;
 import opennlp.tools.*;
 import opennlp.tools.tokenize.lang.en.TokenSampleStream;
 import edu.berkeley.nlp.PCFGLA.BerkeleyParser;
