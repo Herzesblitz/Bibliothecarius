@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="src/BerkeleyParser-1.7.jar"/>
+	<classpathentry kind="lib" path="src/gson-2.3.1.jar"/>
+	<classpathentry kind="lib" path="src/gson-2.6.2-javadoc.jar"/>
+	<classpathentry kind="lib" path="src/opennlp-tools-1.8.3.jar"/>
+	<classpathentry kind="lib" path="src/source/jsoup-1.11.1.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
