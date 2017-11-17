@@ -95,7 +95,7 @@ public class POS_Tagger_de {
    
    public static String getTaggedSentence(String eingabe) throws IOException{
 	 //Loading Parts of speech-maxent model       
-		  InputStream inputStream = new FileInputStream("sources/de-pos-maxent.bin");
+		  InputStream inputStream = new FileInputStream("./src/source/de-pos-maxent.bin");
 	      POSModel model = new POSModel(inputStream); 
 	       
 	      //Instantiating POSTaggerME class 

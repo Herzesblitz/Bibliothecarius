@@ -14,7 +14,7 @@ public class POS_Tagger_en {
    public static void main(String args[]) throws Exception{ 
     
       //Loading Parts of speech-maxent model       
-	  InputStream inputStream = new FileInputStream("C:\\Users\\Devin\\OneDrive\\Cloud\\Programme\\Projekte\\java\\DrThesaurus\\src\\source\\en-pos-maxent.bin");
+	  InputStream inputStream = new FileInputStream("./src/source/en-pos-maxent.bin");
       POSModel model = new POSModel(inputStream); 
        
       //Instantiating POSTaggerME class 

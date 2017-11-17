@@ -13,7 +13,7 @@ public class NER_en  {
       //Loading the NER - Person model       
       for(int s: namen_finden("bed")) System.out.println(s);
       
-   }
+   	  }
    
    public static void test(){
 	  
@@ -22,7 +22,7 @@ public class NER_en  {
   
    
    public static int[] namen_finden(String eingabe) throws IOException{
-	   InputStream inputStream = new FileInputStream("sources/en-ner-person.bin"); 
+	   InputStream inputStream = new FileInputStream("./src/source/en-ner-person.bin"); 
 	      TokenNameFinderModel model = new TokenNameFinderModel(inputStream);
 	      
 	      //Instantiating the NameFinder class 
