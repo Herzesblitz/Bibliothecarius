@@ -4,7 +4,6 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sun.org.apache.xpath.internal.SourceTree;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -103,11 +102,11 @@ public class scrapWebsite {
 		
 		String link="";
 		for (Element result_doc : results_doc) {
-			if(!result_doc.text().contains("�"))break; //TODO: dirty fix
+			if(!result_doc.text().contains("—"))break; //TODO: dirty fix
 			
 			//TODO: link-teil furchtbar, auswahl über html string. gibt es möglichtkeit das <href>-tag des <title> tag auszuwählen??
 			if(result_doc.html().contains("href")) link = "\n link:"+result_doc.html().substring(result_doc.html().indexOf("href")+6, result_doc.html().indexOf(">", result_doc.html().indexOf("href"))-1);
-		    results.add(result_doc.text().substring(0, result_doc.text().lastIndexOf("�")+1)+link);
+		    results.add(result_doc.text().substring(0, result_doc.text().lastIndexOf("—")+1)+link);
 		}
 		//for(String s: results)System.out.println(s);
 		return results;
@@ -184,7 +183,7 @@ public class scrapWebsite {
 				org.jsoup.select.Elements results_doc = doc.getElementsByTag("tr");
 				for (Element result_doc : results_doc) {
 					//TODO: link-teil furchtbar, auswahl über html string. gibt es möglichtkeit das <href>-tag des <title> tag auszuwählen??
-					results.add(result_doc.text().substring(0, result_doc.text().lastIndexOf("�"))+"\n link:"+result_doc.html().substring(result_doc.html().indexOf("href")+6, result_doc.html().indexOf(">", result_doc.html().indexOf("href"))-1));
+					results.add(result_doc.text().substring(0, result_doc.text().lastIndexOf("—"))+"\n link:"+result_doc.html().substring(result_doc.html().indexOf("href")+6, result_doc.html().indexOf(">", result_doc.html().indexOf("href"))-1));
 				}
 				System.out.println(page+"/"+pages_number);
 			}
