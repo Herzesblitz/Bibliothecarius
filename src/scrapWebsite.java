@@ -23,9 +23,16 @@ public class scrapWebsite {
 
 
         //meine erweiterter Test
-        infosBuecher(testInfoBuch,"Sophie's World");
+        infosBuecher(testInfoBuch,"Metro 2033");
         aehnlicheBuecher(testInfoBuch,testInfoBuch.title);
 
+        System.out.println("________________________________________________");
+        System.out.println("Author of  the Book: \n");
+        for (int i = 0; i <testInfoBuch.Author.size() ; i++)
+        {
+            System.out.println(testInfoBuch.Author.get(i));
+        }
+        System.out.println("________________________________________________");
         System.out.println("Similarbooks: \n");
         for (int i = 0; i <testInfoBuch.similar_Books.size() ; i++)
         {
@@ -36,6 +43,12 @@ public class scrapWebsite {
         for (int i = 0; i <testInfoBuch.Characters.size() ; i++)
         {
             System.out.println(testInfoBuch.Characters.get(i));
+        }
+        System.out.println("________________________________________________");
+        System.out.println("Genre of the Book: \n");
+        for (int i = 0; i <testInfoBuch.Genre.size() ; i++)
+        {
+            System.out.println(testInfoBuch.Genre.get(i));
         }
 
 
@@ -55,32 +68,72 @@ public class scrapWebsite {
 		doc = Jsoup.connect("https://www.goodreads.com"+linkBuch).userAgent("bot101").get();
 			//System.out.println(doc.html());
 		title = doc.select("title").text().substring(0,doc.select("title").text().indexOf("by")-1);
-		author = doc.select("title").text().substring(doc.select("title").text().indexOf("by")+3);
-		blurb = doc.html().substring(doc.html().indexOf("span id=\"freeText")+47, doc.html().indexOf("</span>", doc.html().indexOf("span id=\"freeText"))); //TODO: show less umbruecken
+		//TODO:Zeigt nur den ersten Autor Rest wird nicht gefunden!
+		//author = doc.select("title").text().substring(doc.select("title").text().indexOf("by")+3);
+
+        blurb = doc.html().substring(doc.html().indexOf("span id=\"freeText")+47, doc.html().indexOf("</span>", doc.html().indexOf("span id=\"freeText"))); //TODO: show less umbruecken
 		rating = Double.parseDouble(doc.html().substring(doc.html().indexOf("ratingValue")+13, doc.html().indexOf("ratingValue")+17).toString());
 		book.title=title; book.author=author; book.publisher=publisher; book.blurb=blurb;book.rating=rating;
 			System.out.println(book.title);
-			System.out.println(book.author);
+			//System.out.println(book.author);
 			System.out.println(book.publisher);
 			System.out.println(book.blurb);
 			System.out.println(book.rating);
 
-        List<String> Characters=new ArrayList<>();
         int zwischenindex;
-        String TmpHtml="";
-        String html=doc.html().substring(doc.html().indexOf("/characters/"));
+        String TmpHtml = "";
+        String html ="";
+        String suchstring="";
 
-            TmpHtml+=html.substring(html.indexOf("/characters/"),zwischenindex=html.indexOf("<span class=\"toggleLink\">"));
-            html=html.substring(zwischenindex+2);
-            TmpHtml+=html.substring(html.indexOf("/characters/"),zwischenindex=html.indexOf("<span class=\"toggleLink\">"));
-        //System.out.println(TmpHtml);
+            //Suche Autor
 
-        String suchstring="\">";
-        int index;
-        while(TmpHtml.contains(suchstring))
+        if(doc.html().contains("authorName"))
         {
-            book.addCharacter(TmpHtml.substring(TmpHtml.indexOf(suchstring)+2,index=TmpHtml.indexOf("</a>")));
-            TmpHtml=TmpHtml.substring(index+4);
+            html = doc.html().substring(doc.html().indexOf("authorName"));
+
+            TmpHtml += html.substring(html.indexOf("authorName"), zwischenindex = html.indexOf("bookMeta"));
+            html = html.substring(zwischenindex + 2);
+         //   System.out.println(TmpHtml);
+
+            suchstring = "name\">";
+            while (TmpHtml.contains(suchstring)) {
+                book.addAuthor(TmpHtml.substring(TmpHtml.indexOf(suchstring) + 6, zwischenindex = TmpHtml.indexOf("</span>")));
+                TmpHtml = TmpHtml.substring(zwischenindex + 4);
+            }
+        }
+
+			//Suche Characters
+
+        if(doc.html().contains("/characters/"))
+        {
+            html = doc.html().substring(doc.html().indexOf("/characters/"));
+
+            TmpHtml += html.substring(html.indexOf("/characters/"), zwischenindex = html.indexOf("<span class=\"toggleLink\">"));
+            html = html.substring(zwischenindex + 2);
+            TmpHtml += html.substring(html.indexOf("/characters/"), zwischenindex = html.indexOf("<span class=\"toggleLink\">"));
+            //System.out.println(TmpHtml);
+
+            suchstring = "\">";
+            while (TmpHtml.contains(suchstring)) {
+                book.addCharacter(TmpHtml.substring(TmpHtml.indexOf(suchstring) + 2, zwischenindex = TmpHtml.indexOf("</a>")));
+                TmpHtml = TmpHtml.substring(zwischenindex + 4);
+            }
+        }
+        //Suche Genres
+
+        TmpHtml="";
+        html=doc.html().substring(doc.html().indexOf("bookPageGenreLink"));
+
+        TmpHtml+=html.substring(html.indexOf("/genres/"),zwischenindex=html.indexOf("See top shelves"));
+        html=html.substring(zwischenindex+2);
+       // System.out.println(TmpHtml);
+
+
+        suchstring="\">";
+        while(TmpHtml.contains(suchstring)&&TmpHtml.contains("actionLinkLite bookPageGenreLink"))
+        {
+            book.addGenre(TmpHtml.substring(TmpHtml.indexOf(suchstring)+2,zwischenindex=TmpHtml.indexOf("</a>")));
+            TmpHtml=TmpHtml.substring(TmpHtml.indexOf("actionLinkLite bookPageGenreLink")+1);
         }
 
 
@@ -146,7 +199,7 @@ public class scrapWebsite {
         for (int i = 0; i <results.size() ; i++) {
 
             tmptitle=results.get(i).substring(0, results.get(i).indexOf("by")-1);
-            System.out.println(tmptitle);
+            //System.out.println(tmptitle);
             book.addAehnlichBuch(tmptitle);
         }
 

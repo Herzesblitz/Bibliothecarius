@@ -11,6 +11,7 @@ public class Book{
         public List<String> Genre;
         public List<String> similar_Books;
         public List<String> Characters;
+        public List<String> Author;
 
         public Book (String title, String author, String publisher, String blurb, double rating) {
             this.title = title;
@@ -25,21 +26,38 @@ public class Book{
         this.publisher = "";
         this.blurb = "";
         this.rating = 0;
+        this.Genre=new ArrayList<String>();
+        this.similar_Books=new ArrayList<String>();
+        this.Characters=new ArrayList<String>();
+        this.Author=new ArrayList<String>();
     }
 
-    public List<String> getGenre() {
-        return Genre;
+    public void setAuthor(List<String> autor) {
+        Author.addAll(autor) ;
     }
+
+    public void addAuthor(String autor) {
+        if (!Author.contains(autor))
+        {
+            Author.add(autor);
+        }
+    }
+    public void removeAuthor(String autor){
+        if(Author.contains(autor))
+        {
+            Author.remove(autor);
+        }
+
+    }
+
+
+
 
     public void setGenre(List<String> genre) {
         Genre.addAll(genre) ;
     }
 
     public void addGenre(String genre) {
-        if(Genre==null)
-        {
-            Genre=new ArrayList<String>();
-        }
         if (!Genre.contains(genre))
         {
             Genre.add(genre);
@@ -53,19 +71,11 @@ public class Book{
 
     }
 
-    public List<String> getSimilar_Books() {
-        return similar_Books;
-    }
-
     public void setSimilar_Books(List<String> similarBuch) {
         similar_Books.addAll(similarBuch) ;
     }
 
     public void addAehnlichBuch(String bookname) {
-        if(similar_Books ==null)
-        {
-            similar_Books =new ArrayList<String>();
-        }
         if (!similar_Books.contains(bookname))
         {
             similar_Books.add(bookname);
@@ -84,10 +94,6 @@ public class Book{
     }
 
     public void addCharacter(String Character) {
-        if(Characters==null)
-        {
-            Characters=new ArrayList<String>();
-        }
         if (!Characters.contains(Character))
         {
             Characters.add(Character);
