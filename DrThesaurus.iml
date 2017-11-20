@@ -9,5 +9,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="BerkeleyParser-1.7" level="project" />
     <orderEntry type="library" name="jwnl" level="project" />
+    <orderEntry type="library" name="jsoup-1.11.1" level="project" />
   </component>
 </module>

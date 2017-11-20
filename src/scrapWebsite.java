@@ -2,44 +2,49 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.List;
 
+import com.sun.org.apache.xpath.internal.SourceTree;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
- 
-class Book{
-	public String title;
-	public String author;
-	public String publisher;
-	public String covertext;
-	public String blurb; //Klappentext
-	public double rating;
-	
-	public Book (String title, String author, String publisher, String blurb, double rating) {
-		this.title = title;
-		this.author = author;
-		this.publisher = publisher;
-		this.blurb = blurb;
-		this.rating = rating;
-	}
-}
 
 public class scrapWebsite {
 
 	public static void main(String[] args) throws UnsupportedEncodingException, IOException {
 		// TODO Auto-generated method stub
+        Book testInfoBuch=new Book();
+		Book testAehnlicheBuecher=new Book("testtitel","testautor","testpub","testblurb",0.1);
 
-		infosBuecher("Metro 2033");
+		//infosBuecher(testInfoBuch,"Metro 2033");
 		//ThemaZuBuecherliste("");
 		//autorBuecher("Tolkien");
-		//aehnlicheBuecher("Metro 2033");
+       // aehnlicheBuecher(testAehnlicheBuecher,"Metro 2033");
 		//search_title("Metro 2033", 5);
+
+
+        //meine erweiterter Test
+        infosBuecher(testInfoBuch,"Sophie's World");
+        aehnlicheBuecher(testInfoBuch,testInfoBuch.title);
+
+        System.out.println("Similarbooks: \n");
+        for (int i = 0; i <testInfoBuch.similar_Books.size() ; i++)
+        {
+            System.out.println(testInfoBuch.similar_Books.get(i));
+        }
+        System.out.println("________________________________________________");
+        System.out.println("Characters in the Book: \n");
+        for (int i = 0; i <testInfoBuch.Characters.size() ; i++)
+        {
+            System.out.println(testInfoBuch.Characters.get(i));
+        }
+
+
 	}
 	
 	
 	
-	public static Book infosBuecher(String title) throws UnsupportedEncodingException, IOException{
-		Book book;
+	public static Book infosBuecher(Book book,String title) throws UnsupportedEncodingException, IOException{
 		//link zu buch finden
 			String search_1 = "https://www.goodreads.com/search?page=1&query="+title+"&tab=books&utf8=%E2%9C%93";
 			org.jsoup.nodes.Document doc =  Jsoup.connect(search_1).get();
@@ -54,14 +59,33 @@ public class scrapWebsite {
 		author = doc.select("title").text().substring(doc.select("title").text().indexOf("by")+3);
 		blurb = doc.html().substring(doc.html().indexOf("span id=\"freeText")+47, doc.html().indexOf("</span>", doc.html().indexOf("span id=\"freeText"))); //TODO: show less umbruecken
 		rating = Double.parseDouble(doc.html().substring(doc.html().indexOf("ratingValue")+13, doc.html().indexOf("ratingValue")+17).toString());
-		
-		book = new Book(title, author, publisher, blurb, rating);
+		book.title=title; book.author=author; book.publisher=publisher; book.blurb=blurb;book.rating=rating;
 			System.out.println(book.title);
 			System.out.println(book.author);
 			System.out.println(book.publisher);
 			System.out.println(book.blurb);
-			System.out.println(book.rating);		
-		return book;
+			System.out.println(book.rating);
+
+        List<String> Characters=new ArrayList<>();
+        int zwischenindex;
+        String TmpHtml="";
+        String html=doc.html().substring(doc.html().indexOf("/characters/"));
+
+            TmpHtml+=html.substring(html.indexOf("/characters/"),zwischenindex=html.indexOf("<span class=\"toggleLink\">"));
+            html=html.substring(zwischenindex+2);
+            TmpHtml+=html.substring(html.indexOf("/characters/"),zwischenindex=html.indexOf("<span class=\"toggleLink\">"));
+        //System.out.println(TmpHtml);
+
+        String suchstring="\">";
+        int index;
+        while(TmpHtml.contains(suchstring))
+        {
+            book.addCharacter(TmpHtml.substring(TmpHtml.indexOf(suchstring)+2,index=TmpHtml.indexOf("</a>")));
+            TmpHtml=TmpHtml.substring(index+4);
+        }
+
+
+        return book;
 	}
 		
 	public static ArrayList<String> autorBuecher(String autor) throws UnsupportedEncodingException, IOException{
@@ -79,17 +103,17 @@ public class scrapWebsite {
 		
 		String link="";
 		for (Element result_doc : results_doc) {
-			if(!result_doc.text().contains("�"))break; //TODO: dirty fix
+			if(!result_doc.text().contains("�"))break; //TODO: dirty fix
 			
 			//TODO: link-teil furchtbar, auswahl über html string. gibt es möglichtkeit das <href>-tag des <title> tag auszuwählen??
 			if(result_doc.html().contains("href")) link = "\n link:"+result_doc.html().substring(result_doc.html().indexOf("href")+6, result_doc.html().indexOf(">", result_doc.html().indexOf("href"))-1);
-		    results.add(result_doc.text().substring(0, result_doc.text().lastIndexOf("�")+1)+link);
+		    results.add(result_doc.text().substring(0, result_doc.text().lastIndexOf("�")+1)+link);
 		}
-		for(String s: results)System.out.println(s);
+		//for(String s: results)System.out.println(s);
 		return results;
 	}
 	
-	public static ArrayList<String> aehnlicheBuecher(String title) throws UnsupportedEncodingException, IOException{
+	public static ArrayList<String> aehnlicheBuecher(Book book,String title) throws UnsupportedEncodingException, IOException{
 		ArrayList<String> results = new ArrayList<>();
 
 		//finde link zu buch ~ rufe dafür 1 ergebnis 
@@ -97,6 +121,7 @@ public class scrapWebsite {
 			org.jsoup.nodes.Document doc =  Jsoup.connect(search_1 + URLEncoder.encode(search_1, "UTF-8")).get();
 			org.jsoup.select.Elements first = doc.getElementsByTag("tr");
 				//System.out.println(first.html());
+
 			String link= "https://www.goodreads.com."+first.html().substring(first.html().indexOf("href")+6, first.html().indexOf(">", first.html().indexOf("href"))-1);
 				//System.out.println(link);
 			doc = Jsoup.connect(link + URLEncoder.encode(search_1, "UTF-8")).userAgent("bot101").get();
@@ -114,10 +139,18 @@ public class scrapWebsite {
 			org.jsoup.select.Elements results_doc = doc.getElementsByTag("tr");
 			for (Element result_doc : results_doc) {
 				//TODO: link-teil furchtbar, auswahl über html string. gibt es möglichtkeit das <href>-tag des <title> tag auszuwählen??
-				results.add(result_doc.text().substring(0, result_doc.text().lastIndexOf("�"))+"\n link:"+result_doc.html().substring(result_doc.html().indexOf("href")+6, result_doc.html().indexOf(">", result_doc.html().indexOf("href"))-1));
-			}		
-			for(String s: results)System.out.println(s);
-			
+				results.add(result_doc.text().substring(0, result_doc.text().lastIndexOf("—"))+"\n link:"+result_doc.html().substring(result_doc.html().indexOf("href")+6, result_doc.html().indexOf(">", result_doc.html().indexOf("href"))-1));
+			}
+
+			//for(String s: results)System.out.println(s);
+			String tmptitle;
+        for (int i = 0; i <results.size() ; i++) {
+
+            tmptitle=results.get(i).substring(0, results.get(i).indexOf("by")-1);
+            System.out.println(tmptitle);
+            book.addAehnlichBuch(tmptitle);
+        }
+
 			return results;
 	}
 	
@@ -151,7 +184,7 @@ public class scrapWebsite {
 				org.jsoup.select.Elements results_doc = doc.getElementsByTag("tr");
 				for (Element result_doc : results_doc) {
 					//TODO: link-teil furchtbar, auswahl über html string. gibt es möglichtkeit das <href>-tag des <title> tag auszuwählen??
-					results.add(result_doc.text().substring(0, result_doc.text().lastIndexOf("�"))+"\n link:"+result_doc.html().substring(result_doc.html().indexOf("href")+6, result_doc.html().indexOf(">", result_doc.html().indexOf("href"))-1));
+					results.add(result_doc.text().substring(0, result_doc.text().lastIndexOf("�"))+"\n link:"+result_doc.html().substring(result_doc.html().indexOf("href")+6, result_doc.html().indexOf(">", result_doc.html().indexOf("href"))-1));
 				}
 				System.out.println(page+"/"+pages_number);
 			}
