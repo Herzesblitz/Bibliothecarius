@@ -30,7 +30,7 @@ public class scrapWebsite {
 		//search_title("Metro 2033", 5);
 
 
-		sammelBuchInformation("Metro 2033","");
+		Book.sammelBuchInformation("Metro 2033","");
 	}
 	//
 	
@@ -265,22 +265,21 @@ public class scrapWebsite {
 
 		//similar aufrufen
 		String similar = "https://www.goodreads.com/book/similar/" + linktext_schlecht;
-		//System.out.println(similar);
-
+			//System.out.println(similar);
 		doc = Jsoup.connect(similar).get();
-		//System.out.println(doc.html());
+			//System.out.println(doc.html());
 
 		//liste der ähnlichen bücher sammeln
 		org.jsoup.select.Elements results_doc = doc.getElementsByTag("tr");
+		System.out.println(results_doc.size());
 		for (Element result_doc : results_doc) {
 			//TODO: link-teil furchtbar, auswahl über html string. gibt es möglichtkeit das <href>-tag des <title> tag auszuwählen??
-			results.add(result_doc.text().substring(0, result_doc.text().lastIndexOf("�")) + "\n link:" + result_doc.html().substring(result_doc.html().indexOf("href") + 6, result_doc.html().indexOf(">", result_doc.html().indexOf("href")) - 1));
+			results.add(result_doc.text());//.substring(0, result_doc.text().lastIndexOf("�")) + "\n link:" + result_doc.html().substring(result_doc.html().indexOf("href") + 6, result_doc.html().indexOf(">", result_doc.html().indexOf("href")) - 1));
 		}
 
 		//for(String s: results)System.out.println(s);
 		String tmptitle;
 		for (int i = 0; i < results.size(); i++) {
-
 			tmptitle = results.get(i).substring(0, results.get(i).indexOf("by") - 1);
 			//System.out.println(tmptitle);
 			book.addAehnlichBuch(tmptitle);
@@ -380,47 +379,6 @@ public class scrapWebsite {
 
 		return liste;
 	}
-	public static void printmetaInfo(Book Buchmeta) {
+	
 
-		System.out.println("________________________________________________");
-		System.out.println("Author of  the Book: \n");
-		for (int i = 0; i <Buchmeta.Author.size() ; i++)
-		{
-			System.out.println(Buchmeta.Author.get(i));
-		}
-		System.out.println("________________________________________________");
-		System.out.println("Similarbooks: \n");
-		for (int i = 0; i <Buchmeta.similar_Books.size() ; i++)
-		{
-			System.out.println(Buchmeta.similar_Books.get(i));
-		}
-		System.out.println("________________________________________________");
-		System.out.println("Characters in the Book: \n");
-		for (int i = 0; i <Buchmeta.Characters.size() ; i++)
-		{
-			System.out.println(Buchmeta.Characters.get(i));
-		}
-		System.out.println("________________________________________________");
-		System.out.println("Genre of the Book: \n");
-		for (int i = 0; i <Buchmeta.Genre.size() ; i++)
-		{
-			System.out.println(Buchmeta.Genre.get(i));
-		}
-		System.out.println("________________________________________________");
-
-	}
-
-	public static Book sammelBuchInformation(String Buchname, String author) throws IOException {
-		Book InfoBuch = new Book();
-        List<Book> similarbooks=new ArrayList<Book>();
-		infosBuecher(InfoBuch,Buchname,author);
-		aehnlicheBuecher(InfoBuch,InfoBuch.title,author);
-		//zu den Ähnlichen Bücher lassen sich auch Informationen sammeln
-        for (int i = 0; i <InfoBuch.similar_Books.size() ; i++)
-        {
-            similarbooks.set(i,similarbooks.get(i));
-        }
-        printmetaInfo(InfoBuch);
-		return InfoBuch;
-	}
 }
