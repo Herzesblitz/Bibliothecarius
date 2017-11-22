@@ -23,7 +23,7 @@ public class scrapWebsite {
 		BookList testBuchliste = new BookList();
 		
 		//fetchCharacterList();
-		characterToBook("Lucky Ned");
+		//characterToBook("Alexander");
 
 		//infosBuecher(testInfoBuch,"Metro 2033");
 		//ThemaZuBuecherliste("Horror",testBuchliste);
@@ -32,7 +32,7 @@ public class scrapWebsite {
 		//search_title("Metro 2033", 5);
 
 
-		//sammelBuchInformation("Metro 2033");
+		sammelBuchInformation("Metro 2033","Dimitri GLusjoski");
 	}
 	//
 	
@@ -95,30 +95,47 @@ public class scrapWebsite {
 		}
 	}
 	
-	public static ArrayList<Book> characterToBook(String character) throws FileNotFoundException{
+	public static ArrayList<String> characterToBook(String character) throws IOException{
 		//link für charakter finden
 			String link = "";
-			ArrayList<Book> ret = new ArrayList<>();
+			ArrayList<String> ret = new ArrayList<>();
 			String content = new Scanner(new File("./src/source/characters.txt")).useDelimiter("\\Z").next();
 			if(content.contains(character))link = content.substring(content.indexOf("URL:", content.indexOf(character))+5, content.indexOf("\n",content.indexOf(character)));
 				//link = content.substring(content.indexOf("URL:", content.indexOf(character)),content.indexOf("\n", content.indexOf(content.indexOf("URL:", content.indexOf(character)))));
 			if(link.length()==0)System.err.println("charakter nicht gefunden!");
 		//link öffnen
-					
+			ArrayList<String> authors = new ArrayList<>();
+			ArrayList<String> titles = new ArrayList<>();
+
 			
+			Elements elements_titles = Jsoup.connect(link).get().select("a.bookTitle");
+			for(Element el: elements_titles) {
+				titles.add(el.text());
+			}
+			Elements elements_authors = Jsoup.connect(link).get().select("a.authorName");
+			for(Element el: elements_authors) {
+				authors.add(el.text());
+			}
+					if(authors.size() != titles.size())System.err.println("PECH!! authorlist andere laenge als title liste");
+			for(int i=0; i<authors.size(); i++) {
+				ret.add("title: "+titles.get(i)+" author: "+authors.get(i));
+			}
+					
+			for(String s: ret)System.out.println(s);
 		
 		return ret;
 	}
 	
-	public static Book infosBuecher(Book book, String title) throws UnsupportedEncodingException, IOException {
+	public static Book infosBuecher(Book book, String title, String author) throws UnsupportedEncodingException, IOException {
 		//link zu buch finden
-		String search_1 = "https://www.goodreads.com/search?page=1&query=" + title + "&tab=books&utf8=%E2%9C%93";
+		String search_1 = "https://www.goodreads.com/search?page=1&query=" + title + " "+ author + "&tab=books&utf8=%E2%9C%93";
 		org.jsoup.nodes.Document doc = Jsoup.connect(search_1).get();
-		String linkBuch = doc.getElementsByTag("tr").first().html().substring(doc.getElementsByTag("tr").first().html().indexOf("href") + 6, doc.getElementsByTag("tr").first().html().indexOf(">", doc.getElementsByTag("tr").first().html().indexOf("href")) - 1);
+		System.out.println(doc.html());
+		String linkBuch="";
+		linkBuch = doc.getElementsByTag("tr").first().html().substring(doc.getElementsByTag("tr").first().html().indexOf("href") + 6, doc.getElementsByTag("tr").first().html().indexOf(">", doc.getElementsByTag("tr").first().html().indexOf("href")) - 1);
 		//System.out.println(linkBuch);
 
 		//link oeffnen und daten lesen
-		String author = "";
 		String publisher = "";
 		String blurb = "";
 		double rating = 0;
@@ -224,11 +241,11 @@ public class scrapWebsite {
 		return results;
 	}
 
-	public static ArrayList<String> aehnlicheBuecher(Book book, String title) throws UnsupportedEncodingException, IOException {
+	public static ArrayList<String> aehnlicheBuecher(Book book, String title, String author) throws UnsupportedEncodingException, IOException {
 		ArrayList<String> results = new ArrayList<>();
 
 		//finde link zu buch ~ rufe dafÃ¼r 1 ergebnis 
-		String search_1 = "https://www.goodreads.com/search?page=1&query=" + title + "&tab=books&utf8=%E2%9C%93";
+		String search_1 = "https://www.goodreads.com/search?page=1&query=" + title + " " + author + "&tab=books&utf8=%E2%9C%93";
 		org.jsoup.nodes.Document doc = Jsoup.connect(search_1 + URLEncoder.encode(search_1, "UTF-8")).get();
 		org.jsoup.select.Elements first = doc.getElementsByTag("tr");
 		//System.out.println(first.html());
@@ -386,17 +403,17 @@ public class scrapWebsite {
 
 	}
 
-	public static Book sammelBuchInformation(String Buchname) throws IOException {
+	public static Book sammelBuchInformation(String Buchname, String author) throws IOException {
 		Book InfoBuch = new Book();
         List<Book> similarbooks=new ArrayList<Book>();
-		infosBuecher(InfoBuch,Buchname);
-		aehnlicheBuecher(InfoBuch,InfoBuch.title);
+		infosBuecher(InfoBuch,Buchname,author);
+		aehnlicheBuecher(InfoBuch,InfoBuch.title,author);
 		//zu den Ã„hnlichen BÃ¼cher lassen sich auch Informationen sammeln
-        for (int i = 0; i <InfoBuch.similar_Books.size() ; i++)
-        {
-
-            similarbooks.set(i,similarbooks.get(i));
-        }
+//        for (int i = 0; i <InfoBuch.similar_Books.size() ; i++)
+//        {
+//
+//            similarbooks.set(i,similarbooks.get(i));
+//        }
         printmetaInfo(InfoBuch);
 		return InfoBuch;
 	}
