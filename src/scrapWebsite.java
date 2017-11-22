@@ -13,11 +13,18 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class scrapWebsite {
+	
+	/* Funktionen der Klasse:
+	 *  Vorschlaege fuer Bucher in Bezug: Daten(Buch) (TODO) 
+	 *  	Ahnlichkeiten in Bezug: Daten Buch (TODO)
+	 *  		Daten(Buch): TItle, Autor, Genre(TODO), Thema, Charaktere, Plot, Rating, Erscheinungsjahr(TODO), Publisher(TODO), ISBN(TODO)
+	 * 		Variation in Bezug: Daten(Buch)
+	 * 
+	 * 		Vielleicht: billigster Preis fuer Buch (Quelle)
+	 */
 
 	public static void main(String[] args) throws UnsupportedEncodingException, IOException {
 		// TODO Auto-generated method stub
-	
-	
 		test();
 	}	
 	
