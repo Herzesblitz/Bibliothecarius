@@ -22,8 +22,8 @@ public class scrapWebsite {
 		Book testAehnlicheBuecher = new Book("testtitel", "testautor", "testpub", "testblurb", 0.1);
 		BookList testBuchliste = new BookList();
 		
-		fetchCharacterList();
-
+		//fetchCharacterList();
+		characterToBook("Lucky Ned");
 
 		//infosBuecher(testInfoBuch,"Metro 2033");
 		//ThemaZuBuecherliste("Horror",testBuchliste);
@@ -96,11 +96,16 @@ public class scrapWebsite {
 	}
 	
 	public static ArrayList<Book> characterToBook(String character) throws FileNotFoundException{
-		String link;
-		ArrayList<Book> ret = new ArrayList<>();
-		String content = new Scanner(new File("source/characters.txt")).useDelimiter("\\Z").next();
-		if(content.contains(character))link = content.substring(content.indexOf("URL:", content.indexOf(character)+4),content.indexOf("\n", content.indexOf(content.indexOf("URL:", content.indexOf(character)))));
-		
+		//link für charakter finden
+			String link = "";
+			ArrayList<Book> ret = new ArrayList<>();
+			String content = new Scanner(new File("./src/source/characters.txt")).useDelimiter("\\Z").next();
+			if(content.contains(character))link = content.substring(content.indexOf("URL:", content.indexOf(character))+5, content.indexOf("\n",content.indexOf(character)));
+				//link = content.substring(content.indexOf("URL:", content.indexOf(character)),content.indexOf("\n", content.indexOf(content.indexOf("URL:", content.indexOf(character)))));
+			if(link.length()==0)System.err.println("charakter nicht gefunden!");
+		//link öffnen
+					
+			
 		
 		return ret;
 	}
