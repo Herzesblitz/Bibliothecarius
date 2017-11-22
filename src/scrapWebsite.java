@@ -20,7 +20,7 @@ public class scrapWebsite {
 		BookList testBuchliste = new BookList();
 		
 		fetchCharacterList(); //TODO:Test
-		
+		//TODO:Test2
 
 		//infosBuecher(testInfoBuch,"Metro 2033");
 		//ThemaZuBuecherliste("Horror",testBuchliste);
