@@ -14,10 +14,11 @@ import org.jsoup.select.Elements;
 
 public class scrapWebsite {
 	
+	
 	/* Funktionen der Klasse:
 	 *  Vorschlaege fuer Bucher in Bezug: Daten(Buch) (TODO) 
 	 *  	Ahnlichkeiten in Bezug: Daten Buch (TODO)
-	 *  		Daten(Buch): TItle, Autor, Genre(TODO), Thema, Charaktere, Plot, Rating, Erscheinungsjahr(TODO), Publisher(TODO), ISBN(TODO)
+	 *  		Daten(Buch): TItle, Autor, Genre, Thema, Charaktere, Plot, Rating, Erscheinungsjahr(meinstens bei publisher), Publisher, ISBN
 	 * 		Variation in Bezug: Daten(Buch)
 	 * 
 	 * 		Vielleicht: billigster Preis fuer Buch (Quelle)

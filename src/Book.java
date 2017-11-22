@@ -11,13 +11,15 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class Book{
+		public String isbn;
         public String title;
         public String author;
         public String publisher;
         public String covertext;
         public String blurb; //Klappentext
         public double rating;
-        public List<String> Genre;
+        public List<String> awards;
+        public List<String> shelves;
         public List<String> similar_Books;
         public List<String> Characters;
         public List<String> Author;
@@ -36,7 +38,8 @@ public class Book{
         this.publisher = "";
         this.blurb = "";
         this.rating = 0;
-        this.Genre=new ArrayList<String>();
+        this.awards = new ArrayList<>();
+        this.shelves=new ArrayList<String>();
         this.similar_Books=new ArrayList<String>();
         this.Characters=new ArrayList<String>();
         this.Author=new ArrayList<String>();
@@ -44,9 +47,9 @@ public class Book{
     
   //TODO: funktionen javadoc ergaenzen
   	private static void test() throws UnsupportedEncodingException, IOException {
-  	//Name(Buch) -> Autor, aehnlicheB�cher, Charaktere, Genre
+  	//Name(Buch) -> Autor, aehnlicheBücher, Charaktere, Genre
   		
-  		printBook(buchToinfosBuecher( "Metro 2033",""));
+  		printBook(buchToinfosBuecher( "Sophie's World",""));
   			//a=  aehnlicheBuecher(testAehnlicheBuecher,"Metro 2033","");
   			//infosBuecher(testInfoBuch,"Metro 2033");
   		
@@ -70,20 +73,24 @@ public class Book{
 	}
     
     public static void printBook(Book Buchmeta) {
+		System.out.println("Title of the Book: "+Buchmeta.title);    	
+		System.out.println("ISBN of the Book: "+Buchmeta.isbn);    	
+		System.out.println("Publisher: "+Buchmeta.publisher);
 		System.out.println("________________________________________________");
-		System.out.println("Author of  the Book: \n");
-		for (int i = 0; i <Buchmeta.Author.size() ; i++)System.out.println(Buchmeta.Author.get(i));
+		System.out.println("Author(s) of the Book: \n");
+		for (String x: Buchmeta.Author)System.out.println(x);
 		System.out.println("________________________________________________");
-		System.out.println("Similarbooks: \n");
-		for (int i = 0; i <Buchmeta.similar_Books.size() ; i++)	System.out.println(Buchmeta.similar_Books.get(i));
-
+		System.out.println("Similar Books: \n");
+		for (String x: Buchmeta.similar_Books)	System.out.println(x);
 		System.out.println("________________________________________________");
 		System.out.println("Characters in the Book: \n");
-		for (int i = 0; i <Buchmeta.Characters.size() ; i++) System.out.println(Buchmeta.Characters.get(i));
+		for (String x: Buchmeta.Characters) System.out.println(x);
 		System.out.println("________________________________________________");
 		System.out.println("Genre of the Book: \n");
-		for (int i = 0; i <Buchmeta.Genre.size() ; i++)	System.out.println(Buchmeta.Genre.get(i));
+		for (String x: Buchmeta.shelves)	System.out.println(x);
 		System.out.println("________________________________________________");
+		System.out.println("Awards of the Book: \n");
+		for (String x: Buchmeta.awards)	System.out.println(x);
 	}
 
     public static Book buchToinfosBuecher(String title, String author) throws UnsupportedEncodingException, IOException {
@@ -101,62 +108,53 @@ public class Book{
 		//Infos aus doc lesen
 			String publisher = ""; String blurb = ""; double rating = 0;
 
-			title = doc.select("title").text().substring(0, doc.select("title").text().indexOf("by") - 1);
+				title = doc.select("title").text().substring(0, doc.select("title").text().indexOf("by") - 1);
             
-			blurb = doc.html().substring(doc.html().indexOf("span id=\"freeText") + 47, doc.html().indexOf("</span>", doc.html().indexOf("span id=\"freeText"))); //TODO: show less umbruecken
-		
-			rating = Double.parseDouble(doc.html().substring(doc.html().indexOf("ratingValue") + 13, doc.html().indexOf("ratingValue") + 17).toString());
-		
-		
-		int zwischenindex; 	String TmpHtml = ""; String html = ""; String suchstring = "";
-
-		//Suche autor
-			if (doc.html().contains("authorName")) {
-				html = doc.html().substring(doc.html().indexOf("authorName"));
-	
-				TmpHtml += html.substring(html.indexOf("authorName"), zwischenindex = html.indexOf("bookMeta"));
-				html = html.substring(zwischenindex + 2);
-				//   System.out.println(TmpHtml);
-	
-				suchstring = "name\">";
-				while (TmpHtml.contains(suchstring)) {
-					book.addAuthor(TmpHtml.substring(TmpHtml.indexOf(suchstring) + 6, zwischenindex = TmpHtml.indexOf("</span>")));
-					TmpHtml = TmpHtml.substring(zwischenindex + 4);
-				}
-			}
-
-		//Suche Characters
-			if (doc.html().contains("/characters/")) {
-				html = doc.html().substring(doc.html().indexOf("/characters/"));
-	
-				TmpHtml += html.substring(html.indexOf("/characters/"), zwischenindex = html.indexOf("<span class=\"toggleLink\">"));
-				html = html.substring(zwischenindex + 2);
-				TmpHtml += html.substring(html.indexOf("/characters/"), zwischenindex = html.indexOf("<span class=\"toggleLink\">"));
-				//System.out.println(TmpHtml);
-	
-				suchstring = "\">";
-				while (TmpHtml.contains(suchstring)) {
-					book.addCharacter(TmpHtml.substring(TmpHtml.indexOf(suchstring) + 2, zwischenindex = TmpHtml.indexOf("</a>")));
-					TmpHtml = TmpHtml.substring(zwischenindex + 4);
-				}
-			}
+				blurb = doc.html().substring(doc.html().indexOf("span id=\"freeText") + 47, doc.html().indexOf("</span>", doc.html().indexOf("span id=\"freeText"))); //TODO: show less umbruecken
 			
-		//Suche Genres
-			TmpHtml = "";
-			html = doc.html().substring(doc.html().indexOf("bookPageGenreLink"));
-			TmpHtml += html.substring(html.indexOf("/genres/"), zwischenindex = html.indexOf("See top shelves"));
-			html = html.substring(zwischenindex + 2);
-			suchstring = "\">";
-			while (TmpHtml.contains(suchstring) && TmpHtml.contains("actionLinkLite bookPageGenreLink")) {
-				book.addGenre(TmpHtml.substring(TmpHtml.indexOf(suchstring) + 2, zwischenindex = TmpHtml.indexOf("</a>")));
-				TmpHtml = TmpHtml.substring(TmpHtml.indexOf("actionLinkLite bookPageGenreLink") + 1);
-			}
-		
-		//aehnlicheBuecher
-			buchZuAehnlicheBuecher(book,title,author);
+				rating = Double.parseDouble(doc.html().substring(doc.html().indexOf("ratingValue") + 13, doc.html().indexOf("ratingValue") + 17).toString());
+			//Suche autor
+				if (doc.html().contains("authorName")) {
+					Elements elements = doc.select("a.authorName");
+					for(Element el: elements)book.addAuthor(el.text());
+				}
+
+			//Suche Characters
+				if (true/*doc.html().contains("/characters/")*/) {
+						Elements elements = doc.select("div.clearFloats").select("div.infoBoxRowItem").select("a");
+						for(Element el: elements) {
+							if(el.parent().html().contains("character"))book.addCharacter(el.text());
+						}
+				}
+				
+			//Suche Genres
+				Elements elements= doc.select("div.elementList").select("div.left");//select("a.ationLink right bookPageGenreLink__seeMoreLink").toString();
+				for(Element el: elements) book.addGenre(el.text());
+			
+			
+			//aehnlicheBuecher
+				buchZuAehnlicheBuecher(book,title,author);
+				
+			//ISBN	
+				String isbn= doc.select("div.infoBoxRowItem").select("span.greyText").text().toLowerCase();
+				if(isbn.contains("isbn13"))book.setISBN(isbn.substring(isbn.indexOf(" ")+1,isbn.indexOf(")")));
+
+			//publisher
+				elements = doc.select("div.row");
+				for(Element el: elements) {
+					if(el.text().toLowerCase().contains("publish"))publisher = el.text();//.substring(el.text().toLowerCase().indexOf("by")+2, el.text().indexOf(" ", el.text().toLowerCase().indexOf("by")+2));
+				}
+				
+			//awards
+				elements = doc.select("div.clearFloats").select("a.award");
+				for(Element el: elements) {
+					book.addAwards(el.text());
+				}
+
+				
+				
 
 		book.title = title; book.author = author; book.publisher = publisher; book.blurb = blurb; book.rating = rating;
-			// printmetaInfo(InfoBuch);
 		return book;
 	}
 
@@ -175,17 +173,17 @@ public class Book{
 	
 			String link = "";
 			for (Element result_doc : results_doc) {
-				if (!result_doc.text().contains("�")) break; //TODO: dirty fix
-				//TODO: link-teil furchtbar, auswahl über html string. gibt es möglichtkeit das <href>-tag des <title> tag auszuwählen??
+				if (!result_doc.text().contains("–")) break; //TODO: dirty fix
+				//TODO: link-teil furchtbar, auswahl Ã¼ber html string. gibt es mÃ¶glichtkeit das <href>-tag des <title> tag auszuwÃ¤hlen??
 				if (result_doc.html().contains("href"))
 					link = "\n link:" + result_doc.html().substring(result_doc.html().indexOf("href") + 6, result_doc.html().indexOf(">", result_doc.html().indexOf("href")) - 1);
-				results.add(result_doc.text().substring(0, result_doc.text().lastIndexOf("�") + 1) + link);
+				results.add(result_doc.text().substring(0, result_doc.text().lastIndexOf("–") + 1) + link);
 			}
 			return results;
 		}
 	
 		public static ArrayList<String> characterZuBuecherliste(String character) throws IOException{
-			//link f�r charakter finden
+			//link für charakter finden
 				String link = "";
 				ArrayList<String> ret = new ArrayList<>();
 				String content = new Scanner(new File("./src/source/characters.txt")).useDelimiter("\\Z").next();
@@ -193,7 +191,7 @@ public class Book{
 					//link = content.substring(content.indexOf("URL:", content.indexOf(character)),content.indexOf("\n", content.indexOf(content.indexOf("URL:", content.indexOf(character)))));
 				if(link.length()==0)System.err.println("charakter nicht gefunden!");
 			
-			//link �ffnen
+			//link öffnen
 				ArrayList<String> authors = new ArrayList<>();
 				ArrayList<String> titles = new ArrayList<>();
 	
@@ -218,14 +216,14 @@ public class Book{
 			//booktitles holen
 				org.jsoup.select.Elements results_titles = doc.select("a").select(".bookTitle");
 				for (Element result_title : results_titles) {
-					//TODO: link-teil furchtbar, auswahl über html string. gibt es möglichtkeit das <href>-tag des <title> tag auszuwählen??
+					//TODO: link-teil furchtbar, auswahl Ã¼ber html string. gibt es mÃ¶glichtkeit das <href>-tag des <title> tag auszuwÃ¤hlen??
 					title.add(result_title.text());
 				}
 			
 			//autoren holen
 				org.jsoup.select.Elements results_authors = doc.select("a").select(".authorName");
 				for (Element result_author : results_authors) {
-					//TODO: link-teil furchtbar, auswahl über html string. gibt es möglichtkeit das <href>-tag des <title> tag auszuwählen??
+					//TODO: link-teil furchtbar, auswahl Ã¼ber html string. gibt es mÃ¶glichtkeit das <href>-tag des <title> tag auszuwÃ¤hlen??
 					author.add(result_author.text());
 				}
 	
@@ -273,7 +271,7 @@ public class Book{
 					//autoren holen
 					org.jsoup.select.Elements results_authors = doc.getElementsByTag("tr").select("td").select("a.authorName");
 					for (Element result_author : results_authors) {
-						//TODO: link-teil furchtbar, auswahl über html string. gibt es möglichtkeit das <href>-tag des <title> tag auszuwählen??
+						//TODO: link-teil furchtbar, auswahl Ã¼ber html string. gibt es mÃ¶glichtkeit das <href>-tag des <title> tag auszuwÃ¤hlen??
 						authors.add(result_author.text());
 					}
 	
@@ -292,10 +290,10 @@ public class Book{
 		public static ArrayList<String> buchZuAehnlicheBuecher(Book book, String title, String author) throws UnsupportedEncodingException, IOException {
 		ArrayList<String> results = new ArrayList<>();
 
-		//finde link zu buch ~ rufe dafür 1 ergebnis 
+		//finde link zu buch ~ rufe dafÃ¼r 1 ergebnis 
 			String search_1 = "https://www.goodreads.com/search?page=1&query=" + title + " " + author + "&tab=books&utf8=%E2%9C%93";
 			org.jsoup.nodes.Document doc = Jsoup.connect(search_1 + URLEncoder.encode(search_1, "UTF-8")).get();
-			
+		
 			if(doc.select("h3.searchSubNavContainer").toString().toLowerCase().contains("no results")) return null; 
 		
 			org.jsoup.select.Elements first = doc.getElementsByTag("tr");
@@ -308,11 +306,11 @@ public class Book{
 			String similar = "https://www.goodreads.com/book/similar/" + linktext_schlecht;
 			doc = Jsoup.connect(similar).get();
 
-		//liste der ähnlichen bücher sammeln
+		//liste der Ã¤hnlichen bÃ¼cher sammeln
 			org.jsoup.select.Elements results_doc = doc.getElementsByTag("tr");
 			for (Element result_doc : results_doc) {
-				//TODO: link-teil furchtbar, auswahl über html string. gibt es möglichtkeit das <href>-tag des <title> tag auszuwählen??
-				results.add(result_doc.text());//.substring(0, result_doc.text().lastIndexOf("�")) + "\n link:" + result_doc.html().substring(result_doc.html().indexOf("href") + 6, result_doc.html().indexOf(">", result_doc.html().indexOf("href")) - 1));
+				//TODO: link-teil furchtbar, auswahl Ã¼ber html string. gibt es mÃ¶glichtkeit das <href>-tag des <title> tag auszuwÃ¤hlen??
+				results.add(result_doc.text());//.substring(0, result_doc.text().lastIndexOf("–")) + "\n link:" + result_doc.html().substring(result_doc.html().indexOf("href") + 6, result_doc.html().indexOf(">", result_doc.html().indexOf("href")) - 1));
 			}
 
 			String tmptitle;
@@ -325,11 +323,16 @@ public class Book{
 	}
     
 
-	
-	
-	
-	
-    //Setter, Getter etc.
+    //Setter, adder etc.
+						
+						public void setPublisher(String publisher) {
+							this.publisher = publisher;
+						}
+		
+						public void setISBN(String isbn) {
+							this.isbn = isbn;
+						}
+			
 					    public void setAuthor(List<String> autor) {
 					        Author.addAll(autor) ;
 					    }
@@ -343,14 +346,14 @@ public class Book{
 					    }
 					
 					    public void setGenre(List<String> genre) {
-					        Genre.addAll(genre) ;
+					    	shelves.addAll(genre) ;
 					    }
 					
 					    public void addGenre(String genre) {
-					        if (!Genre.contains(genre)) Genre.add(genre);
+					        if (!shelves.contains(genre)) shelves.add(genre);
 					    }
 					    public void removeGenre(String genre){
-					        if(Genre.contains(genre))   Genre.remove(genre);
+					        if(shelves.contains(genre))   shelves.remove(genre);
 					    }
 					
 					    public void setSimilar_Books(List<String> similarBuch) {
@@ -361,8 +364,16 @@ public class Book{
 					        if (!similar_Books.contains(bookname)) similar_Books.add(bookname);
 					    }
 					    public void removeAehnlichBuch(String bookname){
-					        if(Genre.contains(bookname)) Genre.remove(bookname);
+					        if(shelves.contains(bookname)) shelves.remove(bookname);
 					    }
+					    
+					    public void setAwards(List<String> Awards) {
+					        awards.addAll(Awards) ;
+					    }
+					
+					    public void addAwards(String award) {
+					        if (!awards.contains(award))  awards.add(award);
+					    }	
 					
 					    public void setCharacters(List<String> Characters) {
 					        similar_Books.addAll(Characters) ;
@@ -373,7 +384,7 @@ public class Book{
 					    }
 					    
 					    public void removeCharacter(String Character){
-					        if(Genre.contains(Characters)) Genre.remove(Characters);
+					        if(shelves.contains(Characters)) shelves.remove(Characters);
 					    }
 }
 
