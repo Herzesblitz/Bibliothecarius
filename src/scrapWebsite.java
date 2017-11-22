@@ -19,9 +19,8 @@ public class scrapWebsite {
 		Book testAehnlicheBuecher = new Book("testtitel", "testautor", "testpub", "testblurb", 0.1);
 		BookList testBuchliste = new BookList();
 		
-		fetchCharacterList(); //TODO:Test
-		//TODO:Test2
-		//TODO:Test3
+		fetchCharacterList();
+
 
 		//infosBuecher(testInfoBuch,"Metro 2033");
 		//ThemaZuBuecherliste("Horror",testBuchliste);
