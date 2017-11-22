@@ -19,7 +19,7 @@ public class scrapWebsite {
 		Book testAehnlicheBuecher = new Book("testtitel", "testautor", "testpub", "testblurb", 0.1);
 		BookList testBuchliste = new BookList();
 		
-		fetchCharacterList();
+		fetchCharacterList(); //TODO:Test
 		
 
 		//infosBuecher(testInfoBuch,"Metro 2033");
