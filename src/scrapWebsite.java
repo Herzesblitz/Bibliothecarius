@@ -1,18 +1,16 @@
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Scanner;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import java.util.Scanner;
 
 public class scrapWebsite {
 
@@ -32,7 +30,7 @@ public class scrapWebsite {
 		//search_title("Metro 2033", 5);
 
 
-		sammelBuchInformation("Metro 2033","Dimitri GLusjoski");
+		sammelBuchInformation("Metro 2033","");
 	}
 	//
 	
@@ -130,10 +128,14 @@ public class scrapWebsite {
 		//link zu buch finden
 		String search_1 = "https://www.goodreads.com/search?page=1&query=" + title + " "+ author + "&tab=books&utf8=%E2%9C%93";
 		org.jsoup.nodes.Document doc = Jsoup.connect(search_1).get();
-		System.out.println(doc.html());
+
+		if(doc.select("h3.searchSubNavContainer").toString().toLowerCase().contains("no results")) {
+			return null; 
+		}
+		
 		String linkBuch="";
 		linkBuch = doc.getElementsByTag("tr").first().html().substring(doc.getElementsByTag("tr").first().html().indexOf("href") + 6, doc.getElementsByTag("tr").first().html().indexOf(">", doc.getElementsByTag("tr").first().html().indexOf("href")) - 1);
-		//System.out.println(linkBuch);
+		//System.out.println(linkBuch);c
 
 		//link oeffnen und daten lesen
 		String publisher = "";
@@ -230,12 +232,12 @@ public class scrapWebsite {
 
 		String link = "";
 		for (Element result_doc : results_doc) {
-			if (!result_doc.text().contains("—")) break; //TODO: dirty fix
+			if (!result_doc.text().contains("�")) break; //TODO: dirty fix
 
 			//TODO: link-teil furchtbar, auswahl über html string. gibt es möglichtkeit das <href>-tag des <title> tag auszuwählen??
 			if (result_doc.html().contains("href"))
 				link = "\n link:" + result_doc.html().substring(result_doc.html().indexOf("href") + 6, result_doc.html().indexOf(">", result_doc.html().indexOf("href")) - 1);
-			results.add(result_doc.text().substring(0, result_doc.text().lastIndexOf("—") + 1) + link);
+			results.add(result_doc.text().substring(0, result_doc.text().lastIndexOf("�") + 1) + link);
 		}
 		//for(String s: results)System.out.println(s);
 		return results;
@@ -247,6 +249,11 @@ public class scrapWebsite {
 		//finde link zu buch ~ rufe dafür 1 ergebnis 
 		String search_1 = "https://www.goodreads.com/search?page=1&query=" + title + " " + author + "&tab=books&utf8=%E2%9C%93";
 		org.jsoup.nodes.Document doc = Jsoup.connect(search_1 + URLEncoder.encode(search_1, "UTF-8")).get();
+		
+		if(doc.select("h3.searchSubNavContainer").toString().toLowerCase().contains("no results")) {
+			return null; 
+		}
+		
 		org.jsoup.select.Elements first = doc.getElementsByTag("tr");
 		//System.out.println(first.html());
 
@@ -267,7 +274,7 @@ public class scrapWebsite {
 		org.jsoup.select.Elements results_doc = doc.getElementsByTag("tr");
 		for (Element result_doc : results_doc) {
 			//TODO: link-teil furchtbar, auswahl über html string. gibt es möglichtkeit das <href>-tag des <title> tag auszuwählen??
-			results.add(result_doc.text().substring(0, result_doc.text().lastIndexOf("—")) + "\n link:" + result_doc.html().substring(result_doc.html().indexOf("href") + 6, result_doc.html().indexOf(">", result_doc.html().indexOf("href")) - 1));
+			results.add(result_doc.text().substring(0, result_doc.text().lastIndexOf("�")) + "\n link:" + result_doc.html().substring(result_doc.html().indexOf("href") + 6, result_doc.html().indexOf(">", result_doc.html().indexOf("href")) - 1));
 		}
 
 		//for(String s: results)System.out.println(s);
@@ -316,7 +323,7 @@ public class scrapWebsite {
 			org.jsoup.select.Elements results_doc = doc.getElementsByTag("tr");
 			for (Element result_doc : results_doc) {
 				//TODO: link-teil furchtbar, auswahl über html string. gibt es möglichtkeit das <href>-tag des <title> tag auszuwählen??
-				results.add(result_doc.text().substring(0, result_doc.text().lastIndexOf("—")) + "\n link:" + result_doc.html().substring(result_doc.html().indexOf("href") + 6, result_doc.html().indexOf(">", result_doc.html().indexOf("href")) - 1));
+				results.add(result_doc.text().substring(0, result_doc.text().lastIndexOf("�")) + "\n link:" + result_doc.html().substring(result_doc.html().indexOf("href") + 6, result_doc.html().indexOf(">", result_doc.html().indexOf("href")) - 1));
 			}
 			System.out.println(page + "/" + pages_number);
 		}
@@ -409,11 +416,10 @@ public class scrapWebsite {
 		infosBuecher(InfoBuch,Buchname,author);
 		aehnlicheBuecher(InfoBuch,InfoBuch.title,author);
 		//zu den Ähnlichen Bücher lassen sich auch Informationen sammeln
-//        for (int i = 0; i <InfoBuch.similar_Books.size() ; i++)
-//        {
-//
-//            similarbooks.set(i,similarbooks.get(i));
-//        }
+        for (int i = 0; i <InfoBuch.similar_Books.size() ; i++)
+        {
+            similarbooks.set(i,similarbooks.get(i));
+        }
         printmetaInfo(InfoBuch);
 		return InfoBuch;
 	}
