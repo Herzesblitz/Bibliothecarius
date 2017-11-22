@@ -1,4 +1,6 @@
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -10,6 +12,7 @@ import java.util.List;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import java.util.Scanner;
 
 public class scrapWebsite {
 
@@ -80,7 +83,7 @@ public class scrapWebsite {
 		}
 		
 		try {
-		    BufferedWriter out = new BufferedWriter(new FileWriter("characters.txt"));
+		    BufferedWriter out = new BufferedWriter(new FileWriter("./src/source/characters.txt"));
 		    out.write(x);  //Replace with the string 
 		                                             //you are trying to write
 		    out.close();
@@ -91,8 +94,17 @@ public class scrapWebsite {
 
 		}
 	}
-
-
+	
+	public static ArrayList<Book> characterToBook(String character) throws FileNotFoundException{
+		String link;
+		ArrayList<Book> ret = new ArrayList<>();
+		String content = new Scanner(new File("source/characters.txt")).useDelimiter("\\Z").next();
+		if(content.contains(character))link = content.substring(content.indexOf("URL:", content.indexOf(character)+4),content.indexOf("\n", content.indexOf(content.indexOf("URL:", content.indexOf(character)))));
+		
+		
+		return ret;
+	}
+	
 	public static Book infosBuecher(Book book, String title) throws UnsupportedEncodingException, IOException {
 		//link zu buch finden
 		String search_1 = "https://www.goodreads.com/search?page=1&query=" + title + "&tab=books&utf8=%E2%9C%93";
