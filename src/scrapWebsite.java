@@ -21,6 +21,7 @@ public class scrapWebsite {
 		
 		fetchCharacterList(); //TODO:Test
 		//TODO:Test2
+		//TODO:Test3
 
 		//infosBuecher(testInfoBuch,"Metro 2033");
 		//ThemaZuBuecherliste("Horror",testBuchliste);
