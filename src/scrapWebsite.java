@@ -26,7 +26,23 @@ public class scrapWebsite {
 
 	public static void main(String[] args) throws UnsupportedEncodingException, IOException {
 		// TODO Auto-generated method stub
-	}	
+
+
+
+		int pagenummer=3151;//next
+		int tmpmax=3200;
+		int max=3349;
+		int index=25;
+		int stop=0;
+		while (tmpmax<=3349&&stop<2 ) {
+			fetchCharacterList(index,pagenummer,tmpmax );
+			tmpmax+=50;
+			pagenummer+=50;
+			index++;
+			if(tmpmax>3349){ tmpmax=3349; stop++;}
+		}
+	}
+
 	
 	
 	
@@ -42,7 +58,7 @@ public class scrapWebsite {
 	    return true;
 	}
 	
-	public static void fetchCharacterList() throws IOException {
+	public static void fetchCharacterList(int index, int pagenummer,int tmpmax) throws IOException {
 		//anzahl pages 
 			Elements elements = Jsoup.connect("https://www.goodreads.com/characters").get().select("a");
 			int max=0;
@@ -52,7 +68,8 @@ public class scrapWebsite {
 		String 	x=""; 
 			
 		//durch pages gehen
-		for(int page=1; page<=2; page++) {
+		for(int page=pagenummer; page<=tmpmax; page++) {
+			System.out.println(page+ "|| "+ tmpmax);
 			 elements = Jsoup.connect("https://www.goodreads.com/characters?page="+page).get().select("div.elementList"); //. selektiert klassen (mit angegebenen namen) des tags vor dem punkt
 			for(Element el: elements) {
 					byte ptext[] = el.text().getBytes();
@@ -72,7 +89,7 @@ public class scrapWebsite {
 		}
 		
 		try {
-		    BufferedWriter out = new BufferedWriter(new FileWriter("./src/source/characters.txt"));
+		    BufferedWriter out = new BufferedWriter(new FileWriter("./src/source/characters"+index+".txt"));
 		    out.write(x);  //Replace with the string 
 		                                             //you are trying to write
 		    out.close();
