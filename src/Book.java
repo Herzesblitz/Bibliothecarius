@@ -11,45 +11,32 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class Book{
-		public String isbn;
-        public String title;
-        public String author;
-        public String publisher;
-        public String covertext;
-        public String blurb; //Klappentext
-        public double rating;
-        public List<String> awards;
-        public List<String> shelves;
-        public List<String> similar_Books;
-        public List<String> Characters;
-        public List<String> Author;
+		public String url="";
+		public String isbn="";
+        public String title="";
+        public String author="";
+        public String publisher="";
+        public String covertext="";
+        public String blurb=""; //Klappentext
+        public double rating=0;
+        public List<String> awards =  new ArrayList<>();
+        public List<String> shelves =  new ArrayList<>();
+        public List<String> similar_Books =  new ArrayList<>();
+        public List<String> Characters =  new ArrayList<>();
+        public List<String> Author =  new ArrayList<>();
 
-        public Book (String title, String author, String publisher, String blurb, double rating) {
-            this.title = title;
-            this.author = author;
-            this.publisher = publisher;
-            this.blurb = blurb;
-            this.rating = rating;
-        }
-    
-    public Book () {
-        this.title = "";
-        this.author = "";
-        this.publisher = "";
-        this.blurb = "";
-        this.rating = 0;
-        this.awards = new ArrayList<>();
-        this.shelves=new ArrayList<String>();
-        this.similar_Books=new ArrayList<String>();
-        this.Characters=new ArrayList<String>();
-        this.Author=new ArrayList<String>();
+    public Book() {
+	}    
+        
+    public Book (String url) throws UnsupportedEncodingException, IOException {
+    	setData(url);
     }
     
   //TODO: funktionen javadoc ergaenzen
   	private static void test() throws UnsupportedEncodingException, IOException {
   	//Name(Buch) -> Autor, aehnlicheBücher, Charaktere, Genre
   		
-  		printBook(buchToinfosBuecher( "Sophie's World",""));
+  		printBook(buchToinfosBuecher( "Sophie's World","",""));
   			//a=  aehnlicheBuecher(testAehnlicheBuecher,"Metro 2033","");
   			//infosBuecher(testInfoBuch,"Metro 2033");
   		
@@ -71,8 +58,25 @@ public class Book{
 	public static void main(String[] args) throws UnsupportedEncodingException, IOException {
 		test();
 	}
+	
+	private void setData(String url) throws UnsupportedEncodingException, IOException {
+		Book k = buchToinfosBuecher("", "", url);
+		this.url = k.url;
+        this.title = k.title;
+        this.isbn = k.isbn;
+        this.author = k.author;
+        this.publisher = k.publisher;
+        this.blurb = k.blurb;
+        this.rating = k.rating;
+        this.awards = k.awards;
+        this.shelves= k.shelves;
+        this.similar_Books=k.similar_Books;
+        this.Characters=k.Characters;
+        this.Author=k.Author;
+	}
     
     public static void printBook(Book Buchmeta) {
+    	System.out.println("URL: "+Buchmeta.url);
 		System.out.println("Title of the Book: "+Buchmeta.title);    	
 		System.out.println("ISBN of the Book: "+Buchmeta.isbn);    	
 		System.out.println("Publisher: "+Buchmeta.publisher);
@@ -93,23 +97,29 @@ public class Book{
 		for (String x: Buchmeta.awards)	System.out.println(x);
 	}
 
-    public static Book buchToinfosBuecher(String title, String author) throws UnsupportedEncodingException, IOException {
+    public static Book buchToinfosBuecher(String title, String author, String url) throws UnsupportedEncodingException, IOException {
 		Book book = new Book();
-    	//link zu buch finden
+		org.jsoup.nodes.Document doc;
+		String linkBuch="";
+    	if(url.equals("")) {
+    		//link zu buch finden
 			String search_1 = "https://www.goodreads.com/search?page=1&query=" + title + " "+ author + "&tab=books&utf8=%E2%9C%93";
-			org.jsoup.nodes.Document doc = Jsoup.connect(search_1).get();
+		    doc = Jsoup.connect(search_1).get();
 			if(doc.select("h3.searchSubNavContainer").toString().toLowerCase().contains("no results")) return null; 
-			String linkBuch = doc.getElementsByTag("tr").first().html().substring(doc.getElementsByTag("tr").first().html().indexOf("href") + 6, doc.getElementsByTag("tr").first().html().indexOf(">", doc.getElementsByTag("tr").first().html().indexOf("href")) - 1);
-
+			linkBuch = doc.getElementsByTag("tr").first().html().substring(doc.getElementsByTag("tr").first().html().indexOf("href") + 6, doc.getElementsByTag("tr").first().html().indexOf(">", doc.getElementsByTag("tr").first().html().indexOf("href")) - 1);
+    	}
+    	else linkBuch = url;
+    	
 		//link oeffnen und daten lesen
-
-			doc = Jsoup.connect("https://www.goodreads.com" + linkBuch).userAgent("bot101").get();
-			
+    	doc = Jsoup.connect("https://www.goodreads.com" + linkBuch).userAgent("bot101").get();
 		//Infos aus doc lesen
+    		book.url = "https://www.goodreads.com"+linkBuch;
+    	
 			String publisher = ""; String blurb = ""; double rating = 0;
 
-				title = doc.select("title").text().substring(0, doc.select("title").text().indexOf("by") - 1);
-            
+				title = doc.select("title").text();
+					if(title.contains("by"))title = title.substring(0, doc.select("title").text().indexOf("by") - 1);
+					
 				blurb = doc.html().substring(doc.html().indexOf("span id=\"freeText") + 47, doc.html().indexOf("</span>", doc.html().indexOf("span id=\"freeText"))); //TODO: show less umbruecken
 			
 				rating = Double.parseDouble(doc.html().substring(doc.html().indexOf("ratingValue") + 13, doc.html().indexOf("ratingValue") + 17).toString());
