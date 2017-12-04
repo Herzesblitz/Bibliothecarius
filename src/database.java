@@ -43,13 +43,11 @@ public class database {
 							 break;
 						 } 
 					 	Elements url_Books_list_x_page_n=  doc_list_X_page_x.select("a.bookTitle");
-					 	//System.out.println("Buchliste: "+list.text()+list.attr("href"));
+					 	System.out.println("Buchliste: "+list.text()+list.attr("href"));
 						 	//gehe durch buecher
 						 	for(Element book: url_Books_list_x_page_n) {
-						 		String url_book_y_list_x_page_n= "https://www.goodreads.com"+book.attr("href");
-						 		System.out.println(books+": "+url_book_y_list_x_page_n);books++;
-
-						 		addBookToDatabase(url_book_y_list_x_page_n);
+						 		System.out.println("   "+books+" "+book.text());books++;
+						 		addBookToDatabase(book.text());
 						 		//System.out.println(book_y_list_x_page_n);
 						 	}
 					page_books++;
@@ -68,9 +66,9 @@ public class database {
 		 return false; 
 	 }
 	 
-	 public static void addBookToDatabase(String url) throws UnsupportedEncodingException, IOException {
+	 public static void addBookToDatabase(String titel) throws UnsupportedEncodingException, IOException {
 		 //prüfe ob Buch schon in Database
-		 Book neu = Book.buchToinfosBuecher("", "",url);
+		 Book neu = Book.buchToinfosBuecher(titel,"");
 		 if(!databaseContains(neu))buecherliste.add(neu);
 	 }
 }

@@ -7,8 +7,11 @@ import java.util.List;
 import java.util.Scanner;
 
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import sun.util.BuddhistCalendar;
 
 public class Book{
 		public String url="";
@@ -28,15 +31,16 @@ public class Book{
     public Book() {
 	}    
         
-    public Book (String url) throws UnsupportedEncodingException, IOException {
-    	setData(url);
+    public Book (String title, String author) throws UnsupportedEncodingException, IOException {
+    	setData(title, author);
     }
     
   //TODO: funktionen javadoc ergaenzen
   	private static void test() throws UnsupportedEncodingException, IOException {
   	//Name(Buch) -> Autor, aehnlicheBücher, Charaktere, Genre
-  		
-  		printBook(buchToinfosBuecher( "Sophie's World","",""));
+  		ArrayList<String> b= buchZuAehnlicheBuecher("Holy Bible: King James Version ", "");
+  		for(String a: b)System.out.println(a);
+  		//printBook(buchToinfosBuecher("Tempting the Bride (Fitzhugh Trilogy #3) ",""));
   			//a=  aehnlicheBuecher(testAehnlicheBuecher,"Metro 2033","");
   			//infosBuecher(testInfoBuch,"Metro 2033");
   		
@@ -59,8 +63,8 @@ public class Book{
 		test();
 	}
 	
-	private void setData(String url) throws UnsupportedEncodingException, IOException {
-		Book k = buchToinfosBuecher("", "", url);
+	private void setData(String title, String author) throws UnsupportedEncodingException, IOException {
+		Book k = buchToinfosBuecher(title, author);
 		this.url = k.url;
         this.title = k.title;
         this.isbn = k.isbn;
@@ -80,6 +84,7 @@ public class Book{
 		System.out.println("Title of the Book: "+Buchmeta.title);    	
 		System.out.println("ISBN of the Book: "+Buchmeta.isbn);    	
 		System.out.println("Publisher: "+Buchmeta.publisher);
+		System.out.println("Rating: "+Buchmeta.rating);
 		System.out.println("________________________________________________");
 		System.out.println("Author(s) of the Book: \n");
 		for (String x: Buchmeta.Author)System.out.println(x);
@@ -95,21 +100,23 @@ public class Book{
 		System.out.println("________________________________________________");
 		System.out.println("Awards of the Book: \n");
 		for (String x: Buchmeta.awards)	System.out.println(x);
+		System.out.println("________________________________________________");
+		System.out.println("Blurb of the Book: \n");
+		System.out.println(Buchmeta.blurb);
 	}
 
-    public static Book buchToinfosBuecher(String title, String author, String url) throws UnsupportedEncodingException, IOException {
+    public static Book buchToinfosBuecher(String title, String author) throws UnsupportedEncodingException, IOException {
 		Book book = new Book();
 		org.jsoup.nodes.Document doc;
 		String linkBuch="";
-    	if(url.equals("")) {
-    		//link zu buch finden
-			String search_1 = "https://www.goodreads.com/search?page=1&query=" + title + " "+ author + "&tab=books&utf8=%E2%9C%93";
-		    doc = Jsoup.connect(search_1).get();
-			if(doc.select("h3.searchSubNavContainer").toString().toLowerCase().contains("no results")) return null; 
-			linkBuch = doc.getElementsByTag("tr").first().html().substring(doc.getElementsByTag("tr").first().html().indexOf("href") + 6, doc.getElementsByTag("tr").first().html().indexOf(">", doc.getElementsByTag("tr").first().html().indexOf("href")) - 1);
-    	}
-    	else linkBuch = url;
+		
+		//link zu buch finden
+		String search_1 = "https://www.goodreads.com/search?page=1&query=" + title + " "+ author + "&tab=books&utf8=%E2%9C%93";
+	    doc = Jsoup.connect(search_1).get();
+		if(doc.select("h3.searchSubNavContainer").toString().toLowerCase().contains("no results")) return null; 
+		linkBuch = doc.getElementsByTag("tr").first().html().substring(doc.getElementsByTag("tr").first().html().indexOf("href") + 6, doc.getElementsByTag("tr").first().html().indexOf(">", doc.getElementsByTag("tr").first().html().indexOf("href")) - 1);
     	
+    	System.out.println(linkBuch);
 		//link oeffnen und daten lesen
     	doc = Jsoup.connect("https://www.goodreads.com" + linkBuch).userAgent("bot101").get();
 		//Infos aus doc lesen
@@ -117,12 +124,17 @@ public class Book{
     	
 			String publisher = ""; String blurb = ""; double rating = 0;
 
-				title = doc.select("title").text();
+			//Suche Title
+			title = doc.select("title").text();
 					if(title.contains("by"))title = title.substring(0, doc.select("title").text().indexOf("by") - 1);
-					
-				blurb = doc.html().substring(doc.html().indexOf("span id=\"freeText") + 47, doc.html().indexOf("</span>", doc.html().indexOf("span id=\"freeText"))); //TODO: show less umbruecken
 			
-				rating = Double.parseDouble(doc.html().substring(doc.html().indexOf("ratingValue") + 13, doc.html().indexOf("ratingValue") + 17).toString());
+			//Suche blurb
+			 blurb=doc.select("div#descriptionContainer").text();
+			
+			//Suche rating
+			 	rating = Double.parseDouble(doc.select("span.average").text());
+			 	//rating = Double.parseDouble(doc.html().substring(doc.html().indexOf("ratingValue") + 13, doc.html().indexOf("ratingValue") + 17).toString());
+			
 			//Suche autor
 				if (doc.html().contains("authorName")) {
 					Elements elements = doc.select("a.authorName");
@@ -143,7 +155,7 @@ public class Book{
 			
 			
 			//aehnlicheBuecher
-				buchZuAehnlicheBuecher(book,title,author);
+				buchZuAehnlicheBuecher(title,author);
 				
 			//ISBN	
 				String isbn= doc.select("div.infoBoxRowItem").select("span.greyText").text().toLowerCase();
@@ -297,7 +309,7 @@ public class Book{
 			return results;
 		}
 	
-		public static ArrayList<String> buchZuAehnlicheBuecher(Book book, String title, String author) throws UnsupportedEncodingException, IOException {
+		public static ArrayList<String> buchZuAehnlicheBuecher(String title, String author) throws UnsupportedEncodingException, IOException {
 		ArrayList<String> results = new ArrayList<>();
 
 		//finde link zu buch ~ rufe dafÃ¼r 1 ergebnis 
@@ -314,6 +326,7 @@ public class Book{
 
 		//similar aufrufen
 			String similar = "https://www.goodreads.com/book/similar/" + linktext_schlecht;
+			System.out.println(similar);
 			doc = Jsoup.connect(similar).get();
 
 		//liste der Ã¤hnlichen bÃ¼cher sammeln
@@ -321,12 +334,6 @@ public class Book{
 			for (Element result_doc : results_doc) {
 				//TODO: link-teil furchtbar, auswahl Ã¼ber html string. gibt es mÃ¶glichtkeit das <href>-tag des <title> tag auszuwÃ¤hlen??
 				results.add(result_doc.text());//.substring(0, result_doc.text().lastIndexOf("–")) + "\n link:" + result_doc.html().substring(result_doc.html().indexOf("href") + 6, result_doc.html().indexOf(">", result_doc.html().indexOf("href")) - 1));
-			}
-
-			String tmptitle;
-			for (int i = 0; i < results.size(); i++) {
-				tmptitle = results.get(i).substring(0, results.get(i).indexOf("by") - 1);
-				book.addAehnlichBuch(tmptitle);
 			}
 
 		return results;
