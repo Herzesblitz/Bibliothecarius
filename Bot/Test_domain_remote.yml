@@ -1,0 +1,72 @@
+﻿slots:
+  title:
+      type: text
+  author:
+      type: text
+  genre:
+      type: list
+  characters:
+      type: list
+  klapptext:
+      type: text
+  awards:
+    type: text
+    
+intents:
+  - greet
+  - affirm
+  - reject
+  - thankyou
+  - request_info_book
+  - request_similar_books
+     
+     
+entities:
+  - title
+  - klapptext
+  - author
+  - genre
+  - characters
+
+templates:
+  bot_greet:
+  bot_goodbye:
+  bot_ask_searchform:
+    -text: ""
+    buttons:
+      -title: "Info about a book"
+      payload: "Info"
+      -title: "search new Books"
+      payload: "NewBooks"
+  bot_ack_dosearch_infobook:
+  bot_ack_findalternatives:
+  bot_ask_author_forinfo:
+  bot_ask_title_for_info:
+
+  bot_ack_dosearch_newbooks:
+  bot_ask_author_fornewbooks:
+  bot_ask_title_fornewbooks:
+  bot_ask_genre_fornewbooks:
+  bot_ask_characters_fornewbooks:
+
+
+
+
+
+actions:
+  - bot_greet
+  - bot_goodbye
+  - bot_ask_searchform
+  - bot_ack_dosearch_infobook
+  - bot_ack_findalternatives
+  - bot_ask_author_forinfo
+  - bot_ask_title_for_info
+
+  - bot_ack_dosearch_newbooks
+  - bot_ask_author_fornewbooks
+  - bot_ask_title_fornewbooks
+  - bot_ask_genre_fornewbooks
+  - bot_ask_characters_fornewbooks
+
+  -bot.ActionSearchInfoBook
+  -bot.ActionSearchSimilarBooks

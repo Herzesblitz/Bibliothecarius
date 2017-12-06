@@ -1,0 +1,108 @@
+{
+  "rasa_nlu_data": {
+    "common_examples": [
+      {
+        "intent": "findalternatives",
+        "text": "This before wasn't good can you find a Book, that is good for me"
+      },
+      {
+        "intent": "findalternatives",
+        "text": "this is not what i mean"
+      },
+      {
+        "intent": "findalternatives",
+        "text": "can you find alternative books"
+      },
+      {
+        "intent": "greet",
+        "text": "Good day"
+      },
+      {
+        "intent": "greet",
+        "text": "Hi ho"
+      },
+      {
+        "intent": "greet",
+        "text": "hey"
+      },
+      {
+        "intent": "greet",
+        "text": "howdy"
+      },
+      {
+        "intent": "greet",
+        "text": "hey there"
+      },
+      {
+        "intent": "greet",
+        "text": "hello"
+      },
+      {
+        "intent": "greet",
+        "text": "hi"
+      },
+      {
+        "intent": "greet",
+        "text": "good morning"
+      },
+      {
+        "intent": "greet",
+        "text": "good evening"
+      },
+      {
+        "intent": "goodbye",
+        "text": "Bye-bye"
+      },
+      {
+        "intent": "goodbye",
+        "text": "=("
+      },
+      {
+        "intent": "goodbye",
+        "text": "Have a nice day"
+      },
+      {
+        "intent": "ack_dosearch",
+        "text": "I look what I can find"
+      },
+      {
+        "intent": "ack_dosearch",
+        "text": "Ok i try to find a good Book"
+      },
+      {
+        "intent": "ack_search",
+        "text": "can you find a book for me"
+      },
+      {
+        "intent": "ack_search",
+        "text": "i search a book"
+      },
+      {
+        "intent": "ack_search",
+        "text": "what is a good book"
+      },
+      {
+        "intent": "ack_search",
+        "text": "i will read a book"
+      },
+      {
+        "intent": "thankyou",
+        "text": "thanks"
+      },
+      {
+        "intent": "thankyou",
+        "text": "thank you"
+      },
+      {
+        "intent": "thankyou",
+        "text": "thank you very much"
+      },
+      {
+        "intent": "thankyou",
+        "text": "nice"
+      }
+    ],
+    "regex_features": [],
+    "entity_synonyms": []
+  }
+}
