@@ -45,7 +45,7 @@ public class Book implements Serializable {
   	//Name(Buch) -> Autor, aehnlicheBücher, Charaktere, Genre
 //  		ArrayList<String> b= buchZuAehnlicheBuecher("Holy Bible: King James Version ", "");
 //  		for(String a: b)System.out.println(a);
-  		printBook(buchToinfosBuecher("","","/book/show/2767052-the-hunger-games"));
+  		printBook(buchToinfosBuecher("The Name of the Wind (The Kingkiller Chronicle, #1)","",""));
   			//a=  aehnlicheBuecher(testAehnlicheBuecher,"Metro 2033","");
   			//infosBuecher(testInfoBuch,"Metro 2033");
   		
@@ -120,10 +120,10 @@ public class Book implements Serializable {
 			String search_1 = "https://www.goodreads.com/search?page=1&query=" + title + " "+ author + "&tab=books&utf8=%E2%9C%93";
 		    doc = Jsoup.connect(search_1).get();
 			if(doc.select("h3.searchSubNavContainer").toString().toLowerCase().contains("no results")) return null; 
-			linkBuch = doc.getElementsByTag("tr").first().html().substring(doc.getElementsByTag("tr").first().html().indexOf("href") + 6, doc.getElementsByTag("tr").first().html().indexOf(">", doc.getElementsByTag("tr").first().html().indexOf("href")) - 1);	
+			linkBuch = "https://www.goodreads.com"+doc.getElementsByTag("tr").first().html().substring(doc.getElementsByTag("tr").first().html().indexOf("href") + 6, doc.getElementsByTag("tr").first().html().indexOf(">", doc.getElementsByTag("tr").first().html().indexOf("href")) - 1);	
 		}
 		else {
-			linkBuch = "https://www.goodreads.com"+url;
+			linkBuch = url;
 		}
 		
     	System.out.println(linkBuch);
@@ -131,7 +131,7 @@ public class Book implements Serializable {
     	doc = Jsoup.connect(linkBuch).timeout(10000).userAgent("bot101").get();
 
 		//Infos aus doc lesen
-    		book.url = "https://www.goodreads.com"+linkBuch;
+    		book.url = linkBuch;
     	
 			String publisher = ""; String blurb = ""; double rating = 0;
 
