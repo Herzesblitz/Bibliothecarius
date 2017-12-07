@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -13,7 +14,11 @@ import org.jsoup.select.Elements;
 
 import sun.util.BuddhistCalendar;
 
-public class Book{
+public class Book implements Serializable {
+		/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 		public String url="";
 		public String isbn="";
         public String title="";
@@ -38,9 +43,9 @@ public class Book{
   //TODO: funktionen javadoc ergaenzen
   	private static void test() throws UnsupportedEncodingException, IOException {
   	//Name(Buch) -> Autor, aehnlicheBücher, Charaktere, Genre
-  		ArrayList<String> b= buchZuAehnlicheBuecher("Holy Bible: King James Version ", "");
-  		for(String a: b)System.out.println(a);
-  		//printBook(buchToinfosBuecher("Tempting the Bride (Fitzhugh Trilogy #3) ",""));
+//  		ArrayList<String> b= buchZuAehnlicheBuecher("Holy Bible: King James Version ", "");
+//  		for(String a: b)System.out.println(a);
+  		printBook(buchToinfosBuecher("","","/book/show/2767052-the-hunger-games"));
   			//a=  aehnlicheBuecher(testAehnlicheBuecher,"Metro 2033","");
   			//infosBuecher(testInfoBuch,"Metro 2033");
   		
@@ -64,7 +69,7 @@ public class Book{
 	}
 	
 	private void setData(String title, String author) throws UnsupportedEncodingException, IOException {
-		Book k = buchToinfosBuecher(title, author);
+		Book k = buchToinfosBuecher(title, author,"");
 		this.url = k.url;
         this.title = k.title;
         this.isbn = k.isbn;
@@ -105,20 +110,26 @@ public class Book{
 		System.out.println(Buchmeta.blurb);
 	}
 
-    public static Book buchToinfosBuecher(String title, String author) throws UnsupportedEncodingException, IOException {
+    public static Book buchToinfosBuecher(String title, String author, String url) throws UnsupportedEncodingException, IOException {
 		Book book = new Book();
 		org.jsoup.nodes.Document doc;
 		String linkBuch="";
 		
-		//link zu buch finden
-		String search_1 = "https://www.goodreads.com/search?page=1&query=" + title + " "+ author + "&tab=books&utf8=%E2%9C%93";
-	    doc = Jsoup.connect(search_1).get();
-		if(doc.select("h3.searchSubNavContainer").toString().toLowerCase().contains("no results")) return null; 
-		linkBuch = doc.getElementsByTag("tr").first().html().substring(doc.getElementsByTag("tr").first().html().indexOf("href") + 6, doc.getElementsByTag("tr").first().html().indexOf(">", doc.getElementsByTag("tr").first().html().indexOf("href")) - 1);
-    	
+		if(url=="") {
+			//link zu buch finden
+			String search_1 = "https://www.goodreads.com/search?page=1&query=" + title + " "+ author + "&tab=books&utf8=%E2%9C%93";
+		    doc = Jsoup.connect(search_1).get();
+			if(doc.select("h3.searchSubNavContainer").toString().toLowerCase().contains("no results")) return null; 
+			linkBuch = doc.getElementsByTag("tr").first().html().substring(doc.getElementsByTag("tr").first().html().indexOf("href") + 6, doc.getElementsByTag("tr").first().html().indexOf(">", doc.getElementsByTag("tr").first().html().indexOf("href")) - 1);	
+		}
+		else {
+			linkBuch = "https://www.goodreads.com"+url;
+		}
+		
     	System.out.println(linkBuch);
 		//link oeffnen und daten lesen
-    	doc = Jsoup.connect("https://www.goodreads.com" + linkBuch).userAgent("bot101").get();
+    	doc = Jsoup.connect(linkBuch).timeout(10000).userAgent("bot101").get();
+
 		//Infos aus doc lesen
     		book.url = "https://www.goodreads.com"+linkBuch;
     	
@@ -326,7 +337,7 @@ public class Book{
 
 		//similar aufrufen
 			String similar = "https://www.goodreads.com/book/similar/" + linktext_schlecht;
-			System.out.println(similar);
+			//System.out.println(similar);
 			doc = Jsoup.connect(similar).get();
 
 		//liste der Ã¤hnlichen bÃ¼cher sammeln
