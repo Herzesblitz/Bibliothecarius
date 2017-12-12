@@ -7,51 +7,23 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import javax.swing.text.Document;
+
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
-import com.sun.org.apache.xpath.internal.axes.WalkingIterator;
-import com.sun.webkit.network.URLs;
-
-class MyThread implements Runnable {
-	String store;
-	Book b = new Book();
-
-	   public MyThread(String s) {
-	       // store parameter for later user
-		   store = s;
-	   }
-
-	   public void run() {
-		   try {
-			  this.b = Book.buchToinfosBuecher("", "", store);
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	   }
-	   
-	   public Book getBook() {
-			  System.out.println(b.title);
-		   return b;
-	   }
-}
 
 public class database {
 	
@@ -62,21 +34,76 @@ public class database {
 		 if (br.readLine() != null) {
 			 load_Database();
 		 }
-		 refresh_Database_threading(2,2);
+		 refresh_Database_threading(100, 10);
 		// sort_database();
 		// printAllTitles();
 		 //Book.printBook(search_database("Harry Potter"));
 	 }
 	 
-	 
-	 
-	 public static void fuege_n_buecher_hinzu(ArrayList<String> url) {
-		 for(String s: url) {
-			 Runnable r = new MyThread(s);
-			 new Thread(r).start();
-			 addBookToDatabase((((MyThread) r).getBook()));
+	 public static class BookCallable implements Callable {
+		 private String url;
+		 public BookCallable(String title) throws UnsupportedEncodingException, IOException {
+			 this.url = title; 
+		 }
+		 public Book call() throws UnsupportedEncodingException, IOException {
+			 return Book.buchToinfosBuecher("", "", url);
 		 }
 	 }
+	 
+	 public static ArrayList<Book> thread_try2(ArrayList<String> urls) throws InterruptedException, ExecutionException, UnsupportedEncodingException, IOException {
+		    ExecutorService pool = Executors.newFixedThreadPool(12);
+		    Set<Future<Book>> set = new HashSet<Future<Book>>();    	    
+		    for (String url: urls) {
+		    	Callable<Book> b = new BookCallable(url);
+		        Future<Book> future = pool.submit(b);
+		        set.add(future);
+		    }
+		    ArrayList<Book> liste = new ArrayList<>();
+		    for (Future<Book> future : set) {
+		    	liste.add(future.get());
+		    }
+		    pool.shutdownNow();
+		    return liste;
+	 }
+	 
+	 public static void thread_try1() {
+		 ExecutorService executorService = Executors.newFixedThreadPool(12);
+		    List<Future<Void>> handles = new ArrayList<Future<Void>>();
+		    Future<Void> handle;
+		    for (int i=0;i < 12; i++) {
+		        handle = executorService.submit(new Callable<Void>() {
+
+		            public Void call() throws Exception {
+		                //org.jsoup.nodes.Document d = Jsoup.connect("http://www.google.hr").timeout(10000).get();
+		                Book b = Book.buchToinfosBuecher("Sophies Welt", "", "");
+		            	System.out.println(b.title);
+		                return null;
+		            }
+		        });
+		        handles.add(handle);
+		    }
+
+		    for (Future<Void> h : handles) {
+		        try {
+		            h.get();
+		        } 
+		        catch (Exception ex) {
+		            ex.printStackTrace();
+		        }
+		    }
+
+		    executorService.shutdownNow();
+	 }
+	 
+	 public static org.jsoup.nodes.Document thread_connect(String url) {
+		    org.jsoup.nodes.Document doc = null;
+		    try {
+		        doc = Jsoup.connect(url).timeout(0).get();
+		    } catch (IOException ex) {
+		        ex.printStackTrace();
+		    }
+		    return doc;
+		}
 	 
 	 public static void save_Database() throws IOException { 
 		 ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("./src/source/db"));
@@ -130,7 +157,7 @@ public class database {
 	 }
 	 
 	 /**
-	  * levenshteinDistance ist ein Maß fuer Aehnlichkeit von Strings
+	  * levenshteinDistance ist ein MaÃŸ fuer Aehnlichkeit von Strings
 	  * @param lhs
 	  * @param rhs
 	  * @return
@@ -177,8 +204,17 @@ public class database {
 		    return cost[len0 - 1] / dif_len*10 ;                                                          
 		}
 	
-	
-	 public static void refresh_Database_threading(int books_nr, int anz_threads) throws IOException, ClassNotFoundException {
+	/**
+	 * 
+	 * @param books_nr
+	 * @param anz_threads
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 */
+	 public static void refresh_Database_threading(int books_nr, int anz_threads) throws IOException, ClassNotFoundException, InterruptedException, ExecutionException {
+		 load_Database();
 		 int books=0;
 		 int page_lists =(int) Math.random()*1000;
 		 b: while(true) {
@@ -216,13 +252,14 @@ public class database {
 						 				if(urlS.size() == 0)break;
 						 				urlS_teil.add(urlS.remove(0));
 						 			}
-						 			//ArrayList<Book> teilmenge_buecher = new ArrayList<>();
 						 			
 						 			books+=i+1; 
 						 			//starte entsprechend viele threads
-						 			fuege_n_buecher_hinzu(urlS_teil);
+						 			 buecherliste.addAll(thread_try2(urlS_teil));
+						 			
+						 			save_Database(); //if(books%10==0)save_Database();			
 						 			printAllTitles();
-						 			save_Database(); //if(books%10==0)save_Database();						 			
+
 							 			//boolean zugefuegt = addBookToDatabase(+book.attr("href"));
 							 			//if(zugefuegt)books++;
 							 		if(books >= books_nr)break b;
@@ -237,8 +274,8 @@ public class database {
 	
 	 
 	 /* Alle Listen: https://www.goodreads.com/list/recently_active_lists 
-	  * 	öffne jede Liste 
-	  * 		öffne jedes Buch
+	  * 	Ã¶ffne jede Liste 
+	  * 		Ã¶ffne jedes Buch
 	  * 			Lese Daten aus
 	  */
 	 public static void refresh_Database(int books_nr) throws IOException, ClassNotFoundException {
@@ -300,7 +337,7 @@ public class database {
 	 }
 	 
 	 public static boolean addBookToDatabase(String url) throws UnsupportedEncodingException, IOException {
-		 //prüfe ob Buch schon in Database
+		 //prÃ¼fe ob Buch schon in Database
 		 Book neu = Book.buchToinfosBuecher("","",url);
 		 System.out.println("add: "+url);
 		 if(!databaseContains(neu)) {
