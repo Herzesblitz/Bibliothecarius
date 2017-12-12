@@ -27,7 +27,6 @@ import com.sun.org.apache.xpath.internal.axes.WalkingIterator;
 import com.sun.webkit.network.URLs;
 
 class MyThread implements Runnable {
-	
 	String store;
 
 	   public MyThread(String s) {
