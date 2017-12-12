@@ -34,9 +34,10 @@ public class database {
 		 if (br.readLine() != null) {
 			 load_Database();
 		 }
-		 refresh_Database_threading(100, 10);
-		// sort_database();
-		// printAllTitles();
+		 //refresh_Database_threading(100, 20);
+		 remove_double_database();
+		 sort_database();
+		 printAllTitles();
 		 //Book.printBook(search_database("Harry Potter"));
 	 }
 	 
@@ -51,7 +52,7 @@ public class database {
 	 }
 	 
 	 public static ArrayList<Book> thread_try2(ArrayList<String> urls) throws InterruptedException, ExecutionException, UnsupportedEncodingException, IOException {
-		    ExecutorService pool = Executors.newFixedThreadPool(12);
+		    ExecutorService pool = Executors.newFixedThreadPool(20);
 		    Set<Future<Book>> set = new HashSet<Future<Book>>();    	    
 		    for (String url: urls) {
 		    	Callable<Book> b = new BookCallable(url);
@@ -65,6 +66,8 @@ public class database {
 		    pool.shutdownNow();
 		    return liste;
 	 }
+	 
+	 
 	 
 	 public static void thread_try1() {
 		 ExecutorService executorService = Executors.newFixedThreadPool(12);
@@ -142,7 +145,7 @@ public class database {
 	 //TODO: moeglicherweise ineffizient
 	 public static void sort_database() throws FileNotFoundException, ClassNotFoundException, IOException {
 		 load_Database();
-		 System.out.println("datenbank geladen ...");
+		 //System.out.println("datenbank geladen ...");
 		// Sorting
 		 Collections.sort(buecherliste, new Comparator<Book>() {
 		         @Override
@@ -154,6 +157,24 @@ public class database {
 		 save_Database();
 		 System.out.println("datenbank geladen ...");
 		 printAllTitles();
+	 }
+	 
+	 private static boolean contains_duplicates(ArrayList<Book> al, String title) {
+		 int anz=0;
+		 for(Book b: al) {
+			 if(b.title.equals(title))anz++;
+		 }
+		 if(anz == 0)return false;
+		 else return true;
+	 }
+	 
+	 public static void remove_double_database() throws FileNotFoundException, ClassNotFoundException, IOException {
+		load_Database();
+	    ArrayList<Book> bl = new ArrayList<Book>();
+		for(Book a: buecherliste) {
+			if(!contains_duplicates(bl, a.title))bl.add(a);
+		}
+		buecherliste = bl;
 	 }
 	 
 	 /**
@@ -255,13 +276,8 @@ public class database {
 						 			
 						 			books+=i+1; 
 						 			//starte entsprechend viele threads
-						 			 buecherliste.addAll(thread_try2(urlS_teil));
-						 			
-						 			save_Database(); //if(books%10==0)save_Database();			
-						 			printAllTitles();
-
-							 			//boolean zugefuegt = addBookToDatabase(+book.attr("href"));
-							 			//if(zugefuegt)books++;
+						 	  	    buecherliste.addAll(thread_try2(urlS_teil));		
+						 			save_Database(); 
 							 		if(books >= books_nr)break b;
 							 	}
 						 page_books++;
