@@ -28,6 +28,7 @@ import com.sun.webkit.network.URLs;
 
 class MyThread implements Runnable {
 	String store;
+	Book b = new Book();
 
 	   public MyThread(String s) {
 	       // store parameter for later user
@@ -36,7 +37,7 @@ class MyThread implements Runnable {
 
 	   public void run() {
 		   try {
-			database.addBookToDatabase(store);
+			  this.b = Book.buchToinfosBuecher("", "", store);
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -44,6 +45,11 @@ class MyThread implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	   }
+	   
+	   public Book getBook() {
+			  System.out.println(b.title);
+		   return b;
 	   }
 }
 
@@ -68,6 +74,7 @@ public class database {
 		 for(String s: url) {
 			 Runnable r = new MyThread(s);
 			 new Thread(r).start();
+			 addBookToDatabase((((MyThread) r).getBook()));
 		 }
 	 }
 	 
@@ -215,7 +222,7 @@ public class database {
 						 			//starte entsprechend viele threads
 						 			fuege_n_buecher_hinzu(urlS_teil);
 						 			printAllTitles();
-						 			//save_Database(); //if(books%10==0)save_Database();						 			
+						 			save_Database(); //if(books%10==0)save_Database();						 			
 							 			//boolean zugefuegt = addBookToDatabase(+book.attr("href"));
 							 			//if(zugefuegt)books++;
 							 		if(books >= books_nr)break b;
@@ -281,6 +288,15 @@ public class database {
 			 if(suche.url == k.url)return true;
 		 }
 		 return false; 
+	 }
+	 
+	 public static boolean addBookToDatabase(Book b)  {
+		 if(!databaseContains(b)) {
+			 buecherliste.add(b);
+			  System.out.println(b.title+" "+buecherliste.size());
+			 return true;
+		 }
+		 return false;
 	 }
 	 
 	 public static boolean addBookToDatabase(String url) throws UnsupportedEncodingException, IOException {
