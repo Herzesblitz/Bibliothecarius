@@ -34,25 +34,26 @@ public class database {
 		 if (br.readLine() != null) {
 			 load_Database();
 		 }
-		 //refresh_Database_threading(100, 20);
+		 refresh_Database_threading(100, 5);
 		 remove_double_database();
 		 sort_database();
 		 printAllTitles();
+		 save_Database();
 		 //Book.printBook(search_database("Harry Potter"));
 	 }
 	 
 	 public static class BookCallable implements Callable {
 		 private String url;
-		 public BookCallable(String title) throws UnsupportedEncodingException, IOException {
-			 this.url = title; 
+		 public BookCallable(String url) throws UnsupportedEncodingException, IOException {
+			 this.url = url; 
 		 }
 		 public Book call() throws UnsupportedEncodingException, IOException {
 			 return Book.buchToinfosBuecher("", "", url);
 		 }
 	 }
 	 
-	 public static ArrayList<Book> thread_try2(ArrayList<String> urls) throws InterruptedException, ExecutionException, UnsupportedEncodingException, IOException {
-		    ExecutorService pool = Executors.newFixedThreadPool(20);
+	 public static ArrayList<Book> thread_try2(ArrayList<String> urls, int threads) throws InterruptedException, ExecutionException, UnsupportedEncodingException, IOException {
+		    ExecutorService pool = Executors.newFixedThreadPool(threads);
 		    Set<Future<Book>> set = new HashSet<Future<Book>>();    	    
 		    for (String url: urls) {
 		    	Callable<Book> b = new BookCallable(url);
@@ -65,37 +66,6 @@ public class database {
 		    }
 		    pool.shutdownNow();
 		    return liste;
-	 }
-	 
-	 
-	 
-	 public static void thread_try1() {
-		 ExecutorService executorService = Executors.newFixedThreadPool(12);
-		    List<Future<Void>> handles = new ArrayList<Future<Void>>();
-		    Future<Void> handle;
-		    for (int i=0;i < 12; i++) {
-		        handle = executorService.submit(new Callable<Void>() {
-
-		            public Void call() throws Exception {
-		                //org.jsoup.nodes.Document d = Jsoup.connect("http://www.google.hr").timeout(10000).get();
-		                Book b = Book.buchToinfosBuecher("Sophies Welt", "", "");
-		            	System.out.println(b.title);
-		                return null;
-		            }
-		        });
-		        handles.add(handle);
-		    }
-
-		    for (Future<Void> h : handles) {
-		        try {
-		            h.get();
-		        } 
-		        catch (Exception ex) {
-		            ex.printStackTrace();
-		        }
-		    }
-
-		    executorService.shutdownNow();
 	 }
 	 
 	 public static org.jsoup.nodes.Document thread_connect(String url) {
@@ -124,9 +94,9 @@ public class database {
 		 load_Database();
 		 System.out.println("Datenbank geladen");
 		 for(Book b: buecherliste) {
-			 System.out.println(b.title+" "+b.url);
+			 System.out.println(b.title);
 		 }
-		 System.out.println();
+		 System.out.println(buecherliste.size());
 	 }
 	 
 	 public static Book search_database(String title) throws FileNotFoundException, ClassNotFoundException, IOException {
@@ -145,7 +115,6 @@ public class database {
 	 //TODO: moeglicherweise ineffizient
 	 public static void sort_database() throws FileNotFoundException, ClassNotFoundException, IOException {
 		 load_Database();
-		 //System.out.println("datenbank geladen ...");
 		// Sorting
 		 Collections.sort(buecherliste, new Comparator<Book>() {
 		         @Override
@@ -155,8 +124,6 @@ public class database {
 		         }
 		     });
 		 save_Database();
-		 System.out.println("datenbank geladen ...");
-		 printAllTitles();
 	 }
 	 
 	 private static boolean contains_duplicates(ArrayList<Book> al, String title) {
@@ -174,7 +141,9 @@ public class database {
 		for(Book a: buecherliste) {
 			if(!contains_duplicates(bl, a.title))bl.add(a);
 		}
-		buecherliste = bl;
+		//System.out.println(bl.size()+" / "+buecherliste.size());
+		buecherliste = new ArrayList<>(bl);
+		save_Database();
 	 }
 	 
 	 /**
@@ -276,7 +245,7 @@ public class database {
 						 			
 						 			books+=i+1; 
 						 			//starte entsprechend viele threads
-						 	  	    buecherliste.addAll(thread_try2(urlS_teil));		
+						 			buecherliste.addAll(thread_try2(urlS_teil,anz_threads));
 						 			save_Database(); 
 							 		if(books >= books_nr)break b;
 							 	}

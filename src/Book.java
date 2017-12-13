@@ -43,9 +43,9 @@ public class Book implements Serializable {
   //TODO: funktionen javadoc ergaenzen
   	private static void test() throws UnsupportedEncodingException, IOException {
   	//Name(Buch) -> Autor, aehnlicheBücher, Charaktere, Genre
-//  		ArrayList<String> b= buchZuAehnlicheBuecher("Holy Bible: King James Version ", "");
+  		ArrayList<String> b= buchZuAehnlicheBuecher("Holy Bible: King James Version", "");
 //  		for(String a: b)System.out.println(a);
-  		printBook(buchToinfosBuecher("The Name of the Wind (The Kingkiller Chronicle, #1)","",""));
+  		//printBook(buchToinfosBuecher("The Name of the Wind (The Kingkiller Chronicle, #1)","",""));
   			//a=  aehnlicheBuecher(testAehnlicheBuecher,"Metro 2033","");
   			//infosBuecher(testInfoBuch,"Metro 2033");
   		
@@ -126,7 +126,6 @@ public class Book implements Serializable {
 			linkBuch = url;
 		}
 		
-    	System.out.println(linkBuch);
 		//link oeffnen und daten lesen
     	doc = Jsoup.connect(linkBuch).timeout(10000).userAgent("bot101").get();
 
@@ -138,7 +137,7 @@ public class Book implements Serializable {
 			//Suche Title
 			title = doc.select("title").text();
 					if(title.contains("by"))title = title.substring(0, doc.select("title").text().indexOf("by") - 1);
-			
+
 			//Suche blurb
 			 blurb=doc.select("div#descriptionContainer").text();
 			
@@ -183,9 +182,6 @@ public class Book implements Serializable {
 				for(Element el: elements) {
 					book.addAwards(el.text());
 				}
-
-				
-				
 
 		book.title = title; book.author = author; book.publisher = publisher; book.blurb = blurb; book.rating = rating;
 		return book;
@@ -329,9 +325,11 @@ public class Book implements Serializable {
 		
 			if(doc.select("h3.searchSubNavContainer").toString().toLowerCase().contains("no results")) return null; 
 		
-			org.jsoup.select.Elements first = doc.getElementsByTag("tr");
-			String link = "https://www.goodreads.com." + first.html().substring(first.html().indexOf("href") + 6, first.html().indexOf(">", first.html().indexOf("href")) - 1);
-			doc = Jsoup.connect(link + URLEncoder.encode(search_1, "UTF-8")).userAgent("bot101").get();
+			org.jsoup.select.Elements first = doc.getElementsByTag("td").select("a");
+			System.out.println(first.html());
+				//String link = "https://www.goodreads.com." + first.html().substring(first.html().indexOf("href") + 6, first.html().indexOf(">", first.html().indexOf("href")) - 1);
+			String link = first.select("link").text();System.out.println(link);
+			doc = Jsoup.connect(link).userAgent("bot101").get();
 			//TODO: funzt u.u. nicht immer
 			String linktext_schlecht = doc.html().substring(doc.html().indexOf("/trivia/work/") + 13, doc.html().indexOf("\"", doc.html().indexOf("/trivia/work/"))); //System.out.println("link: "+linktext_ann1);
 
