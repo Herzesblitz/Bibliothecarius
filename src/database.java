@@ -30,11 +30,7 @@ public class database {
 	static ArrayList<Book> buecherliste = new ArrayList<>();
 
 	 public static void main(String args[]) throws Exception{  
-		 BufferedReader br = new BufferedReader(new FileReader("./src/source/db"));     
-		 if (br.readLine() != null) {
-			 load_Database();
-		 }
-		 refresh_Database_threading(100, 5);
+		 refresh_Database_threading(1000, 50);
 		 remove_double_database();
 		 sort_database();
 		 printAllTitles();
@@ -65,6 +61,7 @@ public class database {
 		    	liste.add(future.get());
 		    }
 		    pool.shutdownNow();
+		    for(Book b: liste)System.out.println(b.title);
 		    return liste;
 	 }
 	 
@@ -87,6 +84,7 @@ public class database {
 	 public static void load_Database() throws FileNotFoundException, IOException, ClassNotFoundException {
 		 ObjectInputStream ois = new ObjectInputStream(new FileInputStream("./src/source/db"));
 		 buecherliste = (ArrayList<Book>) ois.readObject(); // cast is needed.
+		 System.out.println("laenge: "+buecherliste.size());
 		 ois.close();
 	 }
 	 
@@ -204,7 +202,10 @@ public class database {
 	 * @throws ExecutionException
 	 */
 	 public static void refresh_Database_threading(int books_nr, int anz_threads) throws IOException, ClassNotFoundException, InterruptedException, ExecutionException {
-		 load_Database();
+		 BufferedReader br = new BufferedReader(new FileReader("./src/source/db"));     
+		 if (br.readLine() != null) {
+			 load_Database();
+		 }
 		 int books=0;
 		 int page_lists =(int) Math.random()*1000;
 		 b: while(true) {
@@ -223,6 +224,7 @@ public class database {
 						if(!doc_list_X_page_x.html().toString().contains("bookTitle")) {
 							 break;
 						} 
+				 		System.out.println("page: "+page_books);
 					 	Elements url_Books_list_x_page_n=  doc_list_X_page_x.select("a.bookTitle");
 					 	System.out.println("Buchliste: "+list.text()+list.attr("href"));
 						 	//gehe durch buecher

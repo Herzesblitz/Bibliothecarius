@@ -325,10 +325,10 @@ public class Book implements Serializable {
 		
 			if(doc.select("h3.searchSubNavContainer").toString().toLowerCase().contains("no results")) return null; 
 		
-			org.jsoup.select.Elements first = doc.getElementsByTag("td").select("a");
-			System.out.println(first.html());
-				//String link = "https://www.goodreads.com." + first.html().substring(first.html().indexOf("href") + 6, first.html().indexOf(">", first.html().indexOf("href")) - 1);
-			String link = first.select("link").text();System.out.println(link);
+			org.jsoup.select.Elements first = doc.getElementsByTag("td");
+					//System.out.println(first.html());
+					//String link = first.select("link").text();System.out.println(link);
+				String link = "https://www.goodreads.com." + first.html().substring(first.html().indexOf("href") + 6, first.html().indexOf(">", first.html().indexOf("href")) - 1);
 			doc = Jsoup.connect(link).userAgent("bot101").get();
 			//TODO: funzt u.u. nicht immer
 			String linktext_schlecht = doc.html().substring(doc.html().indexOf("/trivia/work/") + 13, doc.html().indexOf("\"", doc.html().indexOf("/trivia/work/"))); //System.out.println("link: "+linktext_ann1);
