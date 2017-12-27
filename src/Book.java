@@ -354,6 +354,7 @@ public class Book implements Serializable {
 			org.jsoup.nodes.Document doc = Jsoup.connect(search_1 + URLEncoder.encode(search_1, "UTF-8")).get();
 			if(doc.select("h3.searchSubNavContainer").toString().toLowerCase().contains("no results")) return null; 
 		
+<<<<<<< HEAD
 			String link_book = "https://www.goodreads.com"+doc.select("a.booktitle").first().attr("href");
 				System.out.println(link_book);
 			org.jsoup.nodes.Document doc_book = Jsoup.connect(link_book).userAgent("bot101").get();
@@ -367,6 +368,11 @@ public class Book implements Serializable {
 				}
 			}
 			System.out.println(similar_link);
+=======
+			org.jsoup.select.Elements first = doc.getElementsByTag("td");
+					//System.out.println(first.html());
+
+>>>>>>> 2ec0c624afbcaab8ef6b6713216b82d5d7412a63
 		//similar aufrufen
 			doc = Jsoup.connect(similar_link).get();
 
