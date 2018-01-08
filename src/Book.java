@@ -16,6 +16,8 @@ import org.jsoup.select.Elements;
 
 import sun.util.BuddhistCalendar;
 
+//BUGLISTE
+	//TODO: manchmal taucht goodreads.com...goodreads.com auf 
 public class Book implements Serializable {
 		/**
 	 * 
@@ -45,20 +47,19 @@ public class Book implements Serializable {
   //TODO: funktionen javadoc ergaenzen
   	private static void test() throws UnsupportedEncodingException, IOException {
   	//Name(Buch) -> Autor, aehnlicheBücher, Charaktere, Genre
-  		ArrayList<String> b= buchZuAehnlicheBuecher("Holy Bible: King James Version", "");
-  			for(String a: b)System.out.println(a);
+//  		ArrayList<String> b= buchZuAehnlicheBuecher("Holy Bible: King James Version", "");
+//  			for(String a: b)System.out.println(a);
   		//printBook(buchToinfosBuecher("The Name of the Wind (The Kingkiller Chronicle, #1)","",""));
   			//a=  aehnlicheBuecher(testAehnlicheBuecher,"Metro 2033","");
   			//infosBuecher(testInfoBuch,"Metro 2033");
   		
-  		
-//  		ArrayList<String> a= new ArrayList<>();
-//  		a = characterZuBuecherliste("Alexander");
+  		ArrayList<String> a= new ArrayList<>();
+  		a = characterZuBuecherliste("Alexander");
 //  		a = themaZuBuecherliste("Horror");
 //  		a = autorZuBuecherliste("Tolkien");
 //  		a = titleZuBuecherliste("Metro 2033", 5);
 //
-//  		for(String s: a)System.out.println(s);
+  		for(String s: a)System.out.println(s);
   		
   		
   		//Hilfsfunktionen
@@ -86,41 +87,47 @@ public class Book implements Serializable {
         this.Author=k.Author;
 	}
     
-    public static void printBook(Book Buchmeta) {
-    	System.out.println("URL: "+Buchmeta.url);
-		System.out.println("Title of the Book: "+Buchmeta.title);    	
-		System.out.println("ISBN of the Book: "+Buchmeta.isbn);    	
-		System.out.println("Publisher: "+Buchmeta.publisher);
-		System.out.println("Rating: "+Buchmeta.rating);
-		System.out.println("________________________________________________");
-		System.out.println("Author(s) of the Book: \n");
-		for (String x: Buchmeta.Author)System.out.println(x);
-		System.out.println("________________________________________________");
-		System.out.println("Similar Books: \n");
-			for (String x: Buchmeta.similar_Books)	System.out.println(x);
+    //wird durch RASA aufgerufen
+	
+		public static void printListofBooks(ArrayList<Book> liste) {
+			for(Book b: liste)printBook(b);
+		}
+	
+		public static void printBook(Book Buchmeta) {
+	    	System.out.println("URL: "+Buchmeta.url);
+			System.out.println("Title of the Book: "+Buchmeta.title);    	
+			System.out.println("ISBN of the Book: "+Buchmeta.isbn);    	
+			System.out.println("Publisher: "+Buchmeta.publisher);
+			System.out.println("Rating: "+Buchmeta.rating);
 			System.out.println("________________________________________________");
-			System.out.println("Characters in the Book: \n");
-		for (String x: Buchmeta.Characters) System.out.println(x);
-		System.out.println("________________________________________________");
-		System.out.println("Genre of the Book: \n");
-		for (String x: Buchmeta.shelves)	System.out.println(x);
-		System.out.println("________________________________________________");
-		System.out.println("Awards of the Book: \n");
-		for (String x: Buchmeta.awards)	System.out.println(x);
-		System.out.println("________________________________________________");
-		System.out.println("Blurb of the Book: \n");
-		System.out.println(Buchmeta.blurb);
-	}
-    
-    public static ArrayList<Book> Schnitt(ArrayList<Book> a, ArrayList<Book> b){
-    	ArrayList<Book> results = new ArrayList<>();
-    	for(Book q: a) {
-    		if(b.contains(q))results.add(q);
+			System.out.println("Author(s) of the Book: \n");
+			for (String x: Buchmeta.Author)System.out.println(x);
+			System.out.println("________________________________________________");
+			System.out.println("Similar Books: \n");
+				for (String x: Buchmeta.similar_Books)	System.out.println(x);
+				System.out.println("________________________________________________");
+				System.out.println("Characters in the Book: \n");
+			for (String x: Buchmeta.Characters) System.out.println(x);
+			System.out.println("________________________________________________");
+			System.out.println("Genre of the Book: \n");
+			for (String x: Buchmeta.shelves)	System.out.println(x);
+			System.out.println("________________________________________________");
+			System.out.println("Awards of the Book: \n");
+			for (String x: Buchmeta.awards)	System.out.println(x);
+			System.out.println("________________________________________________");
+			System.out.println("Blurb of the Book: \n");
+			System.out.println(Buchmeta.blurb);
+		}
+     
+    	public static ArrayList<Book> Schnitt(ArrayList<Book> a, ArrayList<Book> b){
+	    	ArrayList<Book> results = new ArrayList<>();
+	    	for(Book q: a) {
+	    		if(b.contains(q))results.add(q);
+	    	}
+	    	return results;
     	}
-    	return results;
-    }
     
-    public static ArrayList<Book> Vereinigung(ArrayList<Book> a, ArrayList<Book> b){
+    	public static ArrayList<Book> Vereinigung(ArrayList<Book> a, ArrayList<Book> b){
     	ArrayList<Book> results = new ArrayList<>();
     	for(Book q: a) {
     		results.add(q);
@@ -131,16 +138,16 @@ public class Book implements Serializable {
     	return results;
     }
     
-    public static ArrayList<String> removeDoubles(ArrayList<String> a){
+    	public static ArrayList<String> removeDoubles(ArrayList<String> a){
     	ArrayList<String> b = new ArrayList<>();
     	for(String s: a) {
     		if(b.contains(s))continue;
     		else b.add(s);
     	}
     	return b;
-    }
-
-    public static Book buchToinfosBuecher(String title, String author, String url) throws UnsupportedEncodingException, IOException {
+    }  
+    
+    	public static Book buchToinfosBuecher(String title, String author, String url) throws UnsupportedEncodingException, IOException {
 		Book book = new Book();
 		org.jsoup.nodes.Document doc;
 		String linkBuch="";
@@ -217,7 +224,6 @@ public class Book implements Serializable {
 		return book;
 	}
 
-    
     //Funktionentyp: Daten -> Buecherliste
     
 		public static ArrayList<String> autorZuBuecherliste(String autor) throws UnsupportedEncodingException, IOException {
@@ -238,6 +244,7 @@ public class Book implements Serializable {
 					link = "\n link:" + result_doc.html().substring(result_doc.html().indexOf("href") + 6, result_doc.html().indexOf(">", result_doc.html().indexOf("href")) - 1);
 				results.add(result_doc.text().substring(0, result_doc.text().lastIndexOf("–") + 1) + link);
 			}
+			
 			return results;
 		}
 	
@@ -250,7 +257,7 @@ public class Book implements Serializable {
 					//link = content.substring(content.indexOf("URL:", content.indexOf(character)),content.indexOf("\n", content.indexOf(content.indexOf("URL:", content.indexOf(character)))));
 				if(link.length()==0)System.err.println("charakter nicht gefunden!");
 			
-			//link öffnen
+			//link öffnenc
 				ArrayList<String> authors = new ArrayList<>();
 				ArrayList<String> titles = new ArrayList<>();
 	
@@ -342,7 +349,7 @@ public class Book implements Serializable {
 					//for(String r: results)System.out.println(r);
 					
 				}
-				
+
 			return results;
 		}
 	
@@ -354,7 +361,6 @@ public class Book implements Serializable {
 			org.jsoup.nodes.Document doc = Jsoup.connect(search_1 + URLEncoder.encode(search_1, "UTF-8")).get();
 			if(doc.select("h3.searchSubNavContainer").toString().toLowerCase().contains("no results")) return null; 
 		
-<<<<<<< HEAD
 			String link_book = "https://www.goodreads.com"+doc.select("a.booktitle").first().attr("href");
 				System.out.println(link_book);
 			org.jsoup.nodes.Document doc_book = Jsoup.connect(link_book).userAgent("bot101").get();
@@ -368,7 +374,7 @@ public class Book implements Serializable {
 				}
 			}
 			System.out.println(similar_link);
-=======
+
 			org.jsoup.select.Elements first = doc.getElementsByTag("td");
 					//System.out.println(first.html());
 					//String link = first.select("link").text();System.out.println(link);
@@ -377,14 +383,13 @@ public class Book implements Serializable {
 			//TODO: funzt u.u. nicht immer
 			String linktext_schlecht = doc.html().substring(doc.html().indexOf("/trivia/work/") + 13, doc.html().indexOf("\"", doc.html().indexOf("/trivia/work/"))); //System.out.println("link: "+linktext_ann1);
 
->>>>>>> 2ec0c624afbcaab8ef6b6713216b82d5d7412a63
 		//similar aufrufen
-			doc = Jsoup.connect(similar_link).get();
+			doc = Jsoup.connect(similar_link).ignoreHttpErrors(true).get();
 
 		//liste der Ã¤hnlichen buecher sammeln
 			org.jsoup.select.Elements results_doc = doc.select("div").select("a");
 			for (Element result_doc : results_doc) {
-				String link = result_doc.attr("href").replaceAll(" ", "");
+				link = result_doc.attr("href").replaceAll(" ", "");
 				if(link.contains("/book/show/") && !results.contains(link))results.add("https://www.goodreads.com"+link);
 			}
 		return removeDoubles(results);
