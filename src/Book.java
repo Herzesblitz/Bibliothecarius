@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +47,7 @@ public class Book implements Serializable {
     
   //TODO: funktionen javadoc ergaenzen
   	private static void test() throws UnsupportedEncodingException, IOException {
+  		printBook(buchToinfosBuecher("Platon's Republic", "Platon", ""));
   	//Name(Buch) -> Autor, aehnlicheBücher, Charaktere, Genre
 //  		ArrayList<String> b= buchZuAehnlicheBuecher("Holy Bible: King James Version", "");
 //  			for(String a: b)System.out.println(a);
@@ -53,13 +55,11 @@ public class Book implements Serializable {
   			//a=  aehnlicheBuecher(testAehnlicheBuecher,"Metro 2033","");
   			//infosBuecher(testInfoBuch,"Metro 2033");
   		
-  		ArrayList<String> a= new ArrayList<>();
-  		a = characterZuBuecherliste("Alexander");
+  		//a = characterZuBuecherliste("Alexander");
 //  		a = themaZuBuecherliste("Horror");
-//  		a = autorZuBuecherliste("Tolkien");
+  			//printListofBooks(autorZuBuecherliste("Tolkien"));
 //  		a = titleZuBuecherliste("Metro 2033", 5);
 //
-  		for(String s: a)System.out.println(s);
   		
   		
   		//Hilfsfunktionen
@@ -119,34 +119,11 @@ public class Book implements Serializable {
 			System.out.println(Buchmeta.blurb);
 		}
      
-    	public static ArrayList<Book> Schnitt(ArrayList<Book> a, ArrayList<Book> b){
-	    	ArrayList<Book> results = new ArrayList<>();
-	    	for(Book q: a) {
-	    		if(b.contains(q))results.add(q);
-	    	}
-	    	return results;
-    	}
-    
-    	public static ArrayList<Book> Vereinigung(ArrayList<Book> a, ArrayList<Book> b){
-    	ArrayList<Book> results = new ArrayList<>();
-    	for(Book q: a) {
-    		results.add(q);
-    	}
-    	for(Book p: b) {
-    		if(!results.contains(p))results.add(p);
-    	}
-    	return results;
-    }
-    
-    	public static ArrayList<String> removeDoubles(ArrayList<String> a){
-    	ArrayList<String> b = new ArrayList<>();
-    	for(String s: a) {
-    		if(b.contains(s))continue;
-    		else b.add(s);
-    	}
-    	return b;
-    }  
-    
+    	
+    	
+    //Hilfsfunktionen um Datenbank aufzubauenFunktionentyp: Daten -> Buecherliste
+    	
+    	//TODO: eingabe: ISBN, 
     	public static Book buchToinfosBuecher(String title, String author, String url) throws UnsupportedEncodingException, IOException {
 		Book book = new Book();
 		org.jsoup.nodes.Document doc;
@@ -207,7 +184,11 @@ public class Book implements Serializable {
 			//ISBN	
 				String isbn= doc.select("div.infoBoxRowItem").select("span.greyText").text().toLowerCase();
 				if(isbn.contains("isbn13"))book.setISBN(isbn.substring(isbn.indexOf(" ")+1,isbn.indexOf(")")));
-
+				
+				for(Element el: doc.select("span").select("span"))System.out.println(el.text());
+					
+					//System.out.println("test");isbn = doc.select("META[property=isbn]").toString();
+				
 			//publisher
 				elements = doc.select("div.row");
 				for(Element el: elements) {
@@ -224,35 +205,47 @@ public class Book implements Serializable {
 		return book;
 	}
 
-    //Funktionentyp: Daten -> Buecherliste
-    
-		public static ArrayList<String> autorZuBuecherliste(String autor) throws UnsupportedEncodingException, IOException {
-			ArrayList<String> results = new ArrayList<>();
+    	
+		public static ArrayList<Book> autorZuBuecherliste(String autor) throws UnsupportedEncodingException, IOException {
+			ArrayList<Book> results = new ArrayList<>();
 			//link fuer autor finden
 				String search_1 = "https://www.goodreads.com/search?page=1&query=" + autor + "&tab=books&utf8=%E2%9C%93";
 				org.jsoup.nodes.Document doc = Jsoup.connect(search_1 + URLEncoder.encode(search_1, "UTF-8")).get();
 			//TODO: funzt whrsch nicht immer
-				String linkAutor = doc.html().substring(doc.html().indexOf("www.goodreads.com/author/show/") + 30, doc.html().indexOf("\"", doc.html().indexOf("/www.goodreads.com/author/show/")));
-				doc = Jsoup.connect("https://www.goodreads.com/author/list/" + linkAutor).userAgent("bot101").get();
+				String linkAutor = "https://"+doc.html().substring(doc.html().indexOf("www.goodreads.com/author/show/"), doc.html().indexOf("\"", doc.html().indexOf("/www.goodreads.com/author/show/"))).replaceFirst("/show/", "/list/");			
+					
+			int page_results=1;
+			
+			while(true) {
+				//rufe seiten fuer ergbnisse auf
+				doc = Jsoup.connect(linkAutor+"?page="+page_results).ignoreHttpErrors(true).userAgent("bot101").get();
+				if(doc.html().toString().contains("hasn't written any books"))break; //seite existiert nicht //TODO eig schlecht
+
 				org.jsoup.select.Elements results_doc = doc.getElementsByTag("tr");
-	
-			String link = "";
-			for (Element result_doc : results_doc) {
-				if (!result_doc.text().contains("–")) break; //TODO: dirty fix
-				//TODO: link-teil furchtbar, auswahl Ã¼ber html string. gibt es mÃ¶glichtkeit das <href>-tag des <title> tag auszuwÃ¤hlen??
-				if (result_doc.html().contains("href"))
-					link = "\n link:" + result_doc.html().substring(result_doc.html().indexOf("href") + 6, result_doc.html().indexOf(">", result_doc.html().indexOf("href")) - 1);
-				results.add(result_doc.text().substring(0, result_doc.text().lastIndexOf("–") + 1) + link);
+				for (Element result_doc : results_doc) {
+					String url = "https://www.goodreads.com"+result_doc.select("td").select("a.bookTitle").attr("href");
+					System.out.println(url);
+					results.add(buchToinfosBuecher("", "", url));
+				}			
 			}
 			
 			return results;
 		}
 	
+		//TODO: sollen BOok zurueckgeben
 		public static ArrayList<String> characterZuBuecherliste(String character) throws IOException{
 			//link für charakter finden
 				String link = "";
 				ArrayList<String> ret = new ArrayList<>();
-				String content = new Scanner(new File("./src/source/characters.txt")).useDelimiter("\\Z").next();
+				
+				String content = new Scanner(new File("./src/source/Charaktere.txt")).useDelimiter("//Z").next();
+//				String content="";
+//				Scanner sc = new Scanner(new File("./src/source/Charaktere"));
+//				while(sc.hasNext()) {
+//					content += sc.next();
+//				}
+				
+				
 				if(content.contains(character))link = content.substring(content.indexOf("URL:", content.indexOf(character))+5, content.indexOf("\n",content.indexOf(character)));
 					//link = content.substring(content.indexOf("URL:", content.indexOf(character)),content.indexOf("\n", content.indexOf(content.indexOf("URL:", content.indexOf(character)))));
 				if(link.length()==0)System.err.println("charakter nicht gefunden!");
@@ -395,7 +388,14 @@ public class Book implements Serializable {
 		return removeDoubles(results);
 	}
     
-
+		public static ArrayList<String> removeDoubles(ArrayList<String> a){
+		 	ArrayList<String> b = new ArrayList<>();
+		 	for(String s: a) {
+		 		if(b.contains(s))continue;
+		 		else b.add(s);
+		 	}
+		 	return b;
+	 	}  
     //Setter, adder etc.
 						public void setPublisher(String publisher) {
 							this.publisher = publisher;
