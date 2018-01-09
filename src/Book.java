@@ -18,19 +18,21 @@ import org.jsoup.select.Elements;
 
 //BUGLISTE
 	//TODO: manchmal taucht goodreads.com...goodreads.com auf 
+	//TODO: falscher blurb bei  printBook(buchToinfosBuecher("Platon's Republic", "Platon", ""));
+
 public class Book implements Serializable {
 		/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+		public int year = Integer.MIN_VALUE;
 		public String url="";
 		public String isbn="";
         public String title="";
-        public String author="";
         public String publisher="";
         public String covertext="";
         public String blurb=""; //Klappentext
-        public double rating=0;
+        public double rating=Integer.MIN_VALUE;
         public List<String> awards =  new ArrayList<>();
         public List<String> shelves =  new ArrayList<>();
         public List<String> similar_Books =  new ArrayList<>();
@@ -46,9 +48,7 @@ public class Book implements Serializable {
     
   //TODO: funktionen javadoc ergaenzen
   	private static void test() throws UnsupportedEncodingException, IOException {
-  		System.out.println(randomString());
-  		
-//  	for(int i=0; i<1000; i++) {
+  		//  	for(int i=0; i<1000; i++) {
 //			String randomBook = randomBookURL();
 //			ArrayList<String> b= buchZuAehnlicheBuecher("", "", randomBook);
 //			for(String a: b)System.out.println("   "+a);
@@ -67,7 +67,7 @@ public class Book implements Serializable {
 
   		for(int i=0; i<1000; i++) {
   			ArrayList<String> a= new ArrayList<>();
-  	  		a = characterZuBuecherliste(randomString());
+//  	  		a = characterZuBuecherliste(randomString());
 //  	  		a = themaZuBuecherliste("Horror");
 //  	  		a = autorZuBuecherliste("Tolkien");
 //  	  		a = titleZuBuecherliste("Metro 2033", 5);
@@ -95,7 +95,6 @@ public class Book implements Serializable {
 		this.url = k.url;
         this.title = k.title;
         this.isbn = k.isbn;
-        this.author = k.author;
         this.publisher = k.publisher;
         this.blurb = k.blurb;
         this.rating = k.rating;
@@ -106,31 +105,42 @@ public class Book implements Serializable {
         this.Author=k.Author;
 	}
     
-    //wird durch RASA aufgerufen
+    //wird durch database aufgerufen
 	
-		public static void printListofBooks(ArrayList<Book> liste) {
+	public static void printListofBooks(ArrayList<Book> liste) {
 			for(Book b: liste)printBook(b);
-		}
+	}
 	
-		public static void printBook(Book Buchmeta) {
-	    	System.out.println("URL: "+Buchmeta.url);
-			System.out.println("Title of the Book: "+Buchmeta.title);    	
-			System.out.println("ISBN of the Book: "+Buchmeta.isbn);    	
-			System.out.println("Publisher: "+Buchmeta.publisher);
-			System.out.println("Rating: "+Buchmeta.rating);
+	public static void printBook(Book Buchmeta) {
+			if(!Buchmeta.url.equals(""))System.out.println("URL: "+Buchmeta.url);
+			if(!Buchmeta.title.equals(""))System.out.println("Title of the Book: "+Buchmeta.title); 
+			if(Buchmeta.Author.size() == 1) System.out.println("Author: "+Buchmeta.Author.get(0));
+			else {System.out.print("Authors: "); for (int i=0; i<Buchmeta.Author.size()-1; i++) System.out.print(Buchmeta.Author.get(i)+", "); System.out.println(Buchmeta.Author.get(Buchmeta.Author.size()-1));}
+			if(Buchmeta.year != Integer.MIN_VALUE)System.out.println("Publihsing year: "+Buchmeta.year);
+//			System.out.println("ISBN of the Book: "+Buchmeta.isbn);    	
+			if(!Buchmeta.publisher.equals(""))System.out.println("Publisher: "+Buchmeta.publisher);
+			if(Buchmeta.rating != Integer.MIN_VALUE)System.out.println("Rating: "+Buchmeta.rating);
 			System.out.println("________________________________________________");
-
-			System.out.println("Characters in the Book: \n");
-		for (String x: Buchmeta.Characters) System.out.println(x);
-		System.out.println("________________________________________________");
-		System.out.println("Genre of the Book: \n");
-		for (String x: Buchmeta.shelves)	System.out.println(x);
-		System.out.println("________________________________________________");
-		System.out.println("Awards of the Book: \n");
-		for (String x: Buchmeta.awards)	System.out.println(x);
-		System.out.println("________________________________________________");
-		System.out.println("Blurb of the Book: \n");
-		System.out.println(Buchmeta.blurb);
+			if(Buchmeta.Characters.size() > 0) {
+				System.out.println("Characters in the Book: \n");
+				for (String x: Buchmeta.Characters) System.out.println(x);
+				System.out.println("________________________________________________");
+			}
+			if(Buchmeta.shelves.size() > 0) {
+				System.out.println("Genre of the Book: \n");
+				for (String x: Buchmeta.shelves)	System.out.println(x);
+				System.out.println("________________________________________________");
+			}
+			if(Buchmeta.awards.size() > 0) {
+				System.out.println("Awards of the Book: \n");
+				for (String x: Buchmeta.awards)	System.out.println(x);
+				System.out.println("________________________________________________");
+				
+			}
+			if(!Buchmeta.blurb.equals("")) {
+				System.out.println("Blurb of the Book: \n");
+				System.out.println(Buchmeta.blurb);
+			}
 	}
     
     public static ArrayList<Book> Schnitt(ArrayList<Book> a, ArrayList<Book> b){
@@ -171,39 +181,12 @@ public class Book implements Serializable {
     }
 
     public static Book buchToinfosBuecher(String title, String author, String url) throws UnsupportedEncodingException, IOException {
-=======
-			System.out.println("Author(s) of the Book: \n");
-			for (String x: Buchmeta.Author)System.out.println(x);
-			System.out.println("________________________________________________");
-			System.out.println("Similar Books: \n");
-				for (String x: Buchmeta.similar_Books)	System.out.println(x);
-				System.out.println("________________________________________________");
-				System.out.println("Characters in the Book: \n");
-			for (String x: Buchmeta.Characters) System.out.println(x);
-			System.out.println("________________________________________________");
-			System.out.println("Genre of the Book: \n");
-			for (String x: Buchmeta.shelves)	System.out.println(x);
-			System.out.println("________________________________________________");
-			System.out.println("Awards of the Book: \n");
-			for (String x: Buchmeta.awards)	System.out.println(x);
-			System.out.println("________________________________________________");
-			System.out.println("Blurb of the Book: \n");
-			System.out.println(Buchmeta.blurb);
-		}
-     
-    	
-    	
-    //Hilfsfunktionen um Datenbank aufzubauenFunktionentyp: Daten -> Buecherliste
-    	
-    	//TODO: eingabe: ISBN, 
-    	public static Book buchToinfosBuecher(String title, String author, String url) throws UnsupportedEncodingException, IOException {
->>>>>>> fcef54cfaca7079543cccb4b486056e3d2cd416d
 		Book book = new Book();
 		org.jsoup.nodes.Document doc;
 		String linkBuch="";
 		
 		if(url=="") {
-			BookIDToLink(title, author, url);
+			linkBuch = BookIDToLink(title, author, url);
 		}
 		else {
 			linkBuch = url;
@@ -253,7 +236,7 @@ public class Book implements Serializable {
 				String isbn= doc.select("div.infoBoxRowItem").select("span.greyText").text().toLowerCase();
 				if(isbn.contains("isbn13"))book.setISBN(isbn.substring(isbn.indexOf(" ")+1,isbn.indexOf(")")));
 				
-				for(Element el: doc.select("span").select("span"))System.out.println(el.text());
+				//TODO: ISBN wird zB. bei the republic (plato) nicht gelesen: for(Element el: doc.select("span").select("span"))System.out.println(el.text());
 					
 					//System.out.println("test");isbn = doc.select("META[property=isbn]").toString();
 				
@@ -268,8 +251,11 @@ public class Book implements Serializable {
 				for(Element el: elements) {
 					book.addAwards(el.text());
 				}
+			
+			//year
+				if(book.publisher.matches(".*\\d+.*")) book.year = Integer.valueOf(book.publisher.replaceAll("\\D+",""));
 
-		book.title = title; book.author = author; book.publisher = publisher; book.blurb = blurb; book.rating = rating;
+		book.title = title; book.publisher = publisher; book.blurb = blurb; book.rating = rating;
 		return book;
 	}
 
@@ -300,33 +286,22 @@ public class Book implements Serializable {
 			return results;
 		}
 	
-		//TODO: sollen BOok zurueckgeben
 		public static ArrayList<String> characterZuBuecherliste(String character) throws IOException{
 			//link für charakter finden
 				String link = "";
 				ArrayList<String> ret = new ArrayList<>();
-<<<<<<< HEAD
-				String content = new Scanner(new File("./Bibliothecarius/src/sourceCharacterslist/Characters.txt").getAbsolutePath()).useDelimiter("\\Z").next();
-=======
-				
-				String content = new Scanner(new File("./src/source/Charaktere.txt")).useDelimiter("//Z").next();
-//				String content="";
-//				Scanner sc = new Scanner(new File("./src/source/Charaktere"));
-//				while(sc.hasNext()) {
-//					content += sc.next();
-//				}
-				
-				
->>>>>>> fcef54cfaca7079543cccb4b486056e3d2cd416d
+
+				String content = new Scanner(new File("./src/source/Charaktere.txt")).useDelimiter("//Z").next();	
 				if(content.contains(character))link = content.substring(content.indexOf("URL:", content.indexOf(character))+5, content.indexOf("\n",content.indexOf(character)));
 					//link = content.substring(content.indexOf("URL:", content.indexOf(character)),content.indexOf("\n", content.indexOf(content.indexOf("URL:", content.indexOf(character)))));
 				if(link.length()==0) {
-					System.err.println("charakter nicht gefunden!");
-					return null;
+					//System.err.println("charakter nicht gefunden!");
+					ArrayList<String> a = new ArrayList(); a.add("");
+					return a;
 				}
 				System.out.println(character+" "+link);
 			
-			//link öffnenc
+			//link öffnen
 				ArrayList<String> authors = new ArrayList<>();
 				ArrayList<String> titles = new ArrayList<>();
 	
@@ -424,7 +399,7 @@ public class Book implements Serializable {
 		public static ArrayList<String> buchZuAehnlicheBuecher(String title, String author, String url) throws UnsupportedEncodingException, IOException {
 		ArrayList<String> results = new ArrayList<>();
 		
-<<<<<<< HEAD
+
 		//finde link zu buch
 		String link_book ="";
 		if(url == "") {
@@ -436,45 +411,24 @@ public class Book implements Serializable {
 		System.out.println(link_book);
 
 		org.jsoup.nodes.Document doc = Jsoup.connect(link_book).userAgent("bot101").get();
-=======
-			String link_book = "https://www.goodreads.com"+doc.select("a.booktitle").first().attr("href");
-				System.out.println(link_book);
-			org.jsoup.nodes.Document doc_book = Jsoup.connect(link_book).userAgent("bot101").get();
-			
->>>>>>> fcef54cfaca7079543cccb4b486056e3d2cd416d
-			//TODO: immer noch nicht perfekt, aber besser als vorher, da keine substringsuche
-			String similar_link = "https://www.goodreads.com/book/similar/";
-			for(Element e:doc.select("div").select("h2.brownBackground").select("a")) {
-				if(e.attr("href").contains("work")) { //contains("work") ist kritisch
-					similar_link += e.attr("href").replaceAll("[^0-9]+", "");
-					break;
-				}
+
+		//TODO: immer noch nicht perfekt, aber besser als vorher, da keine substringsuche
+		String similar_link = "https://www.goodreads.com/book/similar/";
+		for(Element e:doc.select("div").select("h2.brownBackground").select("a")) {
+			if(e.attr("href").contains("work")) { //contains("work") ist kritisch
+				similar_link += e.attr("href").replaceAll("[^0-9]+", "");
+				break;
 			}
-<<<<<<< HEAD
-			
-		//similar aufrufen 
-			//ignoreHttpErrors(true) wird Probleme wie Status 404 loesen (wird ggf. durch Bot verursacht)
-=======
-			System.out.println(similar_link);
-
-			org.jsoup.select.Elements first = doc.getElementsByTag("td");
-					//System.out.println(first.html());
-					//String link = first.select("link").text();System.out.println(link);
-				String link = "https://www.goodreads.com." + first.html().substring(first.html().indexOf("href") + 6, first.html().indexOf(">", first.html().indexOf("href")) - 1);
-			doc = Jsoup.connect(link).userAgent("bot101").get();
-			//TODO: funzt u.u. nicht immer
-			String linktext_schlecht = doc.html().substring(doc.html().indexOf("/trivia/work/") + 13, doc.html().indexOf("\"", doc.html().indexOf("/trivia/work/"))); //System.out.println("link: "+linktext_ann1);
-
-		//similar aufrufen
->>>>>>> fcef54cfaca7079543cccb4b486056e3d2cd416d
+			//ignoreHttpErrors(true) wird Probleme wie Status 404 loesen (wird ggf. durch Bot verursacht
 			doc = Jsoup.connect(similar_link).ignoreHttpErrors(true).get();
 
-		//liste der Ã¤hnlichen buecher sammeln
+			//liste der Ã¤hnlichen buecher sammeln
 			org.jsoup.select.Elements results_doc = doc.select("div").select("a");
 			for (Element result_doc : results_doc) {
-				link = result_doc.attr("href").replaceAll(" ", "");
+				String link = result_doc.attr("href").replaceAll(" ", "");
 				if(link.contains("/book/show/") && !results.contains(link))results.add("https://www.goodreads.com"+link);
 			}
+		}
 		return removeDoubles(results);
 	}
 		
@@ -514,15 +468,7 @@ public class Book implements Serializable {
 				}
 				return randomString;
 		}
-    
-		public static ArrayList<String> removeDoubles(ArrayList<String> a){
-		 	ArrayList<String> b = new ArrayList<>();
-		 	for(String s: a) {
-		 		if(b.contains(s))continue;
-		 		else b.add(s);
-		 	}
-		 	return b;
-	 	}  
+
     //Setter, adder etc.
 						public void setPublisher(String publisher) {
 							this.publisher = publisher;
@@ -551,6 +497,7 @@ public class Book implements Serializable {
 					    public void addGenre(String genre) {
 					        if (!shelves.contains(genre)) shelves.add(genre);
 					    }
+					    
 					    public void removeGenre(String genre){
 					        if(shelves.contains(genre))   shelves.remove(genre);
 					    }

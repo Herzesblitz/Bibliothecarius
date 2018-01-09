@@ -53,31 +53,68 @@ public class database {
 		 }
 	 }
 	 
-	 //Kann durch RASA aufgerufen werden:
+	 //Kann durch RASA aufgerufen werden: 
+	 	//..._LS benutzen die LevensteinDistanz zur Suche (werden immer die Buecher mit dem ähnlichsten String zurueckgeben)
+	 
 	 	
-	 	 /**
-          * sucht nach ALLEN Buechern die diesen Charakter haben
-	 	  * @param character
-	 	  * @return
-	 	  * @throws FileNotFoundException
-	 	  * @throws ClassNotFoundException
-	 	  * @throws IOException
-	 	  */
-	 	 public static ArrayList<Book> searchBook_characters(String character) throws FileNotFoundException, ClassNotFoundException, IOException {
+	 
+	    /**
+	  	* sucht nach ALLEN Buechern die dieses Thema haben
+	    * @param character
+	    * @return
+	 	* @throws FileNotFoundException
+	 	* @throws ClassNotFoundException
+	    * @throws IOException
+	 	*/
+		public static ArrayList<Book> searchBook_thema_LS(String thema) throws FileNotFoundException, ClassNotFoundException, IOException {
 	 		 load_Database();
 	 		 ArrayList<Book> results = new ArrayList<Book>();
 	 		 Book min_b = buecherliste.get(0);
 	 		 double min_distance = Integer.MAX_VALUE;
-			 for(Book b: buecherliste) {
+			 for(int i=0; i<buecherliste.size(); i++) {
 				 //System.out.println(b.title+" "+levenshteinDistance(b.title, title));
-				 for(String character_: b.Characters) {
+				 for(String thema_: buecherliste.get(i).shelves) {
+					 if(levenshteinDistance_modifiziert(thema_,thema) == min_distance) {
+						 if(!results.contains(buecherliste.get(i)))results.add(buecherliste.get(i));
+					 }
+					 if(levenshteinDistance_modifiziert(thema_,thema) < min_distance) {
+						 min_distance = levenshteinDistance_modifiziert(thema_,thema);
+						 i=0;
+//TODO: folgendes ist denke ich fehlerhaft da dann nicht mehr alle buecher zugefuegt werden die dieses suchwort haben						 
+//						 results = new ArrayList<>(); results.add(buecherliste.get(i));
+//						 min_b = buecherliste.get(i);
+//						 min_distance = levenshteinDistance_modifiziert(thema_,thema);
+					 } 
+				 }
+			 }
+	 		 return results;
+	 	 }
+	 
+	 	/**
+        * sucht nach ALLEN Buechern die diesen Charakter haben
+	    * @param character
+	    * @return
+	 	* @throws FileNotFoundException
+	 	* @throws ClassNotFoundException
+	    * @throws IOException
+	 	*/
+	    public static ArrayList<Book> searchBook_characters_LS(String character) throws FileNotFoundException, ClassNotFoundException, IOException {
+	 		 load_Database();
+	 		 ArrayList<Book> results = new ArrayList<Book>();
+	 		 double min_distance = Integer.MAX_VALUE;
+	 		 for(int i=0; i<buecherliste.size(); i++) {
+				 //System.out.println(b.title+" "+levenshteinDistance(b.title, title));
+				 for(String character_: buecherliste.get(i).Characters) {
 					 if(levenshteinDistance_modifiziert(character_,character) == min_distance) {
-						 if(!results.contains(b))results.add(b);
+						 if(!results.contains(buecherliste.get(i)))results.add(buecherliste.get(i));
 					 }
 					 if(levenshteinDistance_modifiziert(character_,character) < min_distance) {
-						 results = new ArrayList<>(); results.add(b);
-						 min_b = b;
 						 min_distance = levenshteinDistance_modifiziert(character_,character);
+						 i=0;
+//TODO: folgendes ist denke ich fehlerhaft da dann nicht mehr alle buecher zugefuegt werden die dieses suchwort haben						 
+//						 results = new ArrayList<>(); results.add(buecherliste.get(i));
+//						 min_b = buecherliste.get(i);
+//						 min_distance = levenshteinDistance_modifiziert(thema_,thema);
 					 } 
 				 }
 			 }
@@ -92,18 +129,26 @@ public class database {
 	 	 * @throws ClassNotFoundException
 	 	 * @throws IOException
 	 	 */
-	 	public static ArrayList<Book> searchBook_author(String author) throws FileNotFoundException, ClassNotFoundException, IOException {
+	 	public static ArrayList<Book> searchBook_author_LS(String author) throws FileNotFoundException, ClassNotFoundException, IOException {
 	 		 load_Database();
 	 		 ArrayList<Book> results = new ArrayList<Book>();
 	 		 Book min_b = buecherliste.get(0);
-	 		 for(Book b: buecherliste) {
+	 		 double min_distance = Integer.MAX_VALUE;
+
+	 		 for(int i=0; i<buecherliste.size(); i++) {
 				 //System.out.println(b.title+" "+levenshteinDistance(b.title, title));
-				 if(levenshteinDistance_modifiziert(b.author,author) < levenshteinDistance_modifiziert(min_b.author,author) ) {
-					 results = new ArrayList<>(); results.add(b);
-					 min_b = b;
-				 }
-				 if(levenshteinDistance_modifiziert(b.author,author) == levenshteinDistance_modifiziert(min_b.author,author) ) {
-					 results.add(b);
+				 for(String author_: buecherliste.get(i).Author) {
+					 if(levenshteinDistance_modifiziert(author_,author) == min_distance) {
+						 if(!results.contains(buecherliste.get(i)))results.add(buecherliste.get(i));
+					 }
+					 if(levenshteinDistance_modifiziert(author_,author) < min_distance) {
+						 min_distance = levenshteinDistance_modifiziert(author_,author);
+						 i=0;
+//TODO: folgendes ist denke ich fehlerhaft da dann nicht mehr alle buecher zugefuegt werden die dieses suchwort haben						 
+//						 results = new ArrayList<>(); results.add(buecherliste.get(i));
+//						 min_b = buecherliste.get(i);
+//						 min_distance = levenshteinDistance_modifiziert(thema_,thema);
+					 } 
 				 }
 			 }
 	 		 return results;
@@ -117,7 +162,7 @@ public class database {
 	 	 * @throws ClassNotFoundException
 	 	 * @throws IOException
 	 	 */
-	 	public static ArrayList<Book> searchBook_title(String title) throws FileNotFoundException, ClassNotFoundException, IOException {
+	 	public static ArrayList<Book> searchBook_title_LS(String title) throws FileNotFoundException, ClassNotFoundException, IOException {
 	 		 load_Database();
 	 		 ArrayList<Book> results = new ArrayList<Book>();
 	 		 Book min_b = buecherliste.get(0);
@@ -143,7 +188,7 @@ public class database {
 	 	 * @throws ClassNotFoundException
 	 	 * @throws IOException
 	 	 */
-	 	public static void searchBook(String title, String author, String ISBN) throws FileNotFoundException, ClassNotFoundException, IOException {
+	 	public static void searchBook_LS(String title, String author, String ISBN) throws FileNotFoundException, ClassNotFoundException, IOException {
 	 		 load_Database();
 			 System.out.println("datenbank geladen ...");
 			 if(ISBN!="") {
@@ -158,62 +203,105 @@ public class database {
 			 else {
 				 if(ISBN!="") {
 					 Book min_b = buecherliste.get(0);
+					 double min_distance = Integer.MAX_VALUE;
 					 for(Book b: buecherliste) {
 						 //System.out.println(b.title+" "+levenshteinDistance(b.title, title));
-						 if((levenshteinDistance_modifiziert(b.author,author) + levenshteinDistance_modifiziert(b.title,title)) < (levenshteinDistance_modifiziert(min_b.author,author) + levenshteinDistance_modifiziert(min_b.title,title))) {
-							 min_b = b;
+						 for(String author_: b.Author) {
+							 if((levenshteinDistance_modifiziert(author_,author) + levenshteinDistance_modifiziert(b.title,title)) < min_distance) {
+								 min_distance = (levenshteinDistance_modifiziert(author_,author) + levenshteinDistance_modifiziert(b.title,title));
+								 min_b = b;
+							 } 
 						 }
+						 
 					 } 
 				 }
 			 }
 	 	 }
 	
-	 	 public static void empfehlungsschritt(ArrayList<Book> empfehlungen, boolean schnitt, String qualitaet, String inhalt) throws FileNotFoundException, ClassNotFoundException, IOException {
+	 	public static void empfehlungsschritt_LS(ArrayList<Book> empfehlungen, boolean schnitt, String qualitaet, String inhalt) throws FileNotFoundException, ClassNotFoundException, IOException {
 	 		load_empfehlungsliste();
 	 		if(qualitaet.contains("charakter")) {
 	 			if(schnitt) {
-	 				empfehlungsliste = Schnitt(empfehlungsliste, Book.characterZuBuecherliste(inhalt));
+	 				empfehlungsliste = Schnitt(empfehlungsliste, searchBook_characters_LS(qualitaet));
 	 			}
 	 			else {
-	 				empfehlungsliste = Vereinigung(empfehlungsliste, Book.characterZuBuecherliste(inhalt));
+	 				empfehlungsliste = Vereinigung(empfehlungsliste, searchBook_characters_LS(qualitaet));
 	 			}
 	 		}
 	 		if(qualitaet.contains("title")) {
 	 			if(schnitt) {
-	 				empfehlungsliste = Schnitt(empfehlungsliste, Book.titleZuBuecherliste(qualitaet, 1000));
+	 				empfehlungsliste = Schnitt(empfehlungsliste, searchBook_title_LS(qualitaet));
 	 			}
 	 			else {
-	 				empfehlungsliste = Vereinigung(empfehlungsliste, Book.titleZuBuecherliste(qualitaet, 1000));
+	 				empfehlungsliste = Vereinigung(empfehlungsliste, searchBook_title_LS(qualitaet));
 	 			}
 	 		}
 	 		if(qualitaet.contains("author")) {
 	 			if(schnitt) {
-	 				empfehlungsliste = Schnitt(empfehlungsliste, Book.autorZuBuecherliste(qualitaet));
+	 				empfehlungsliste = Schnitt(empfehlungsliste, searchBook_author_LS(qualitaet));
 	 			}
 	 			else {
-	 				empfehlungsliste = Vereinigung(empfehlungsliste, Book.autorZuBuecherliste(qualitaet));
+	 				empfehlungsliste = Vereinigung(empfehlungsliste, searchBook_author_LS(qualitaet));
 	 			}
 	 		}
 	 		if(qualitaet.contains("thema")) {
 	 			if(schnitt) {
-	 				empfehlungsliste = Schnitt(empfehlungsliste, Book.themaZuBuecherliste(qualitaet));
+	 				empfehlungsliste = Schnitt(empfehlungsliste, searchBook_thema_LS(qualitaet));
 	 			}
 	 			else {
-	 				empfehlungsliste = Vereinigung(empfehlungsliste, Book.themaZuBuecherliste(qualitaet));
+	 				empfehlungsliste = Vereinigung(empfehlungsliste, searchBook_thema_LS(qualitaet));
 	 			}
 	 		}
 	 		save_empfehlungsliste();
 	 	 }
 	 	 
-	 	 public static void printBook(Book b) {
+	 	public static void printBook(Book b) {
 	 		 Book.printBook(b);
-	 	 }
+	 	}
+	 	
+	 	/**
+	 	 * richtigen Parameter zur Auswahl benutzen
+	 	 * @param b
+	 	 * @param param
+	 	 */
+	 	public static void printBook_param(Book b, String param) {
+				if(param.equals("url") && !b.url.equals(""))System.out.println("URL: "+b.url);
+				if(param.equals("title") && !b.title.equals(""))System.out.println("Title of the Book: "+b.title); 
+				if(param.equals("author") && b.Author.size() == 1) System.out.println("Author: "+b.Author.get(0));
+				else if (param.equals("author") && b.Author.size() != 1) {System.out.print("Authors: "); for (int i=0; i<b.Author.size()-1; i++) System.out.print(b.Author.get(i)+", "); System.out.println(b.Author.get(b.Author.size()-1));}
+				if(param.equals("year") && b.year != Integer.MIN_VALUE)System.out.println("Publihsing year: "+b.year);
+//				System.out.println("ISBN of the Book: "+Buchmeta.isbn);    	
+				if(param.equals("publisher") && !b.publisher.equals(""))System.out.println("Publisher: "+b.publisher);
+				if(param.equals("ratin") && b.rating != Integer.MIN_VALUE)System.out.println("Rating: "+b.rating);
+				System.out.println("________________________________________________");
+				if(param.equals("character") && b.Characters.size() > 0) {
+					System.out.println("Characters in the Book: \n");
+					for (String x: b.Characters) System.out.println(x);
+					System.out.println("________________________________________________");
+				}
+				if(param.equals("genre") && b.shelves.size() > 0) {
+					System.out.println("Genre of the Book: \n");
+					for (String x: b.shelves)	System.out.println(x);
+					System.out.println("________________________________________________");
+				}
+				if(param.equals("awards") && b.awards.size() > 0) {
+					System.out.println("Awards of the Book: \n");
+					for (String x: b.awards)	System.out.println(x);
+					System.out.println("________________________________________________");
+					
+				}
+				if(param.equals("blurb") && !b.blurb.equals("")) {
+					System.out.println("Blurb of the Book: \n");
+					System.out.println(b.blurb);
+				}
+		
+	 	}
 	 	 
-	 	 public static void printBooklist(ArrayList<Book> b) {
+	 	public static void printBooklist(ArrayList<Book> b) {
 	 		 Book.printListofBooks(b);
 	 	 }
 	 
-		 public static ArrayList<Book> Schnitt(ArrayList<Book> a, ArrayList<Book> b){
+		public static ArrayList<Book> Schnitt(ArrayList<Book> a, ArrayList<Book> b){
 		    	ArrayList<Book> results = new ArrayList<>();
 		    	for(Book q: a) {
 		    		if(b.contains(q))results.add(q);
@@ -221,7 +309,7 @@ public class database {
 		    	return results;
 	 	 }
 	 
-	 	 public static ArrayList<Book> Vereinigung(ArrayList<Book> a, ArrayList<Book> b){
+	 	public static ArrayList<Book> Vereinigung(ArrayList<Book> a, ArrayList<Book> b){
 		 	ArrayList<Book> results = new ArrayList<>();
 		 	for(Book q: a) {
 		 		results.add(q);
@@ -281,7 +369,6 @@ public class database {
 		 System.out.println("laenge: "+empfehlungsliste.size());
 		 ois.close();
 	 }
-	 
 	 
 	 public static void save_Database() throws IOException { 
 		 ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("./src/source/db"));
