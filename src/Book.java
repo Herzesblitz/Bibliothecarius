@@ -14,7 +14,6 @@ import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import sun.util.BuddhistCalendar;
 
 public class Book implements Serializable {
 		/**
@@ -44,21 +43,30 @@ public class Book implements Serializable {
     
   //TODO: funktionen javadoc ergaenzen
   	private static void test() throws UnsupportedEncodingException, IOException {
+  		System.out.println(randomString());
+  		
+//  	for(int i=0; i<1000; i++) {
+//			String randomBook = randomBookURL();
+//			ArrayList<String> b= buchZuAehnlicheBuecher("", "", randomBook);
+//			for(String a: b)System.out.println("   "+a);
+//		}
+  
   	//Name(Buch) -> Autor, aehnlicheBücher, Charaktere, Genre
-  		ArrayList<String> b= buchZuAehnlicheBuecher("Holy Bible: King James Version", "");
-  			for(String a: b)System.out.println(a);
+//  		ArrayList<String> b= buchZuAehnlicheBuecher("Alexander", "");
+//  			for(String a: b)System.out.println(a);
   		//printBook(buchToinfosBuecher("The Name of the Wind (The Kingkiller Chronicle, #1)","",""));
   			//a=  aehnlicheBuecher(testAehnlicheBuecher,"Metro 2033","");
   			//infosBuecher(testInfoBuch,"Metro 2033");
   		
+  		for(int i=0; i<1000; i++) {
+  			ArrayList<String> a= new ArrayList<>();
+  	  		a = characterZuBuecherliste(randomString());
+//  	  		a = themaZuBuecherliste("Horror");
+//  	  		a = autorZuBuecherliste("Tolkien");
+//  	  		a = titleZuBuecherliste("Metro 2033", 5);
+  	  		for(String s: a)System.out.println(s);
+  		}
   		
-//  		ArrayList<String> a= new ArrayList<>();
-//  		a = characterZuBuecherliste("Alexander");
-//  		a = themaZuBuecherliste("Horror");
-//  		a = autorZuBuecherliste("Tolkien");
-//  		a = titleZuBuecherliste("Metro 2033", 5);
-//
-//  		for(String s: a)System.out.println(s);
   		
   		
   		//Hilfsfunktionen
@@ -139,6 +147,15 @@ public class Book implements Serializable {
     	}
     	return b;
     }
+    
+    //TODO: testen
+    private static String BookIDToLink (String title, String author, String url) throws IOException {
+		org.jsoup.nodes.Document doc;
+    	String search_1 = "https://www.goodreads.com/search?page=1&query=" + title + " "+ author + "&tab=books&utf8=%E2%9C%93";
+	    doc = Jsoup.connect(search_1).get();
+		if(doc.select("h3.searchSubNavContainer").toString().toLowerCase().contains("no results")) return null; 
+		return "https://www.goodreads.com"+doc.getElementsByTag("tr").first().html().substring(doc.getElementsByTag("tr").first().html().indexOf("href") + 6, doc.getElementsByTag("tr").first().html().indexOf(">", doc.getElementsByTag("tr").first().html().indexOf("href")) - 1);	
+    }
 
     public static Book buchToinfosBuecher(String title, String author, String url) throws UnsupportedEncodingException, IOException {
 		Book book = new Book();
@@ -146,16 +163,11 @@ public class Book implements Serializable {
 		String linkBuch="";
 		
 		if(url=="") {
-			//link zu buch finden
-			String search_1 = "https://www.goodreads.com/search?page=1&query=" + title + " "+ author + "&tab=books&utf8=%E2%9C%93";
-		    doc = Jsoup.connect(search_1).get();
-			if(doc.select("h3.searchSubNavContainer").toString().toLowerCase().contains("no results")) return null; 
-			linkBuch = "https://www.goodreads.com"+doc.getElementsByTag("tr").first().html().substring(doc.getElementsByTag("tr").first().html().indexOf("href") + 6, doc.getElementsByTag("tr").first().html().indexOf(">", doc.getElementsByTag("tr").first().html().indexOf("href")) - 1);	
+			BookIDToLink(title, author, url);
 		}
 		else {
 			linkBuch = url;
 		}
-		
 		//link oeffnen und daten lesen
     	doc = Jsoup.connect(linkBuch).timeout(10000).userAgent("bot101").get();
 
@@ -195,7 +207,7 @@ public class Book implements Serializable {
 			
 			
 			//aehnlicheBuecher
-				buchZuAehnlicheBuecher(title,author);
+				buchZuAehnlicheBuecher(title,author,"");
 				
 			//ISBN	
 				String isbn= doc.select("div.infoBoxRowItem").select("span.greyText").text().toLowerCase();
@@ -245,10 +257,14 @@ public class Book implements Serializable {
 			//link für charakter finden
 				String link = "";
 				ArrayList<String> ret = new ArrayList<>();
-				String content = new Scanner(new File("./src/source/characters.txt")).useDelimiter("\\Z").next();
+				String content = new Scanner(new File("./Bibliothecarius/src/sourceCharacterslist/Characters.txt").getAbsolutePath()).useDelimiter("\\Z").next();
 				if(content.contains(character))link = content.substring(content.indexOf("URL:", content.indexOf(character))+5, content.indexOf("\n",content.indexOf(character)));
 					//link = content.substring(content.indexOf("URL:", content.indexOf(character)),content.indexOf("\n", content.indexOf(content.indexOf("URL:", content.indexOf(character)))));
-				if(link.length()==0)System.err.println("charakter nicht gefunden!");
+				if(link.length()==0) {
+					System.err.println("charakter nicht gefunden!");
+					return null;
+				}
+				System.out.println(character+" "+link);
 			
 			//link öffnen
 				ArrayList<String> authors = new ArrayList<>();
@@ -340,46 +356,37 @@ public class Book implements Serializable {
 					}
 					
 					//for(String r: results)System.out.println(r);
-					
 				}
 				
 			return results;
 		}
 	
-		public static ArrayList<String> buchZuAehnlicheBuecher(String title, String author) throws UnsupportedEncodingException, IOException {
+		public static ArrayList<String> buchZuAehnlicheBuecher(String title, String author, String url) throws UnsupportedEncodingException, IOException {
 		ArrayList<String> results = new ArrayList<>();
-
-		//finde link zu buch ~ rufe dafÃ¼r 1 ergebnis 
-			String search_1 = "https://www.goodreads.com/search?page=1&query=" + title + " " + author + "&tab=books&utf8=%E2%9C%93";
-			org.jsoup.nodes.Document doc = Jsoup.connect(search_1 + URLEncoder.encode(search_1, "UTF-8")).get();
-			if(doc.select("h3.searchSubNavContainer").toString().toLowerCase().contains("no results")) return null; 
 		
-<<<<<<< HEAD
-			String link_book = "https://www.goodreads.com"+doc.select("a.booktitle").first().attr("href");
-				System.out.println(link_book);
-			org.jsoup.nodes.Document doc_book = Jsoup.connect(link_book).userAgent("bot101").get();
-			
+		//finde link zu buch
+		String link_book ="";
+		if(url == "") {
+			link_book = BookIDToLink(title, author, "");
+		}
+		else {
+			link_book = url;
+		}
+		System.out.println(link_book);
+
+		org.jsoup.nodes.Document doc = Jsoup.connect(link_book).userAgent("bot101").get();
 			//TODO: immer noch nicht perfekt, aber besser als vorher, da keine substringsuche
 			String similar_link = "https://www.goodreads.com/book/similar/";
-			for(Element e:doc_book.select("div").select("h2.brownBackground").select("a")) {
+			for(Element e:doc.select("div").select("h2.brownBackground").select("a")) {
 				if(e.attr("href").contains("work")) { //contains("work") ist kritisch
 					similar_link += e.attr("href").replaceAll("[^0-9]+", "");
 					break;
 				}
 			}
-			System.out.println(similar_link);
-=======
-			org.jsoup.select.Elements first = doc.getElementsByTag("td");
-					//System.out.println(first.html());
-					//String link = first.select("link").text();System.out.println(link);
-				String link = "https://www.goodreads.com." + first.html().substring(first.html().indexOf("href") + 6, first.html().indexOf(">", first.html().indexOf("href")) - 1);
-			doc = Jsoup.connect(link).userAgent("bot101").get();
-			//TODO: funzt u.u. nicht immer
-			String linktext_schlecht = doc.html().substring(doc.html().indexOf("/trivia/work/") + 13, doc.html().indexOf("\"", doc.html().indexOf("/trivia/work/"))); //System.out.println("link: "+linktext_ann1);
-
->>>>>>> 2ec0c624afbcaab8ef6b6713216b82d5d7412a63
-		//similar aufrufen
-			doc = Jsoup.connect(similar_link).get();
+			
+		//similar aufrufen 
+			//ignoreHttpErrors(true) wird Probleme wie Status 404 loesen (wird ggf. durch Bot verursacht)
+			doc = Jsoup.connect(similar_link).ignoreHttpErrors(true).get();
 
 		//liste der Ã¤hnlichen buecher sammeln
 			org.jsoup.select.Elements results_doc = doc.select("div").select("a");
@@ -389,6 +396,43 @@ public class Book implements Serializable {
 			}
 		return removeDoubles(results);
 	}
+		
+	//testfunktionen
+		
+		private static String randomBookURL() throws IOException {
+			//greife auf liste der aktualisierten buecherlisten zu
+				int random_page = ((int) (Math.random()*1000)) % 1000;
+				String url_allLists= "https://www.goodreads.com/list/recently_active_lists?page=" + random_page;
+				 org.jsoup.nodes.Document doc_List_page_n = Jsoup.connect(url_allLists).get();
+				 if(doc_List_page_n.html().toString().contains("No lists yet...")) {
+					 System.out.println("Ende"); return"";
+				 } 
+		 	
+			//gehe durch 1. buecherliste 
+				Element firstList = doc_List_page_n.select("a.listTitle").first();
+		 		String url_list_x_page_n= "https://www.goodreads.com/"+firstList.attr("href")+"?page="+1;		
+				
+		 		org.jsoup.nodes.Document doc_list_X_page_x = Jsoup.connect(url_list_x_page_n).get();
+				if(!doc_list_X_page_x.html().toString().contains("bookTitle")) {
+					 return "";
+				} 
+			 	
+				Elements url_Books_list_x_page_n=  doc_list_X_page_x.select("a.bookTitle");
+			
+			//greife auf 1. ELement zu
+				return "https://www.goodreads.com"+url_Books_list_x_page_n.first().attr("href");
+		}
+		
+		private static String randomString() {
+				String randomString ="";
+				int length = ((int) (Math.random()*1000)) % 20;
+				for(int pos=0; pos < length; pos++) {
+					 int rnd = (int) (Math.random() * 52); // or use Random or whatever
+				    char base = (rnd < 26) ? 'A' : 'a';
+				    randomString += (char) (base + rnd % 26);
+				}
+				return randomString;
+		}
     
 
     //Setter, adder etc.
