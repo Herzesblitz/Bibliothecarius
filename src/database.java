@@ -1,4 +1,5 @@
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -135,22 +136,23 @@ public class database {
 			 }
 	 	 }
 	
-	 	 public static void empfehlungsschritt(ArrayList<Book> empfehlungen, boolean schnitt, String qualitaet, String inhalt) throws FileNotFoundException, ClassNotFoundException, IOException {
-	 		load_empfehlungsliste();
+	 	 public static void empfehlungsschritt(boolean schnitt, String qualitaet, String inhalt) throws FileNotFoundException, ClassNotFoundException, IOException {
+	 		if(new File("./src/source/el").exists()) load_empfehlungsliste();
+	 		else save_Database();
 	 		if(qualitaet.contains("charakter")) {
 	 			if(schnitt) {
-	 				empfehlungsliste = Schnitt(empfehlungsliste, Book.characterZuBuecherliste(inhalt));
+	 				empfehlungsliste = Schnitt(empfehlungsliste, searchBook_characters(inhalt));
 	 			}
 	 			else {
-	 				empfehlungsliste = Vereinigung(empfehlungsliste, Book.characterZuBuecherliste(inhalt));
+	 				empfehlungsliste = Vereinigung(empfehlungsliste, searchBook_characters(inhalt));
 	 			}
 	 		}
 	 		if(qualitaet.contains("title")) {
 	 			if(schnitt) {
-	 				empfehlungsliste = Schnitt(empfehlungsliste, Book.titleZuBuecherliste(qualitaet, 1000));
+	 				empfehlungsliste = Schnitt(empfehlungsliste, searchBook_title(inhalt));
 	 			}
 	 			else {
-	 				empfehlungsliste = Vereinigung(empfehlungsliste, Book.titleZuBuecherliste(qualitaet, 1000));
+	 				empfehlungsliste = Vereinigung(empfehlungsliste, searchBook_title(inhalt));
 	 			}
 	 		}
 	 		if(qualitaet.contains("author")) {
@@ -163,7 +165,7 @@ public class database {
 	 		}
 	 		if(qualitaet.contains("thema")) {
 	 			if(schnitt) {
-	 				empfehlungsliste = Schnitt(empfehlungsliste, Book.themaZuBuecherliste(qualitaet));
+	 				empfehlungsliste = Schnitt(empfehlungsliste, searchBook);
 	 			}
 	 			else {
 	 				empfehlungsliste = Vereinigung(empfehlungsliste, Book.themaZuBuecherliste(qualitaet));
