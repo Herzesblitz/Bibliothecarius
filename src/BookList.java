@@ -23,6 +23,7 @@ List<Book> Liste_von_Informationen_der_Buecher; //TODO:muss noch erstellt werden
     public void addBuchtitel(String genre) {
         if (!title.contains(genre))  title.add(genre);
     }
+    
     public void removeBuchtitel(String titel){
         if(title.contains(titel)) title.remove(titel);
     }
@@ -50,7 +51,6 @@ List<Book> Liste_von_Informationen_der_Buecher; //TODO:muss noch erstellt werden
     public void removeAutor(String autor){
         if(this.autor.contains(autor)) this.autor.remove(autor);
     }
-
 
     public void addBuch(Book buchmeta) {
         if (!Liste_von_Informationen_der_Buecher.contains(buchmeta)) Liste_von_Informationen_der_Buecher.add(buchmeta);

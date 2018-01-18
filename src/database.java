@@ -33,7 +33,7 @@ public class database {
 
 
 	 public static void main(String args[]) throws Exception{  
-		 refresh_Database_threading(1000, 50);
+		 refresh_Database_threading(1000, 20);
 		 remove_double_database();
 		 sort_database();
 		 printAllTitles();
@@ -219,17 +219,7 @@ public class database {
 			 }
 	 	 }
 	
-<<<<<<< HEAD
-	 	 public static void empfehlungsschritt(boolean schnitt, String qualitaet, String inhalt) throws FileNotFoundException, ClassNotFoundException, IOException {
-	 		if(new File("./src/source/el").exists()) load_empfehlungsliste();
-	 		else save_Database();
-	 		if(qualitaet.contains("charakter")) {
-	 			if(schnitt) {
-	 				empfehlungsliste = Schnitt(empfehlungsliste, searchBook_characters(inhalt));
-	 			}
-	 			else {
-	 				empfehlungsliste = Vereinigung(empfehlungsliste, searchBook_characters(inhalt));
-=======
+
 	 	public static void empfehlungsschritt_LS(ArrayList<Book> empfehlungen, boolean schnitt, String qualitaet, String inhalt) throws FileNotFoundException, ClassNotFoundException, IOException {
 	 		load_empfehlungsliste();
 	 		if(qualitaet.contains("charakter")) {
@@ -238,22 +228,16 @@ public class database {
 	 			}
 	 			else {
 	 				empfehlungsliste = Vereinigung(empfehlungsliste, searchBook_characters_LS(qualitaet));
->>>>>>> 9eb8c69950eb87b1e28e3d473b3daf9c8ec6c628
 	 			}
 	 		}
+	 		
+	 		
 	 		if(qualitaet.contains("title")) {
 	 			if(schnitt) {
-<<<<<<< HEAD
-	 				empfehlungsliste = Schnitt(empfehlungsliste, searchBook_title(inhalt));
-	 			}
-	 			else {
-	 				empfehlungsliste = Vereinigung(empfehlungsliste, searchBook_title(inhalt));
-=======
 	 				empfehlungsliste = Schnitt(empfehlungsliste, searchBook_title_LS(qualitaet));
 	 			}
 	 			else {
 	 				empfehlungsliste = Vereinigung(empfehlungsliste, searchBook_title_LS(qualitaet));
->>>>>>> 9eb8c69950eb87b1e28e3d473b3daf9c8ec6c628
 	 			}
 	 		}
 	 		if(qualitaet.contains("author")) {
@@ -266,11 +250,7 @@ public class database {
 	 		}
 	 		if(qualitaet.contains("thema")) {
 	 			if(schnitt) {
-<<<<<<< HEAD
-	 				empfehlungsliste = Schnitt(empfehlungsliste, searchBook);
-=======
 	 				empfehlungsliste = Schnitt(empfehlungsliste, searchBook_thema_LS(qualitaet));
->>>>>>> 9eb8c69950eb87b1e28e3d473b3daf9c8ec6c628
 	 			}
 	 			else {
 	 				empfehlungsliste = Vereinigung(empfehlungsliste, searchBook_thema_LS(qualitaet));
