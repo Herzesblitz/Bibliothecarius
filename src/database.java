@@ -230,8 +230,6 @@ public class database {
 	 				empfehlungsliste = Vereinigung(empfehlungsliste, searchBook_characters_LS(qualitaet));
 	 			}
 	 		}
-	 		
-	 		
 	 		if(qualitaet.contains("title")) {
 	 			if(schnitt) {
 	 				empfehlungsliste = Schnitt(empfehlungsliste, searchBook_title_LS(qualitaet));
