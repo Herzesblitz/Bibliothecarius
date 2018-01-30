@@ -1,4 +1,5 @@
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -15,10 +16,11 @@ import org.jsoup.select.Elements;
  *
  */
 public class Testklasse {
+	Datenbank db = new Datenbank();
 
-	public static void main(String[] args) throws UnsupportedEncodingException, IOException {
-		test();
-	}
+	public static void main(String[] args) throws UnsupportedEncodingException, IOException, ClassNotFoundException {
+		test_hilfsfkt();
+		}
 
 	public static ArrayList<Buch> autorZuBuecherliste(String autor) throws UnsupportedEncodingException, IOException {
 		ArrayList<Buch> results = new ArrayList<>();
@@ -106,6 +108,16 @@ public class Testklasse {
 
 		return liste;
 	}
+	
+	 public static org.jsoup.nodes.Document thread_connect(String url) {
+		    org.jsoup.nodes.Document doc = null;
+		    try {
+		        doc = Jsoup.connect(url).timeout(0).get();
+		    } catch (IOException ex) {
+		        ex.printStackTrace();
+		    }
+		    return doc;
+		}
 
 	public static ArrayList<String> titleZuBuecherliste(String search, int maxresultpages) throws UnsupportedEncodingException, IOException {
 		String search_2 = "https://www.goodreads.com/search?page=1&query=" + search + "&tab=books&utf8=%E2%9C%93";
@@ -156,6 +168,12 @@ public class Testklasse {
 		return results;
 	}
 	
+  	private static void test_hilfsfkt() throws UnsupportedEncodingException, IOException {
+  		System.out.println("https://www.goodreads.com/book/show/5358.The_Firm?from_search=true".matches("https://www.goodreads.com/book/show/[0-9]+\\.(.)+?from_search=true"));
+
+  	}
+
+	
 	//TODO: funktionen javadoc ergaenzen
   	private static void test() throws UnsupportedEncodingException, IOException {
   		//  	for(int i=0; i<1000; i++) {
@@ -195,5 +213,10 @@ public class Testklasse {
   			//fetchCharacterList();
 
   	}
-
+  	
+  	public static void gebeausDatabase() throws FileNotFoundException, ClassNotFoundException, IOException {
+  		Datenbank.load_Database();
+  		Datenbank.printBooklist(Datenbank.buecherliste);
+		Datenbank.printAllTitles();
+  	}
 }

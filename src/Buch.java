@@ -27,7 +27,9 @@ public class Buch implements Serializable {
 	private static final long serialVersionUID = 1L;
 		public int year = Integer.MIN_VALUE;
 		public String url="";
+		public String sprache = "";
 		public String isbn="";
+		public String buecherreihe ="";
         public String title="";
         public String publisher="";
         public String covertext="";
@@ -49,7 +51,10 @@ public class Buch implements Serializable {
   
   	
 	public static void main(String[] args) throws UnsupportedEncodingException, IOException {
+		Datenbank.printBook(buchToinfosBuecher("Herr der Ringe", "",""));
+
 	}
+	
 	
 	private void setData(String title, String author) throws UnsupportedEncodingException, IOException {
 		Buch k = buchToinfosBuecher(title, author,"");
@@ -69,7 +74,7 @@ public class Buch implements Serializable {
     //wird durch Datenbank aufgerufen
 	
 	public static void ausgebenBücherliste(ArrayList<Buch> liste) {
-			for(Buch b: liste)ausgebenBuch(b);
+			for(Buch b: liste) {ausgebenBuch(b);System.out.println("\n------------------------------------------------------------------------------------------------\n");}
 	}
 	
 	public static void ausgebenBuch(Buch Buchmeta) {
@@ -136,8 +141,8 @@ public class Buch implements Serializable {
     private static String BuchIDZuURL (String suchterm, String url) throws IOException {
 		org.jsoup.nodes.Document doc;
     	String search_1 = "https://www.goodreads.com/search?page=1&query=" + suchterm;
-	    doc = Jsoup.connect(search_1).get();
-		if(doc.select("h3.searchSubNavContainer").toString().toLowerCase().contains("no results")) return null; 
+	    doc = Jsoup.connect(search_1).ignoreHttpErrors(true).get();
+		if(doc.select("h3.searchSubNavContainer").toString().toLowerCase().contains("no results")) return ""; 
 		return "https://www.goodreads.com"+doc.getElementsByTag("tr").first().html().substring(doc.getElementsByTag("tr").first().html().indexOf("href") + 6, doc.getElementsByTag("tr").first().html().indexOf(">", doc.getElementsByTag("tr").first().html().indexOf("href")) - 1);	
     }
 
@@ -162,7 +167,7 @@ public class Buch implements Serializable {
 			linkBuch = url;
 		}
 		//link oeffnen und daten lesen
-    	doc = Jsoup.connect(linkBuch).timeout(10000).userAgent("bot101").get();
+    	doc = Jsoup.connect(linkBuch).userAgent("Mozilla/13.0 (Windows NT 6.1; WOW64; rv:5.0) Gecko/20100101 Firefox/5.0").referrer("http://www.google.com").timeout(20000).get();
 
 		//Infos aus doc lesen
     		book.url = linkBuch;
@@ -170,13 +175,22 @@ public class Buch implements Serializable {
 			String publisher = ""; String blurb = ""; double rating = 0;
 			
 			//prüfe "Edition Language" auf Deutsch (mglw. auch Englisch)
-			System.out.println(doc.getElementsByClass("infoBoxRowItem").select("[itemprop=inLanguage]").to); 
+				String sprache = doc.getElementsByClass("infoBoxRowItem").select("[itemprop=inLanguage]").text(); 
+				if(!(sprache != "German" || sprache != "English"))return null;
+				book.sprache = sprache;
 			//if(doc.select("infoBoxRowItem.inLanguage").first().text() == "German")System.out.println("Deutsch!");
 			
 
 			//Suche Title
 			title = doc.select("title").text();
 					if(title.contains("by"))title = title.substring(0, doc.select("title").text().indexOf("by") - 1);
+			
+			//ggf. title von buchreihe trennen
+			if(title.matches(".+\\(.+\\)")) {
+				System.out.println(title);
+				book.buecherreihe = title.substring(title.lastIndexOf("(")+1, title.lastIndexOf(")")-1);
+				title = title.substring(0, title.lastIndexOf("(")-1);
+			}
 
 			//Suche blurb
 			 blurb=doc.select("div#descriptionContainer").text();
@@ -230,6 +244,7 @@ public class Buch implements Serializable {
 			//year
 				if(book.publisher.matches(".*\\d+.*")) book.year = Integer.valueOf(book.publisher.replaceAll("\\D+",""));
 
+				System.out.println("Title: "+title);
 		book.title = title; book.publisher = publisher; book.blurb = blurb; book.rating = rating;
 		return book;
 	}
@@ -249,6 +264,9 @@ public class Buch implements Serializable {
 			link_book = url;
 		}
 		System.out.println(link_book);
+		
+		//prüfe ob url legal
+		if(!link_book.matches("https://www.goodreads.com/book/show/[0-9]+\\.(.)+?from_search=true"))return new ArrayList<String>();
 
 		org.jsoup.nodes.Document doc = Jsoup.connect(link_book).userAgent("bot101").get();
 
@@ -260,7 +278,7 @@ public class Buch implements Serializable {
 				break;
 			}
 			//ignoreHttpErrors(true) wird Probleme wie Status 404 loesen (wird ggf. durch Bot verursacht
-			doc = Jsoup.connect(similar_link).ignoreHttpErrors(true).get();
+			doc = Jsoup.connect(similar_link).timeout(300*1000).ignoreHttpErrors(true).get();
 
 			//liste der Ã¤hnlichen buecher sammeln
 			org.jsoup.select.Elements results_doc = doc.select("div").select("a");
