@@ -16,9 +16,8 @@ import org.jsoup.select.Elements;
  */
 public class Testklasse {
 
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+	public static void main(String[] args) throws UnsupportedEncodingException, IOException {
+		test();
 	}
 
 	public static ArrayList<Buch> autorZuBuecherliste(String autor) throws UnsupportedEncodingException, IOException {

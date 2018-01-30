@@ -133,9 +133,9 @@ public class Buch implements Serializable {
     }
     
     //TODO: testen
-    private static String BuchIDZuURL (String title, String author, String url) throws IOException {
+    private static String BuchIDZuURL (String suchterm, String url) throws IOException {
 		org.jsoup.nodes.Document doc;
-    	String search_1 = "https://www.goodreads.com/search?page=1&query=" + title + " "+ author + "&tab=books&utf8=%E2%9C%93";
+    	String search_1 = "https://www.goodreads.com/search?page=1&query=" + suchterm;
 	    doc = Jsoup.connect(search_1).get();
 		if(doc.select("h3.searchSubNavContainer").toString().toLowerCase().contains("no results")) return null; 
 		return "https://www.goodreads.com"+doc.getElementsByTag("tr").first().html().substring(doc.getElementsByTag("tr").first().html().indexOf("href") + 6, doc.getElementsByTag("tr").first().html().indexOf(">", doc.getElementsByTag("tr").first().html().indexOf("href")) - 1);	
@@ -156,7 +156,7 @@ public class Buch implements Serializable {
 		String linkBuch="";
 		
 		if(url=="") {
-			linkBuch = BuchIDZuURL(title, author, url);
+			linkBuch = BuchIDZuURL(title+" "+author, url);
 		}
 		else {
 			linkBuch = url;
@@ -168,6 +168,11 @@ public class Buch implements Serializable {
     		book.url = linkBuch;
     	
 			String publisher = ""; String blurb = ""; double rating = 0;
+			
+			//prüfe "Edition Language" auf Deutsch (mglw. auch Englisch)
+			System.out.println(doc.getElementsByClass("infoBoxRowItem").select("[itemprop=inLanguage]").to); 
+			//if(doc.select("infoBoxRowItem.inLanguage").first().text() == "German")System.out.println("Deutsch!");
+			
 
 			//Suche Title
 			title = doc.select("title").text();
@@ -238,7 +243,7 @@ public class Buch implements Serializable {
 		//finde link zu buch
 		String link_book ="";
 		if(url == "") {
-			link_book = BuchIDZuURL(title, author, "");
+			link_book = BuchIDZuURL(title+" "+author, "");
 		}
 		else {
 			link_book = url;
