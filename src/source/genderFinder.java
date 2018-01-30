@@ -1,3 +1,4 @@
+package source;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -91,14 +92,12 @@ public class genderFinder {
 		try {
 			 maleNames = readFile("C:\\Users\\Devin\\OneDrive\\Cloud\\Programme\\Projekte\\java\\DrThesaurus\\src\\source\\census-dist-male-first.txt");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	//textfileTOString - female
 		try {
 			 femaleNames = readFile("C:\\Users\\Devin\\OneDrive\\Cloud\\Programme\\Projekte\\java\\DrThesaurus\\src\\source\\census-dist-female-first.txt");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

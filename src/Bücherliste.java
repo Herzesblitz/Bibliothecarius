@@ -1,16 +1,16 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class BookList {
+public class Bücherliste {
 //Liste von Book aehnliche Buecher
 //kann auch nur ein einfaches Linkobjekt sein, welches alle aehnlichen buecher enthaelt muss eine Baumstufe hoeher platziert werden
 
 String thema;
 List<String> title;
 List<String> autor;
-List<Book> Liste_von_Informationen_der_Buecher; //TODO:muss noch erstellt werden
-    public BookList() {
-        Liste_von_Informationen_der_Buecher=new ArrayList<Book>();
+List<Buch> Liste_von_Informationen_der_Buecher; //TODO:muss noch erstellt werden
+    public Bücherliste() {
+        Liste_von_Informationen_der_Buecher=new ArrayList<Buch>();
         title =new ArrayList<String>();
         autor =new ArrayList<String>();
         thema="";
@@ -52,11 +52,11 @@ List<Book> Liste_von_Informationen_der_Buecher; //TODO:muss noch erstellt werden
     }
 
 
-    public void addBuch(Book buchmeta) {
+    public void addBuch(Buch buchmeta) {
         if (!Liste_von_Informationen_der_Buecher.contains(buchmeta)) Liste_von_Informationen_der_Buecher.add(buchmeta);
     }
     
-    public void removeBuchtitel(Book titel){
+    public void removeBuchtitel(Buch titel){
         if(Liste_von_Informationen_der_Buecher.contains(titel)) Liste_von_Informationen_der_Buecher.remove(titel);
     }
 }

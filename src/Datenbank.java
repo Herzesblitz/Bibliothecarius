@@ -25,10 +25,10 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-public class database {
+public class Datenbank {
 	
-	static ArrayList<Book> buecherliste = new ArrayList<>();
-	static ArrayList<Book> empfehlungsliste = new ArrayList<>();
+	static ArrayList<Buch> buecherliste = new ArrayList<>();
+	static ArrayList<Buch> empfehlungsliste = new ArrayList<>();
 
 
 	 public static void main(String args[]) throws Exception{  
@@ -48,8 +48,8 @@ public class database {
 		 public BookCallable(String url) throws UnsupportedEncodingException, IOException {
 			 this.url = url; 
 		 }
-		 public Book call() throws UnsupportedEncodingException, IOException {
-			 return Book.buchToinfosBuecher("", "", url);
+		 public Buch call() throws UnsupportedEncodingException, IOException {
+			 return Buch.buchToinfosBuecher("", "", url);
 		 }
 	 }
 	 
@@ -66,10 +66,10 @@ public class database {
 	 	* @throws ClassNotFoundException
 	    * @throws IOException
 	 	*/
-		public static ArrayList<Book> searchBook_thema_LS(String thema) throws FileNotFoundException, ClassNotFoundException, IOException {
+		public static ArrayList<Buch> searchBook_thema_LS(String thema) throws FileNotFoundException, ClassNotFoundException, IOException {
 	 		 load_Database();
-	 		 ArrayList<Book> results = new ArrayList<Book>();
-	 		 Book min_b = buecherliste.get(0);
+	 		 ArrayList<Buch> results = new ArrayList<Buch>();
+	 		 Buch min_b = buecherliste.get(0);
 	 		 double min_distance = Integer.MAX_VALUE;
 			 for(int i=0; i<buecherliste.size(); i++) {
 				 //System.out.println(b.title+" "+levenshteinDistance(b.title, title));
@@ -98,9 +98,9 @@ public class database {
 	 	* @throws ClassNotFoundException
 	    * @throws IOException
 	 	*/
-	    public static ArrayList<Book> searchBook_characters_LS(String character) throws FileNotFoundException, ClassNotFoundException, IOException {
+	    public static ArrayList<Buch> searchBook_characters_LS(String character) throws FileNotFoundException, ClassNotFoundException, IOException {
 	 		 load_Database();
-	 		 ArrayList<Book> results = new ArrayList<Book>();
+	 		 ArrayList<Buch> results = new ArrayList<Buch>();
 	 		 double min_distance = Integer.MAX_VALUE;
 	 		 for(int i=0; i<buecherliste.size(); i++) {
 				 //System.out.println(b.title+" "+levenshteinDistance(b.title, title));
@@ -129,10 +129,10 @@ public class database {
 	 	 * @throws ClassNotFoundException
 	 	 * @throws IOException
 	 	 */
-	 	public static ArrayList<Book> searchBook_author_LS(String author) throws FileNotFoundException, ClassNotFoundException, IOException {
+	 	public static ArrayList<Buch> searchBook_author_LS(String author) throws FileNotFoundException, ClassNotFoundException, IOException {
 	 		 load_Database();
-	 		 ArrayList<Book> results = new ArrayList<Book>();
-	 		 Book min_b = buecherliste.get(0);
+	 		 ArrayList<Buch> results = new ArrayList<Buch>();
+	 		 Buch min_b = buecherliste.get(0);
 	 		 double min_distance = Integer.MAX_VALUE;
 
 	 		 for(int i=0; i<buecherliste.size(); i++) {
@@ -162,11 +162,11 @@ public class database {
 	 	 * @throws ClassNotFoundException
 	 	 * @throws IOException
 	 	 */
-	 	public static ArrayList<Book> searchBook_title_LS(String title) throws FileNotFoundException, ClassNotFoundException, IOException {
+	 	public static ArrayList<Buch> searchBook_title_LS(String title) throws FileNotFoundException, ClassNotFoundException, IOException {
 	 		 load_Database();
-	 		 ArrayList<Book> results = new ArrayList<Book>();
-	 		 Book min_b = buecherliste.get(0);
-			 for(Book b: buecherliste) {
+	 		 ArrayList<Buch> results = new ArrayList<Buch>();
+	 		 Buch min_b = buecherliste.get(0);
+			 for(Buch b: buecherliste) {
 				 //System.out.println(b.title+" "+levenshteinDistance(b.title, title));
 				 if(levenshteinDistance_modifiziert(b.title,title) < levenshteinDistance_modifiziert(min_b.title,title) ) {
 					 results = new ArrayList<>(); results.add(b);
@@ -192,8 +192,8 @@ public class database {
 	 		 load_Database();
 			 System.out.println("datenbank geladen ...");
 			 if(ISBN!="") {
-				 Book min_b = buecherliste.get(0);
-				 for(Book b: buecherliste) {
+				 Buch min_b = buecherliste.get(0);
+				 for(Buch b: buecherliste) {
 					 //System.out.println(b.title+" "+levenshteinDistance(b.title, title));
 					 if(levenshteinDistance_modifiziert(b.isbn,ISBN) < levenshteinDistance_modifiziert(min_b.isbn,ISBN) ) {
 						 min_b = b;
@@ -202,9 +202,9 @@ public class database {
 			 }
 			 else {
 				 if(ISBN!="") {
-					 Book min_b = buecherliste.get(0);
+					 Buch min_b = buecherliste.get(0);
 					 double min_distance = Integer.MAX_VALUE;
-					 for(Book b: buecherliste) {
+					 for(Buch b: buecherliste) {
 						 //System.out.println(b.title+" "+levenshteinDistance(b.title, title));
 						 for(String author_: b.Author) {
 							 if((levenshteinDistance_modifiziert(author_,author) + levenshteinDistance_modifiziert(b.title,title)) < min_distance) {
@@ -218,7 +218,7 @@ public class database {
 			 }
 	 	 }
 	
-	 	public static void empfehlungsschritt_LS(ArrayList<Book> empfehlungen, boolean schnitt, String qualitaet, String inhalt) throws FileNotFoundException, ClassNotFoundException, IOException {
+	 	public static void empfehlungsschritt_LS(ArrayList<Buch> empfehlungen, boolean schnitt, String qualitaet, String inhalt) throws FileNotFoundException, ClassNotFoundException, IOException {
 	 		load_empfehlungsliste();
 	 		if(qualitaet.contains("charakter")) {
 	 			if(schnitt) {
@@ -255,8 +255,8 @@ public class database {
 	 		save_empfehlungsliste();
 	 	 }
 	 	 
-	 	public static void printBook(Book b) {
-	 		 Book.printBook(b);
+	 	public static void printBook(Buch b) {
+	 		 Buch.ausgebenBuch(b);
 	 	}
 	 	
 	 	/**
@@ -264,7 +264,7 @@ public class database {
 	 	 * @param b
 	 	 * @param param
 	 	 */
-	 	public static void printBook_param(Book b, String param) {
+	 	public static void printBook_param(Buch b, String param) {
 				if(param.equals("url") && !b.url.equals(""))System.out.println("URL: "+b.url);
 				if(param.equals("title") && !b.title.equals(""))System.out.println("Title of the Book: "+b.title); 
 				if(param.equals("author") && b.Author.size() == 1) System.out.println("Author: "+b.Author.get(0));
@@ -297,24 +297,24 @@ public class database {
 		
 	 	}
 	 	 
-	 	public static void printBooklist(ArrayList<Book> b) {
-	 		 Book.printListofBooks(b);
+	 	public static void printBooklist(ArrayList<Buch> b) {
+	 		 Buch.ausgebenBücherliste(b);
 	 	 }
 	 
-		public static ArrayList<Book> Schnitt(ArrayList<Book> a, ArrayList<Book> b){
-		    	ArrayList<Book> results = new ArrayList<>();
-		    	for(Book q: a) {
+		public static ArrayList<Buch> Schnitt(ArrayList<Buch> a, ArrayList<Buch> b){
+		    	ArrayList<Buch> results = new ArrayList<>();
+		    	for(Buch q: a) {
 		    		if(b.contains(q))results.add(q);
 		    	}
 		    	return results;
 	 	 }
 	 
-	 	public static ArrayList<Book> Vereinigung(ArrayList<Book> a, ArrayList<Book> b){
-		 	ArrayList<Book> results = new ArrayList<>();
-		 	for(Book q: a) {
+	 	public static ArrayList<Buch> Vereinigung(ArrayList<Buch> a, ArrayList<Buch> b){
+		 	ArrayList<Buch> results = new ArrayList<>();
+		 	for(Buch q: a) {
 		 		results.add(q);
 		 	}
-		 	for(Book p: b) {
+		 	for(Buch p: b) {
 		 		if(!results.contains(p))results.add(p);
 		 	}
 		 	return results;
@@ -330,20 +330,20 @@ public class database {
 	 	}  
 
 	 
-	 public static ArrayList<Book> thread_try2(ArrayList<String> urls, int threads) throws InterruptedException, ExecutionException, UnsupportedEncodingException, IOException {
+	 public static ArrayList<Buch> thread_try2(ArrayList<String> urls, int threads) throws InterruptedException, ExecutionException, UnsupportedEncodingException, IOException {
 		    ExecutorService pool = Executors.newFixedThreadPool(threads);
-		    Set<Future<Book>> set = new HashSet<Future<Book>>();    	    
+		    Set<Future<Buch>> set = new HashSet<Future<Buch>>();    	    
 		    for (String url: urls) {
-		    	Callable<Book> b = new BookCallable(url);
-		        Future<Book> future = pool.submit(b);
+		    	Callable<Buch> b = new BookCallable(url);
+		        Future<Buch> future = pool.submit(b);
 		        set.add(future);
 		    }
-		    ArrayList<Book> liste = new ArrayList<>();
-		    for (Future<Book> future : set) {
+		    ArrayList<Buch> liste = new ArrayList<>();
+		    for (Future<Buch> future : set) {
 		    	liste.add(future.get());
 		    }
 		    pool.shutdownNow();
-		    for(Book b: liste)System.out.println(b.title);
+		    for(Buch b: liste)System.out.println(b.title);
 		    return liste;
 	 }
 	 
@@ -365,7 +365,7 @@ public class database {
 	 
 	 public static void load_empfehlungsliste() throws FileNotFoundException, IOException, ClassNotFoundException {
 		 ObjectInputStream ois = new ObjectInputStream(new FileInputStream("./src/source/el"));
-		 empfehlungsliste = (ArrayList<Book>) ois.readObject(); // cast is needed.
+		 empfehlungsliste = (ArrayList<Buch>) ois.readObject(); // cast is needed.
 		 System.out.println("laenge: "+empfehlungsliste.size());
 		 ois.close();
 	 }
@@ -378,7 +378,7 @@ public class database {
 	 
 	 public static void load_Database() throws FileNotFoundException, IOException, ClassNotFoundException {
 		 ObjectInputStream ois = new ObjectInputStream(new FileInputStream("./src/source/db"));
-		 buecherliste = (ArrayList<Book>) ois.readObject(); // cast is needed.
+		 buecherliste = (ArrayList<Buch>) ois.readObject(); // cast is needed.
 		 System.out.println("laenge: "+buecherliste.size());
 		 ois.close();
 	 }
@@ -386,7 +386,7 @@ public class database {
 	 public static void printAllTitles() throws FileNotFoundException, ClassNotFoundException, IOException {
 		 load_Database();
 		 System.out.println("Datenbank geladen");
-		 for(Book b: buecherliste) {
+		 for(Buch b: buecherliste) {
 			 System.out.println(b.title);
 		 }
 		 System.out.println(buecherliste.size());
@@ -396,9 +396,9 @@ public class database {
 	 public static void sort_database() throws FileNotFoundException, ClassNotFoundException, IOException {
 		 load_Database();
 		// Sorting
-		 Collections.sort(buecherliste, new Comparator<Book>() {
+		 Collections.sort(buecherliste, new Comparator<Buch>() {
 		         @Override
-		         public int compare(Book a, Book b)
+		         public int compare(Buch a, Buch b)
 		         {
 		             return  a.title.compareTo(b.title);
 		         }
@@ -406,9 +406,9 @@ public class database {
 		 save_Database();
 	 }
 	 
-	 private static boolean contains_duplicates(ArrayList<Book> al, String title) {
+	 private static boolean contains_duplicates(ArrayList<Buch> al, String title) {
 		 int anz=0;
-		 for(Book b: al) {
+		 for(Buch b: al) {
 			 if(b.title.equals(title))anz++;
 		 }
 		 if(anz == 0)return false;
@@ -417,8 +417,8 @@ public class database {
 	 
 	 public static void remove_double_database() throws FileNotFoundException, ClassNotFoundException, IOException {
 		load_Database();
-	    ArrayList<Book> bl = new ArrayList<Book>();
-		for(Book a: buecherliste) {
+	    ArrayList<Buch> bl = new ArrayList<Buch>();
+		for(Buch a: buecherliste) {
 			if(!contains_duplicates(bl, a.title))bl.add(a);
 		}
 		//System.out.println(bl.size()+" / "+buecherliste.size());
@@ -588,15 +588,15 @@ public class database {
 		 save_Database();
 	 }
 	 
-	 private static boolean databaseContains(Book k) {
+	 private static boolean databaseContains(Buch k) {
 		 //suche nach url
-		 for(Book suche: buecherliste) {
+		 for(Buch suche: buecherliste) {
 			 if(suche.url == k.url)return true;
 		 }
 		 return false; 
 	 }
 	 
-	 public static boolean addBookToDatabase(Book b)  {
+	 public static boolean addBookToDatabase(Buch b)  {
 		 if(!databaseContains(b)) {
 			 buecherliste.add(b);
 			  System.out.println(b.title+" "+buecherliste.size());
@@ -607,7 +607,7 @@ public class database {
 	 
 	 public static boolean addBookToDatabase(String url) throws UnsupportedEncodingException, IOException {
 		 //prüfe ob Buch schon in Database
-		 Book neu = Book.buchToinfosBuecher("","",url);
+		 Buch neu = Buch.buchToinfosBuecher("","",url);
 		 System.out.println("add: "+url);
 		 if(!databaseContains(neu)) {
 			 buecherliste.add(neu);

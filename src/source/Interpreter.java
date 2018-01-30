@@ -1,3 +1,4 @@
+package source;
 import java.io.IOException;
 
 public class Interpreter
@@ -11,10 +12,8 @@ public class Interpreter
             String tree_input_d;
 
         SemanticAnalysis sa=new SemanticAnalysis();
-        // TODO: Frames als Ausgabe
 
     PragmaticAnalysis pa=new PragmaticAnalysis();
-    // TODO: Frames als Ausgabe
 
     public static void main(String[] args) throws IOException {
 

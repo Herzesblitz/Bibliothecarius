@@ -1,3 +1,4 @@
+package source;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
@@ -22,11 +23,9 @@ public class Steuerung {
 
 
 
-		// TODO Auto-generated method stub
 		try {
 			dialog();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
