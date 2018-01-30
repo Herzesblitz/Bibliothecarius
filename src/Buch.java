@@ -46,48 +46,9 @@ public class Buch implements Serializable {
     	setData(title, author);
     }
     
-  //TODO: funktionen javadoc ergaenzen
-  	private static void test() throws UnsupportedEncodingException, IOException {
-  		//  	for(int i=0; i<1000; i++) {
-//			String randomBook = randomBookURL();
-//			ArrayList<String> b= buchZuAehnlicheBuecher("", "", randomBook);
-//			for(String a: b)System.out.println("   "+a);
-//		}
   
-  	//Name(Buch) -> Autor, aehnlicheBücher, Charaktere, Genre
-//  		ArrayList<String> b= buchZuAehnlicheBuecher("Alexander", "");
-  		ausgebenBuch(buchToinfosBuecher("Platon's Republic", "Platon", ""));
-  	//Name(Buch) -> Autor, aehnlicheBücher, Charaktere, Genre
-//  		ArrayList<String> b= buchZuAehnlicheBuecher("Holy Bible: King James Version", "");
-//  			for(String a: b)System.out.println(a);
-  		//printBook(buchToinfosBuecher("The Name of the Wind (The Kingkiller Chronicle, #1)","",""));
-  			//a=  aehnlicheBuecher(testAehnlicheBuecher,"Metro 2033","");
-  			//infosBuecher(testInfoBuch,"Metro 2033");
-  		
-
-  		for(int i=0; i<1000; i++) {
-  			ArrayList<String> a= new ArrayList<>();
-//  	  		a = characterZuBuecherliste(randomString());
-//  	  		a = themaZuBuecherliste("Horror");
-//  	  		a = autorZuBuecherliste("Tolkien");
-//  	  		a = titleZuBuecherliste("Metro 2033", 5);
-  	  		for(String s: a)System.out.println(s);
-  		}
-  		
-  		//a = characterZuBuecherliste("Alexander");
-//  		a = themaZuBuecherliste("Horror");
-  			//printListofBooks(autorZuBuecherliste("Tolkien"));
-//  		a = titleZuBuecherliste("Metro 2033", 5);
-//
-  		
-  		
-  		//Hilfsfunktionen
-  			//fetchCharacterList();
-
-  	}
   	
 	public static void main(String[] args) throws UnsupportedEncodingException, IOException {
-		test();
 	}
 	
 	private void setData(String title, String author) throws UnsupportedEncodingException, IOException {
