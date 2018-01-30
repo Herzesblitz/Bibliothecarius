@@ -32,16 +32,22 @@ public class database {
 	static ArrayList<Book> empfehlungsliste = new ArrayList<>();
 
 
-	 public static void main(String args[]) throws Exception{  
+	public static void main(String args[]) throws Exception{
+		test();
+		 //Book.printBook(search_database("Harry Potter"));
+	 }
+	 
+	 private static void refreshDB() throws ClassNotFoundException, IOException, InterruptedException, ExecutionException {
 		 refresh_Database_threading(1000, 20);
 		 remove_double_database();
 		 sort_database();
 		 printAllTitles();
 		 save_Database();
-		 //Book.printBook(search_database("Harry Potter"));
 	 }
 	 
-	 private static void test() {
+	 private static void test() throws FileNotFoundException, ClassNotFoundException, IOException {
+		 sort_database();
+		 printBooklist(searchBook_title_LS("Blessed are the dead"));
 	 }
 	 
 	 public static class BookCallable implements Callable {
@@ -163,6 +169,7 @@ public class database {
 	 	 * @throws ClassNotFoundException
 	 	 * @throws IOException
 	 	 */
+	 	//TODO: gibt unsinnige titel aus bsp: Blessed be the dead
 	 	public static ArrayList<Book> searchBook_title_LS(String title) throws FileNotFoundException, ClassNotFoundException, IOException {
 	 		 load_Database();
 	 		 ArrayList<Book> results = new ArrayList<Book>();
@@ -274,7 +281,7 @@ public class database {
 				if(param.equals("year") && b.year != Integer.MIN_VALUE)System.out.println("Publihsing year: "+b.year);
 //				System.out.println("ISBN of the Book: "+Buchmeta.isbn);    	
 				if(param.equals("publisher") && !b.publisher.equals(""))System.out.println("Publisher: "+b.publisher);
-				if(param.equals("ratin") && b.rating != Integer.MIN_VALUE)System.out.println("Rating: "+b.rating);
+				if(param.equals("rating") && b.rating != Integer.MIN_VALUE)System.out.println("Rating: "+b.rating);
 				System.out.println("________________________________________________");
 				if(param.equals("character") && b.Characters.size() > 0) {
 					System.out.println("Characters in the Book: \n");
