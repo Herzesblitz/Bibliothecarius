@@ -23,6 +23,7 @@ List<Buch> Liste_von_Informationen_der_Buecher; //TODO:muss noch erstellt werden
     public void addBuchtitel(String genre) {
         if (!title.contains(genre))  title.add(genre);
     }
+    
     public void removeBuchtitel(String titel){
         if(title.contains(titel)) title.remove(titel);
     }
@@ -51,8 +52,12 @@ List<Buch> Liste_von_Informationen_der_Buecher; //TODO:muss noch erstellt werden
         if(this.autor.contains(autor)) this.autor.remove(autor);
     }
 
+<<<<<<< HEAD:src/Bücherliste.java
 
     public void addBuch(Buch buchmeta) {
+=======
+    public void addBuch(Book buchmeta) {
+>>>>>>> cc5f96127ed96a06d1a558317e2bef6072198a8d:src/BookList.java
         if (!Liste_von_Informationen_der_Buecher.contains(buchmeta)) Liste_von_Informationen_der_Buecher.add(buchmeta);
     }
     

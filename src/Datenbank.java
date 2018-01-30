@@ -1,4 +1,5 @@
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -31,16 +32,22 @@ public class Datenbank {
 	static ArrayList<Buch> empfehlungsliste = new ArrayList<>();
 
 
-	 public static void main(String args[]) throws Exception{  
-		 refresh_Database_threading(1000, 50);
+	public static void main(String args[]) throws Exception{
+		test();
+		 //Book.printBook(search_database("Harry Potter"));
+	 }
+	 
+	 private static void refreshDB() throws ClassNotFoundException, IOException, InterruptedException, ExecutionException {
+		 refresh_Database_threading(1000, 20);
 		 remove_double_database();
 		 sort_database();
 		 printAllTitles();
 		 save_Database();
-		 //Book.printBook(search_database("Harry Potter"));
 	 }
 	 
-	 private static void test() {
+	 private static void test() throws FileNotFoundException, ClassNotFoundException, IOException {
+		 sort_database();
+		 printBooklist(searchBook_title_LS("Blessed are the dead"));
 	 }
 	 
 	 public static class BookCallable implements Callable {
@@ -162,7 +169,12 @@ public class Datenbank {
 	 	 * @throws ClassNotFoundException
 	 	 * @throws IOException
 	 	 */
+<<<<<<< HEAD:src/Datenbank.java
 	 	public static ArrayList<Buch> searchBook_title_LS(String title) throws FileNotFoundException, ClassNotFoundException, IOException {
+=======
+	 	//TODO: gibt unsinnige titel aus bsp: Blessed be the dead
+	 	public static ArrayList<Book> searchBook_title_LS(String title) throws FileNotFoundException, ClassNotFoundException, IOException {
+>>>>>>> cc5f96127ed96a06d1a558317e2bef6072198a8d:src/database.java
 	 		 load_Database();
 	 		 ArrayList<Buch> results = new ArrayList<Buch>();
 	 		 Buch min_b = buecherliste.get(0);
@@ -218,7 +230,12 @@ public class Datenbank {
 			 }
 	 	 }
 	
+<<<<<<< HEAD:src/Datenbank.java
 	 	public static void empfehlungsschritt_LS(ArrayList<Buch> empfehlungen, boolean schnitt, String qualitaet, String inhalt) throws FileNotFoundException, ClassNotFoundException, IOException {
+=======
+
+	 	public static void empfehlungsschritt_LS(ArrayList<Book> empfehlungen, boolean schnitt, String qualitaet, String inhalt) throws FileNotFoundException, ClassNotFoundException, IOException {
+>>>>>>> cc5f96127ed96a06d1a558317e2bef6072198a8d:src/database.java
 	 		load_empfehlungsliste();
 	 		if(qualitaet.contains("charakter")) {
 	 			if(schnitt) {
@@ -272,7 +289,7 @@ public class Datenbank {
 				if(param.equals("year") && b.year != Integer.MIN_VALUE)System.out.println("Publihsing year: "+b.year);
 //				System.out.println("ISBN of the Book: "+Buchmeta.isbn);    	
 				if(param.equals("publisher") && !b.publisher.equals(""))System.out.println("Publisher: "+b.publisher);
-				if(param.equals("ratin") && b.rating != Integer.MIN_VALUE)System.out.println("Rating: "+b.rating);
+				if(param.equals("rating") && b.rating != Integer.MIN_VALUE)System.out.println("Rating: "+b.rating);
 				System.out.println("________________________________________________");
 				if(param.equals("character") && b.Characters.size() > 0) {
 					System.out.println("Characters in the Book: \n");
