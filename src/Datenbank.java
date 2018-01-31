@@ -200,26 +200,6 @@ public class Datenbank {
 					}
 				}
 			 } 
-//	 		 ArrayList<Buch> results = new ArrayList<Buch>();
-//	 		 Buch min_b = buecherliste.get(0);
-//	 		 double min_distance = Integer.MAX_VALUE;
-//
-//	 		 for(int i=0; i<buecherliste.size(); i++) {
-//				 //System.out.println(b.title+" "+levenshteinDistance(b.title, title));
-//				 for(String author_: buecherliste.get(i).Author) {
-//					 if(levenshteinDistance(author_,author) == min_distance) {
-//						 if(!results.contains(buecherliste.get(i)))results.add(buecherliste.get(i));
-//					 }
-//					 if(levenshteinDistance(author_,author) < min_distance) {
-//						 min_distance = levenshteinDistance(author_,author);
-//						 i=0;
-////TODO: folgendes ist denke ich fehlerhaft da dann nicht mehr alle buecher zugefuegt werden die dieses suchwort haben						 
-////						 results = new ArrayList<>(); results.add(buecherliste.get(i));
-////						 min_b = buecherliste.get(i);
-////						 min_distance = levenshteinDistance(thema_,thema);
-//					 } 
-//				 }
-//			 }
 	 		 return results;
 	 	}
 	 	

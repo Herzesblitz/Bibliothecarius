@@ -18,7 +18,6 @@ import org.jsoup.select.Elements;
 
 //BUGLISTE
 	//FIXME: manchmal taucht goodreads.com...goodreads.com auf 
-	//FIXME: falscher blurb bei  printBook(buchToinfosBuecher("Platon's Republic", "Platon", ""));
 
 public class Buch implements Serializable {
 		/**
@@ -51,8 +50,8 @@ public class Buch implements Serializable {
   
   	
 	public static void main(String[] args) throws UnsupportedEncodingException, IOException {
-		Datenbank.printBook(buchToinfosBuecher("Herr der Ringe", "",""));
-
+		//Datenbank.printBook(buchToinfosBuecher("Herr der Ringe", "",""));
+		System.out.println(BuchIDZuURL("Platon"));
 	}
 	
 	
@@ -138,12 +137,14 @@ public class Buch implements Serializable {
     }
     
     //TODO: testen
-    private static String BuchIDZuURL (String suchterm, String url) throws IOException {
+    private static String BuchIDZuURL (String suchterm) throws IOException {
 		org.jsoup.nodes.Document doc;
     	String search_1 = "https://www.goodreads.com/search?page=1&query=" + suchterm;
 	    doc = Jsoup.connect(search_1).ignoreHttpErrors(true).get();
 		if(doc.select("h3.searchSubNavContainer").toString().toLowerCase().contains("no results")) return ""; 
 			//FIXME: keine substring suche
+		System.out.println(doc.select("td").select("a.bookTitle"));// doc.getElementsByAttribute("href"));
+		
 		return "https://www.goodreads.com"+doc.getElementsByTag("tr").first().html().substring(doc.getElementsByTag("tr").first().html().indexOf("href") + 6, doc.getElementsByTag("tr").first().html().indexOf(">", doc.getElementsByTag("tr").first().html().indexOf("href")) - 1);	
     }
 
@@ -162,7 +163,7 @@ public class Buch implements Serializable {
 		String linkBuch="";
 		
 		if(url=="") {
-			linkBuch = BuchIDZuURL(title+" "+author, url);
+			linkBuch = BuchIDZuURL(title+" "+author);
 		}
 		else {
 			linkBuch = url;
@@ -170,7 +171,6 @@ public class Buch implements Serializable {
 		//link oeffnen und daten lesen
     	doc = Jsoup.connect(linkBuch).userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:5.0) Gecko/20100101 Firefox/5.0").referrer("http://www.google.com").timeout(20000).get();
  
-    	//FIXME:
 		//Infos aus doc lesen
     		book.url = linkBuch;
     	
@@ -259,7 +259,7 @@ public class Buch implements Serializable {
 		//finde link zu buch
 		String link_book ="";
 		if(url == "") {
-			link_book = BuchIDZuURL(title+" "+author, "");
+			link_book = BuchIDZuURL(title+" "+author);
 		}
 		else {
 			link_book = url;
