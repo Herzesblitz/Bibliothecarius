@@ -41,7 +41,8 @@ public class Datenbank {
 
 	 public static void main(String args[]) throws Exception{  
 		//printAllTitles();
-		// datenbankErweitern("https://www.goodreads.com/list/show/1.Best_Books_Ever");
+		 save_Database();
+		 datenbankErweitern("https://www.goodreads.com/list/show/1.Best_Books_Ever");
 		 //test();
 
 	 }
@@ -85,8 +86,8 @@ public class Datenbank {
 		 public BookCallable(String url) throws UnsupportedEncodingException, IOException {
 			 this.url = url; 
 		 }
-		 public Buch call() throws UnsupportedEncodingException, IOException, InterruptedException {
-			 return Buch.buchToinfosBuecher("", "", url);
+		 public Buch call() throws UnsupportedEncodingException, IOException, InterruptedException, ClassNotFoundException {
+			 return Buch.buchToinfosBuecher("", "", url, 10);
 		 }
 	 }
 	 
@@ -122,6 +123,8 @@ public class Datenbank {
 	 		return null;
 	 	}
 	
+	 	
+	 	
 	 	/**
 	 	 * Großschreibung! gibt alle Bücher mit angegebener Sprache zurück
 	 	 * @param sprache
@@ -219,6 +222,22 @@ public class Datenbank {
 	 		return results;
 		 }
 	 	
+		 /**
+		  * wird von mir benutzt ...
+		  * @param isbn
+		  * @return
+		  * @throws FileNotFoundException
+		  * @throws ClassNotFoundException
+		  * @throws IOException
+		  */
+		 public static Buch searchBook_URL(String url) throws FileNotFoundException, ClassNotFoundException, IOException {
+	 		 load_Database();
+	 		 for(Buch b: buecherliste) {
+	 			 return (b);
+	 		 }
+	 		 return null;
+		}
+		 
 	 	/**
 	 	 * gibt genau die bücher 
 	 	 * @param thema
@@ -888,9 +907,9 @@ public class Datenbank {
 		 return false;
 	 }
 	 
-	 public static boolean addBookToDatabase(String url) throws UnsupportedEncodingException, IOException, InterruptedException {
+	 public static boolean addBookToDatabase(String url) throws UnsupportedEncodingException, IOException, InterruptedException, ClassNotFoundException {
 		 //prüfe ob Buch schon in Database
-		 Buch neu = Buch.buchToinfosBuecher("","",url);
+		 Buch neu = Buch.buchToinfosBuecher("","",url, 10);
 		 System.out.println("add: "+url);
 		 if(!databaseContains(neu)) {
 			 buecherliste.add(neu);
