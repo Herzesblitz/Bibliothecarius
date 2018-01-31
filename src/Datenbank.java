@@ -41,14 +41,15 @@ public class Datenbank {
 
 	 public static void main(String args[]) throws Exception{  
 		//printAllTitles();
-		// save_Database();
+		//save_Database();
 		 //datenbankErweitern("https://www.goodreads.com/list/show/1.Best_Books_Ever");
-		test();
+		 printBooklist(searchBook_title("Lord"));
+		//test();
 
 	 }
 	 
 	 private static void test() throws FileNotFoundException, ClassNotFoundException, IOException {
-		 printAllSimilar();
+		 //printAllSimilar();
 		 //printAllTitles();
 		 //printBooklist(searchBook_thema("Humor"));
 		 //printBooklist(searchBook_author("Funky Chicken"));
