@@ -48,8 +48,9 @@ public class Buch implements Serializable {
   
   	
 	public static void main(String[] args) throws UnsupportedEncodingException, IOException, InterruptedException, ClassNotFoundException {
-		Datenbank.printBook(buchToinfosBuecher("Herr der Ringe", "","", 10));
+		Datenbank.printBook(buchToinfosBuecher("Dante", "","", 10));
 		//System.out.println(BuchIDZuURL("Platon"));
+		
 	}
 	
 	
@@ -100,7 +101,7 @@ public class Buch implements Serializable {
 				System.out.println("________________________________________________");
 				
 			}
-			if(Buchmeta.similar_Books.size()>0){
+			if(Buchmeta.similar_Books != null && Buchmeta.similar_Books.size()>0){
 				System.out.println("Ähnliche Bücher: \n");
 				for (Buch x: Buchmeta.similar_Books)	System.out.println(x.title);
 				System.out.println("________________________________________________");
@@ -228,6 +229,7 @@ public class Buch implements Serializable {
 			
 			//aehnlicheBuecher
 				buchZuAehnlicheBuecher("","",linkBuch, book, 10);
+				//System.out.println("similar size"+book.similar_Books.size());
 				
 			//ISBN	
 				String isbn= doc.select("div.infoBoxRowItem").select("span.greyText").text().toLowerCase();
@@ -258,6 +260,7 @@ public class Buch implements Serializable {
 		
 	public static void buchZuAehnlicheBuecher(String title, String author, String url, Buch book, int anz_ähnliche) throws UnsupportedEncodingException, IOException, InterruptedException, ClassNotFoundException {
 		ArrayList<String> results = new ArrayList<>();
+		System.out.println(book.title);
 		int groeße = 10;
 		
 		//finde link zu buch
@@ -300,6 +303,7 @@ public class Buch implements Serializable {
 			else {
 				Buch b = buchToinfosBuecher("", "", URL, 0);
 				if(b == null) continue;
+				//System.out.println(b.title);
 				book.similar_Books.add(b);
 				Thread.sleep(50);
 			}

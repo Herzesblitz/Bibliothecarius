@@ -42,9 +42,9 @@ public class Datenbank {
 	 public static void main(String args[]) throws Exception{  
 		//printAllTitles();
 		//save_Database();
-		 //datenbankErweitern("https://www.goodreads.com/list/show/1.Best_Books_Ever");
-		 printBooklist(searchBook_title("Lord"));
-		//test();
+		 datenbankErweitern("https://www.goodreads.com/list/show/1.Best_Books_Ever");
+		 //printBooklist(searchBook_title("Lord"));
+		 //test();
 
 	 }
 	 
@@ -53,8 +53,9 @@ public class Datenbank {
 		 //printAllTitles();
 		 //printBooklist(searchBook_thema("Humor"));
 		 //printBooklist(searchBook_author("Funky Chicken"));
-		 //printBooklist(Schnitt(searchBook_rating_höher(3), searchBook_thema(Arrays.asList("Humor"))));
-				 
+		 ArrayList<String> genre = new ArrayList<String>(); genre.add("Humor");
+		 printBooklist(Schnitt(searchBook_rating_höher(3), searchBook_thema(genre)));
+				
 		 //printBooklist(Schnitt(searchBook_title("A"), searchBook_title("The Road")));
 	 }
 	 
