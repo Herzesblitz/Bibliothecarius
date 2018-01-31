@@ -176,6 +176,7 @@ public class Buch implements Serializable {
 		else {
 			linkBuch = url;
 		}
+		System.out.println("btIB: "+url);
 		//link oeffnen und daten lesen
 		if(linkBuch == null)return null;
     	doc = Jsoup.connect(linkBuch).userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:5.0) Gecko/20100101 Firefox/5.0").referrer("http://www.google.com").timeout(20000).get();
@@ -311,7 +312,6 @@ public class Buch implements Serializable {
 				//wenn nicht rufe infoToBuch für entsprechende Bücher auf
 				//- WICHTIG warte 50ms Thread.sleep(50);
 				// und füge ähnliche zu similar von Book hinzu
-		
 		return;
 	}
 		

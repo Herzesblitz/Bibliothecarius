@@ -231,7 +231,9 @@ public class Datenbank {
 		  * @throws IOException
 		  */
 		 public static Buch searchBook_URL(String url) throws FileNotFoundException, ClassNotFoundException, IOException {
-	 		 load_Database();
+	 		 if(buecherliste == null) {
+	 			 load_Database();
+	 		 }
 	 		 for(Buch b: buecherliste) {
 	 			 return (b);
 	 		 }
@@ -564,14 +566,14 @@ public class Datenbank {
 	 
 	 public static void save_Database() throws IOException, ClassNotFoundException { 
 		 System.out.println("sichere Datenbank ... "+buecherliste.size());
-		 ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("./source/db"));
+		 ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("./src/source/db"));
 		 oos.writeObject(buecherliste);
 		 oos.close();
 	 }
 	 
 	 public static void load_Database() throws FileNotFoundException, IOException, ClassNotFoundException {
 		 if(buecherliste.size() > 0)return;
-		 ObjectInputStream ois = new ObjectInputStream(new FileInputStream("./source/db"));
+		 ObjectInputStream ois = new ObjectInputStream(new FileInputStream("./src/source/db"));
 		 Object o = ois.readObject();
 		 buecherliste = (ArrayList<Buch>) o;// cast is needed.
 		 System.out.println("load_Database ... : "+buecherliste.size());
@@ -826,12 +828,10 @@ public class Datenbank {
 							 				if(urlS.size() == 0)break;
 							 				urlS_teil.add(urlS.remove(0));
 							 			}
-							 			
-							 			ArrayList<Buch> tmp = buchThreading(urlS_teil,anz_threads);
-							 			//gehe durch tmp
-							 				//
-							 			
-							 			sortmerge(buecherliste, tmp);
+//								 			ArrayList<Buch> tmp = buchThreading(urlS_teil,anz_threads);
+//								 			System.out.println(tmp.size());
+//								 			sortmerge(buecherliste, tmp);
+							 			buecherliste.addAll(buchThreading(urlS_teil, 20));
 							 			repariere_database();
 							 			save_Database();
 										System.out.println("Länge Bücherliste: "+buecherliste.size());
