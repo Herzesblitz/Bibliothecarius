@@ -42,7 +42,7 @@ public class Testklasse {
 			for (Element result_doc : results_doc) {
 				String url = "https://www.goodreads.com"+result_doc.select("td").select("a.bookTitle").attr("href");
 				System.out.println(url);
-				results.add(Buch.buchToinfosBuecher("", "", url));
+			//	results.add(Buch.buchToinfosBuecher("", "", url));
 			}			
 		}
 		
@@ -166,30 +166,45 @@ public class Testklasse {
 		return results;
 	}
 	
-  	private static void test_hilfsfkt() throws UnsupportedEncodingException, IOException {
-  		System.out.println("https://www.goodreads.com/book/show/5358.The_Firm?from_search=true".matches("https://www.goodreads.com/book/show/[0-9]+\\.(.)+?from_search=true"));
+  	private static void test_hilfsfkt() throws UnsupportedEncodingException, IOException, ClassNotFoundException {
+  		//System.out.println("https://www.goodreads.com/book/show/5358.The_Firm?from_search=true".matches("https://www.goodreads.com/book/show/[0-9]+\\.(.)+?from_search=true"));
+  		//teste sortmerge
+  		ArrayList<Buch> A =new ArrayList<>();
+  		Buch a = new Buch(); a.title = "a";
+  		Buch c = new Buch(); c.title = "c";
+  		Buch ba = new Buch(); ba.title = "ba";
+  		A.add(a);
+  		A.add(ba);
+  		A.add(c);
 
+  		ArrayList<Buch> B =new ArrayList<>();
+  		Buch b = new Buch(); b.title = "b";
+  		Buch e = new Buch(); e.title = "e";
+  		Buch d = new Buch(); d.title = "d";
+  		Buch f = new Buch(); f.title = "f";
+  		Buch bb = new Buch(); bb.title = "1";
+
+  		B.add(e);
+  		B.add(bb);
+  		B.add(b);
+  		B.add(d);
+  		B.add(f);
+
+  		
+  		A =Datenbank.sortmerge(A, B);
+  		for(Buch buch: A)System.out.println(buch.title);
   	}
 
 	
 	//TODO: funktionen javadoc ergaenzen
   	private static void test() throws UnsupportedEncodingException, IOException, ClassNotFoundException {
-  		//  	for(int i=0; i<1000; i++) {
-//			String randomBook = randomBookURL();
-//			ArrayList<String> b= buchZuAehnlicheBuecher("", "", randomBook);
-//			for(String a: b)System.out.println("   "+a);
-//		}
-  		
-  
-  	//Name(Buch) -> Autor, aehnlicheBücher, Charaktere, Genre
-//  		ArrayList<String> b= buchZuAehnlicheBuecher("Alexander", "");
-  		
-  		//Datenbank.printBooklist(Datenbank.searchBook_author(new ArrayList<String>(Arrays.asList("Tolkien"))));
-  		Datenbank.printBooklist(Datenbank.searchBook_characters(new ArrayList<String>(Arrays.asList("Hurin"))));
-
-  		
-  		//Datenbank.printBooklist(Datenbank.Schnitt(Datenbank.searchBook_rating_höher(3), Datenbank.searchBook_thema("Humor")));
+  	//Datenbank.printBooklist(Datenbank.searchBook_author(new ArrayList<String>(Arrays.asList("Tolkien"))));
+  		//Datenbank.printBooklist(Datenbank.searchBook_characters(new ArrayList<String>(Arrays.asList("Hurin"))));
+  	Datenbank.printBooklist(Datenbank.searchBook_sprache(("Deutsch")));
   	
+  
+  		
+  		
   		//Name(Buch) -> Autor, aehnlicheBücher, Charaktere, Genre
 //  		ArrayList<String> b= buchZuAehnlicheBuecher("Holy Bible: King James Version", "");
 //  			for(String a: b)System.out.println(a);

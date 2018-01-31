@@ -15,7 +15,8 @@ import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 //BUGLISTE
-
+//TODO: quotes
+//TODO: inhaltszusammenfassung => alle fkt. database 
 public class Buch implements Serializable {
 		/**
 	 * 
@@ -33,26 +34,27 @@ public class Buch implements Serializable {
         public double rating=Integer.MIN_VALUE;
         public List<String> awards =  new ArrayList<>();
         public List<String> shelves =  new ArrayList<>();
-        public List<String> similar_Books =  new ArrayList<>();
+        public ArrayList<Buch> similar_Books =  new ArrayList<>();
         public List<String> Characters =  new ArrayList<>();
         public List<String> Author =  new ArrayList<>();
 
     public Buch() {
 	}    
         
-    public Buch (String title, String author) throws UnsupportedEncodingException, IOException {
+    public Buch (String title, String author) throws UnsupportedEncodingException, IOException, InterruptedException {
     	setData(title, author);
     }
     
   
   	
-	public static void main(String[] args) throws UnsupportedEncodingException, IOException {
+	public static void main(String[] args) throws UnsupportedEncodingException, IOException, InterruptedException {
 		//Datenbank.printBook(buchToinfosBuecher("Herr der Ringe", "",""));
-		System.out.println(BuchIDZuURL("Platon"));
+		//System.out.println(BuchIDZuURL("Platon"));
+		buchZuAehnlicheBuecher("Der Staat", "", "");
 	}
 	
 	
-	private void setData(String title, String author) throws UnsupportedEncodingException, IOException {
+	private void setData(String title, String author) throws UnsupportedEncodingException, IOException, InterruptedException {
 		Buch k = buchToinfosBuecher(title, author,"");
 		this.url = k.url;
         this.title = k.title;
@@ -77,7 +79,7 @@ public class Buch implements Serializable {
 			if(!Buchmeta.url.equals(""))System.out.println("URL: "+Buchmeta.url);
 			if(!Buchmeta.title.equals(""))System.out.println("Title of the Book: "+Buchmeta.title); 
 			if(Buchmeta.Author.size() == 1) System.out.println("Author: "+Buchmeta.Author.get(0));
-			else {System.out.print("Authors: "); for (int i=0; i<Buchmeta.Author.size()-1; i++) System.out.print(Buchmeta.Author.get(i)+", "); System.out.println(Buchmeta.Author.get(Buchmeta.Author.size()-1));}
+			else if(Buchmeta.Author.size() > 1) {System.out.print("Authors: "); for (int i=0; i<Buchmeta.Author.size()-1; i++) System.out.print(Buchmeta.Author.get(i)+", "); System.out.println(Buchmeta.Author.get(Buchmeta.Author.size()-1));}
 			if(Buchmeta.year != Integer.MIN_VALUE)System.out.println("Publihsing year: "+Buchmeta.year);
 //			System.out.println("ISBN of the Book: "+Buchmeta.isbn);    	
 			if(!Buchmeta.publisher.equals(""))System.out.println("Publisher: "+Buchmeta.publisher);
@@ -99,10 +101,17 @@ public class Buch implements Serializable {
 				System.out.println("________________________________________________");
 				
 			}
+			//FIXME
+//			if(Buchmeta.similar_Books.size()>0){
+//				System.out.println("Ähnliche Bücher: \n");
+//				for (Buch x: Buchmeta.similar_Books)	System.out.println(x.title);
+//				System.out.println("________________________________________________");
+//			}
 			if(!Buchmeta.blurb.equals("")) {
 				System.out.println("Blurb of the Book: \n");
 				System.out.println(Buchmeta.blurb);
 			}
+			
 	}
     
     public static ArrayList<Buch> Schnitt(ArrayList<Buch> a, ArrayList<Buch> b){
@@ -139,7 +148,10 @@ public class Buch implements Serializable {
     	String search_1 = "https://www.goodreads.com/search?page=1&query=" + suchterm;
 	    doc = Jsoup.connect(search_1).ignoreHttpErrors(true).get();
 		if(doc.select("h3.searchSubNavContainer").toString().toLowerCase().contains("no results")) return ""; 
-		return "https://www.goodreads.com"+doc.select("td").select("a.bookTitle").first().attr("href");	
+		try {return "https://www.goodreads.com"+doc.select("td").select("a.bookTitle").first().attr("href");}
+		catch(NullPointerException e){
+			return null;
+		}
     }
 
     /**
@@ -150,8 +162,9 @@ public class Buch implements Serializable {
      * @return
      * @throws UnsupportedEncodingException
      * @throws IOException
+     * @throws InterruptedException 
      */
-    public static Buch buchToinfosBuecher(String title, String author, String url) throws UnsupportedEncodingException, IOException {
+    public static Buch buchToinfosBuecher(String title, String author, String url) throws UnsupportedEncodingException, IOException, InterruptedException {
 		Buch book = new Buch();
 		org.jsoup.nodes.Document doc;
 		String linkBuch="";
@@ -163,6 +176,7 @@ public class Buch implements Serializable {
 			linkBuch = url;
 		}
 		//link oeffnen und daten lesen
+		if(linkBuch == null)return null;
     	doc = Jsoup.connect(linkBuch).userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:5.0) Gecko/20100101 Firefox/5.0").referrer("http://www.google.com").timeout(20000).get();
  
 		//Infos aus doc lesen
@@ -172,7 +186,7 @@ public class Buch implements Serializable {
 			
 			//prüfe "Edition Language" auf Deutsch (mglw. auch Englisch)
 				String sprache = doc.getElementsByClass("infoBoxRowItem").select("[itemprop=inLanguage]").text(); 
-				if(!(sprache != "German" || sprache != "English"))return null;
+				if(sprache != "German" && sprache != "English")return null;
 				book.sprache = sprache;
 			//if(doc.select("infoBoxRowItem.inLanguage").first().text() == "German")System.out.println("Deutsch!");
 			
@@ -198,28 +212,28 @@ public class Buch implements Serializable {
 			//Suche autor
 				if (doc.html().contains("authorName")) {
 					Elements elements = doc.select("a.authorName");
-					for(Element el: elements)book.addAuthor(el.text());
+					for(Element el: elements)book.Author.add(el.text());
 				}
 
 			//Suche Characters
 				if (true/*doc.html().contains("/characters/")*/) {
 						Elements elements = doc.select("div.clearFloats").select("div.infoBoxRowItem").select("a");
 						for(Element el: elements) {
-							if(el.parent().html().contains("character"))book.addCharacter(el.text());
+							if(el.parent().html().contains("character"))book.Characters.add(el.text());
 						}
 				}
 				
 			//Suche Genres
 				Elements elements= doc.select("div.elementList").select("div.left");//select("a.ationLink right bookPageGenreLink__seeMoreLink").toString();
-				for(Element el: elements) book.addGenre(el.text());
+				for(Element el: elements) book.shelves.add(el.text());
 			
 			
 			//aehnlicheBuecher
-				buchZuAehnlicheBuecher(title,author,"");
+				buchZuAehnlicheBuecher("","",linkBuch, book);
 				
 			//ISBN	
 				String isbn= doc.select("div.infoBoxRowItem").select("span.greyText").text().toLowerCase();
-				if(isbn.contains("isbn13"))book.setISBN(isbn.substring(isbn.indexOf(" ")+1,isbn.indexOf(")")));
+				if(isbn.contains("isbn13"))book.isbn = isbn.substring(isbn.indexOf(" ")+1,isbn.indexOf(")"));
 			
 					
 					//System.out.println("test");isbn = doc.select("META[property=isbn]").toString();
@@ -233,7 +247,7 @@ public class Buch implements Serializable {
 			//awards
 				elements = doc.select("div.clearFloats").select("a.award");
 				for(Element el: elements) {
-					book.addAwards(el.text());
+					book.awards.add(el.text());
 				}
 			
 			//year
@@ -243,13 +257,10 @@ public class Buch implements Serializable {
 		book.title = title; book.publisher = publisher; book.blurb = blurb; book.rating = rating;
 		return book;
 	}
-
-    	
 		
-		public static ArrayList<String> buchZuAehnlicheBuecher(String title, String author, String url) throws UnsupportedEncodingException, IOException {
+		public static void buchZuAehnlicheBuecher(String title, String author, String url, Buch book) throws UnsupportedEncodingException, IOException, InterruptedException {
 		ArrayList<String> results = new ArrayList<>();
 		
-
 		//finde link zu buch
 		String link_book ="";
 		if(url == "") {
@@ -261,28 +272,31 @@ public class Buch implements Serializable {
 		System.out.println(link_book);
 		
 		//prüfe ob url legal
-		if(!link_book.matches("https://www.goodreads.com/book/show/[0-9]+\\.(.)+?from_search=true"))return new ArrayList<String>();
+		if(!link_book.matches("https://www.goodreads.com/book/show/[0-9]+(\\.|-)(.)+?from_search=true"))return new ArrayList<Buch>();
 
+		//öffne similar link
 		org.jsoup.nodes.Document doc = Jsoup.connect(link_book).userAgent("bot101").get();
-
-		//TODO: immer noch nicht perfekt, aber besser als vorher, da keine substringsuche
-		String similar_link = "https://www.goodreads.com/book/similar/";
-		for(Element e:doc.select("div").select("h2.brownBackground").select("a")) {
-			if(e.attr("href").contains("work")) { //contains("work") ist kritisch
-				similar_link += e.attr("href").replaceAll("[^0-9]+", "");
-				break;
-			}
-			//ignoreHttpErrors(true) wird Probleme wie Status 404 loesen (wird ggf. durch Bot verursacht
-			doc = Jsoup.connect(similar_link).timeout(300*1000).ignoreHttpErrors(true).get();
-
-			//liste der Ã¤hnlichen buecher sammeln
-			org.jsoup.select.Elements results_doc = doc.select("div").select("a");
-			for (Element result_doc : results_doc) {
-				String link = result_doc.attr("href").replaceAll(" ", "");
-				if(link.contains("/book/show/") && !results.contains(link))results.add("https://www.goodreads.com"+link);
-			}
+		String similar_link = doc.getElementsMatchingText("Readers Also Enjoyed").attr("href");
+		doc = Jsoup.connect(similar_link).userAgent("bot101").get();
+	
+		//sammle die ersten 10 bücher
+		ArrayList<String> urls;
+		
+		Elements similars= doc.select("span[itemprop]");
+		
+		System.out.println(similars+"\n\n\n");
+		for(Element s: similars) {
+			System.out.println("blubl: "+s.attr("name"));
 		}
-		return singularisierung(results);
+		
+		//FIXME: prüfe ob bücher in Datenbank (über urls) sind
+		
+		//FIXME //wenn ja füge ähnliche zu similar von Book hinzu
+				//wenn nicht rufe infoToBuch für entsprechende Bücher auf
+				//- WICHTIG warte 50ms Thread.sleep(50);
+				// und füge ähnliche zu similar von Book hinzu
+		
+		return;
 	}
 		
 	//testfunktionen
@@ -322,69 +336,5 @@ public class Buch implements Serializable {
 				return randomString;
 		}
 
-    //Setter, adder etc.
-						public void setPublisher(String publisher) {
-							this.publisher = publisher;
-						}
-		
-						public void setISBN(String isbn) {
-							this.isbn = isbn;
-						}
-			
-					    public void setAuthor(List<String> autor) {
-					        Author.addAll(autor) ;
-					    }
-					
-					    public void addAuthor(String autor) {
-					        if (!Author.contains(autor)) Author.add(autor);
-					    }
-					    
-					    public void removeAuthor(String autor){
-					        if(Author.contains(autor))  Author.remove(autor);
-					    }
-					
-					    public void setGenre(List<String> genre) {
-					    	shelves.addAll(genre) ;
-					    }
-					
-					    public void addGenre(String genre) {
-					        if (!shelves.contains(genre)) shelves.add(genre);
-					    }
-					    
-					    public void removeGenre(String genre){
-					        if(shelves.contains(genre))   shelves.remove(genre);
-					    }
-					
-					    public void setSimilar_Books(List<String> similarBuch) {
-					        similar_Books.addAll(similarBuch) ;
-					    }
-				
-					    public void addAehnlichBuch(String bookname) {
-					        if (!similar_Books.contains(bookname)) similar_Books.add(bookname);
-					    }
-					    
-					    public void removeAehnlichBuch(String bookname){
-					        if(shelves.contains(bookname)) shelves.remove(bookname);
-					    }
-					    
-					    public void setAwards(List<String> Awards) {
-					        awards.addAll(Awards) ;
-					    }
-					
-					    public void addAwards(String award) {
-					        if (!awards.contains(award))  awards.add(award);
-					    }	
-					
-					    public void setCharacters(List<String> Characters) {
-					        similar_Books.addAll(Characters) ;
-					    }
-					
-					    public void addCharacter(String Character) {
-					        if (!Characters.contains(Character))  Characters.add(Character);
-					    }
-					    
-					    public void removeCharacter(String Character){
-					        if(shelves.contains(Characters)) shelves.remove(Characters);
-					    }
 }
 

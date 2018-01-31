@@ -40,13 +40,15 @@ public class Datenbank {
 
 
 	 public static void main(String args[]) throws Exception{  
-		datenbankErweitern("https://www.goodreads.com/list/show/1.Best_Books_Ever");
-		// test();
+		//printAllTitles();
+		// datenbankErweitern("https://www.goodreads.com/list/show/1.Best_Books_Ever");
+		 //test();
 
 	 }
 	 
 	 private static void test() throws FileNotFoundException, ClassNotFoundException, IOException {
-		 //printAllTitles();
+		 //printAllSimilar();
+		 printAllTitles();
 		 //printBooklist(searchBook_thema("Humor"));
 		 //printBooklist(searchBook_author("Funky Chicken"));
 		 //printBooklist(Schnitt(searchBook_rating_höher(3), searchBook_thema(Arrays.asList("Humor"))));
@@ -65,13 +67,8 @@ public class Datenbank {
 	  */
 	 private static void datenbankErweitern(String url_liste) throws ClassNotFoundException, IOException, InterruptedException, ExecutionException {
 			load_Database();
-			while(true) {
-				refresh_Database_threading(20, url_liste,-1);
-				repariere_database();
-				sort_database();
-				save_Database(); 
-			}
-		 }
+			refresh_Database_threading(20, url_liste,-1);
+	 }
 	 
 	 private static void datenbankErweitern() throws ClassNotFoundException, IOException, InterruptedException, ExecutionException {
 		load_Database();
@@ -88,7 +85,7 @@ public class Datenbank {
 		 public BookCallable(String url) throws UnsupportedEncodingException, IOException {
 			 this.url = url; 
 		 }
-		 public Buch call() throws UnsupportedEncodingException, IOException {
+		 public Buch call() throws UnsupportedEncodingException, IOException, InterruptedException {
 			 return Buch.buchToinfosBuecher("", "", url);
 		 }
 	 }
@@ -107,6 +104,8 @@ public class Datenbank {
 	  return eingabe;
 	 }
 	 
+	 //FIXME: 
+	 
 	 	/**
 	 	 * füge jedes buch hinzu was mind. einen awards
 	 	 * @param awards
@@ -115,6 +114,94 @@ public class Datenbank {
 	 	 * @throws ClassNotFoundException
 	 	 * @throws IOException
 	 	 */
+	 //TODO: sprache, klapptext, publisher, blurb()
+	 	
+	 	public static ArrayList<Buch> searchBook_ähnlich(Buch b){
+	 		//FIXME:
+	 		//return b.similar_Books;
+	 		return null;
+	 	}
+	
+	 	/**
+	 	 * Großschreibung! gibt alle Bücher mit angegebener Sprache zurück
+	 	 * @param sprache
+	 	 * @return
+	 	 * @throws IOException 
+	 	 * @throws ClassNotFoundException 
+	 	 * @throws FileNotFoundException 
+	 	 */
+	 	public static ArrayList<Buch> searchBook_sprache(String sprache) throws FileNotFoundException, ClassNotFoundException, IOException{
+	 		if(buecherliste.size() == 0)load_Database();
+			ArrayList<Buch> results = new ArrayList<Buch>();
+	 		switch(sprache) {
+	 			case "Deutsch":{
+	 				for(Buch b: buecherliste) {
+						 if(b.sprache.equals("German")) {
+							 results.add(b);
+						 }
+					}
+	 			}break;
+	 			case "Englisch":{
+	 				for(Buch b: buecherliste) {
+						 if(b.sprache.equals("English")) {
+							 results.add(b);
+						 }
+					}
+	 			}break;
+	 			default: {
+	 				System.err.println("keine anerkannte Sprache angegeben!");
+	 				return null;
+	 			}
+	 		}
+	 		return results;
+	 	}
+	 
+	 	/**
+	 	 * modus = 0: exaktes Jahr, modus = -1: davor, modus = 1: dannach
+	 	 * @param year
+	 	 * @param zeit
+	 	 * @return
+	 	 * @throws IOException 
+	 	 * @throws ClassNotFoundException 
+	 	 * @throws FileNotFoundException 
+	 	 */
+	 	 public static ArrayList<Buch> searchBook_year(int year, int modus) throws FileNotFoundException, ClassNotFoundException, IOException{
+	 		 if(buecherliste.size() == 0)load_Database();
+	 		 if(modus < -1 || modus > 1) {
+	 			 System.err.println("falscher Wert für Parameter "+modus);
+		 		 return null;
+	 		 }
+	 		 else {
+	 			 ArrayList<Buch> results = new ArrayList<Buch>();
+		 		 //suche nach exaktem Titel
+	 			 switch(modus) {
+	 			 	case -1: {
+	 			 		 for(Buch b: buecherliste) {
+	 						 if(b.year < year) {
+	 							 results.add(b);
+	 						 }
+	 					 }
+	 			 	}break;
+	 			 	case 0: {
+	 			 		 for(Buch b: buecherliste) {
+	 						 if(b.year == year) {
+	 							 results.add(b);
+	 						 }
+	 					 }
+	 			 	}break;
+	 			 	case 1: {
+	 			 		 for(Buch b: buecherliste) {
+	 						 if(b.year > year) {
+	 							 results.add(b);
+	 						 }
+	 					 }
+	 			 	}break;
+	 			 }
+				
+				 return results;
+	 		 }
+	 	 }
+	 
 		 public static ArrayList<Buch> searchBook_awards(ArrayList<String> awardliste) throws FileNotFoundException, ClassNotFoundException, IOException {
 			 load_Database();
 	 		 ArrayList<Buch> results = new ArrayList<Buch>();
@@ -343,8 +430,12 @@ public class Datenbank {
 	 	 * @param b
 	 	 * @param param
 	 	 */
+	 	//FIXME: klapptext
 	 	public static void printBook_param(Buch b, String param) {
-				if(param.equals("url") && !b.url.equals(""))System.out.println("URL: "+b.url);
+	 			if(param.equals("klapptext" ))
+	 			if(param.equals("sprache") && !b.sprache.equals(""))System.out.println("Sprache: "+b.sprache);
+				if(param.equals("isbn") && !b.isbn.equals(""))System.out.println("ISBN: "+b.isbn);
+	 			if(param.equals("url") && !b.url.equals(""))System.out.println("URL: "+b.url);
 				if(param.equals("title") && !b.title.equals(""))System.out.println("Title of the Book: "+b.title); 
 				if(param.equals("bücherreihe") && !b.buecherreihe.equals(""))System.out.println("buecherreihe of the Book: "+b.title); 
 				if(param.equals("author") && b.Author.size() == 1) System.out.println("Author: "+b.Author.get(0));
@@ -352,15 +443,15 @@ public class Datenbank {
 				if(param.equals("year") && b.year != Integer.MIN_VALUE)System.out.println("Publihsing year: "+b.year);
 //				System.out.println("ISBN of the Book: "+Buchmeta.isbn);    	
 				if(param.equals("publisher") && !b.publisher.equals(""))System.out.println("Publisher: "+b.publisher);
-				if(param.equals("ratin") && b.rating != Integer.MIN_VALUE)System.out.println("Rating: "+b.rating);
+				if(param.equals("rating") && b.rating != Integer.MIN_VALUE)System.out.println("Rating: "+b.rating);
 				System.out.println("________________________________________________");
 				if(param.equals("character") && b.Characters.size() > 0) {
 					System.out.println("Characters in the Book: \n");
 					for (String x: b.Characters) System.out.println(x);
 					System.out.println("________________________________________________");
 				}
-				if(param.equals("genre") && b.shelves.size() > 0) {
-					System.out.println("Genre of the Book: \n");
+				if(param.equals("thema") && b.shelves.size() > 0) {
+					System.out.println("Thema of the Book: \n");
 					for (String x: b.shelves)	System.out.println(x);
 					System.out.println("________________________________________________");
 				}
@@ -462,11 +553,26 @@ public class Datenbank {
 	 public static void load_Database() throws FileNotFoundException, IOException, ClassNotFoundException {
 		 if(buecherliste.size() > 0)return;
 		 ObjectInputStream ois = new ObjectInputStream(new FileInputStream("./source/db"));
-		 buecherliste = (ArrayList<Buch>) ois.readObject(); // cast is needed.
+		 Object o = ois.readObject();
+		 buecherliste = (ArrayList<Buch>) o;// cast is needed.
 		 System.out.println("load_Database ... : "+buecherliste.size());
 		 ois.close();
 	 }
 	 
+	 public static void printAllSimilar() throws FileNotFoundException, ClassNotFoundException, IOException {
+		 load_Database();
+		 System.out.println("Datenbank geladen");
+		 for(Buch b: buecherliste) {
+			 System.out.println();
+			 if(b.similar_Books.size() > 0) {
+				 //FIXME:
+				// for(Buch a: b.similar_Books)System.out.println(a.title);
+			 }
+			 else System.out.println();
+		 }
+		 System.out.println(buecherliste.size());
+	 }
+	 	 
 	 public static void printAllTitles() throws FileNotFoundException, ClassNotFoundException, IOException {
 		 load_Database();
 		 System.out.println("Datenbank geladen");
@@ -477,7 +583,7 @@ public class Datenbank {
 		 }
 		 System.out.println(buecherliste.size());
 	 }
-	 	 
+	 
 	 //TODO: moeglicherweise ineffizient
 	 public static void sort_database() throws FileNotFoundException, ClassNotFoundException, IOException {
 		if(buecherliste == null) load_Database();
@@ -504,8 +610,20 @@ public class Datenbank {
 				return neu;
 	 }
 	 
-	 public static void mergewith_and_sort(ArrayList<Buch> neu) throws FileNotFoundException, ClassNotFoundException, IOException {
-		 if(buecherliste == null) load_Database();
+	 public static ArrayList<Buch> sortmerge(ArrayList<Buch> alt, ArrayList<Buch> neu) throws FileNotFoundException, ClassNotFoundException, IOException {
+		 neu = sortAL(neu);
+		 int index1;
+		 int index2;
+		 for (index1 = 0, index2 = 0; index2 < neu.size(); index1++) {
+			 	//returns < 0 then the String calling the method is lexicographically first (comes first in a dictionary)
+			 	//for(Buch buch: alt)System.out.println(buch.title);
+			 	//System.out.println("index alt: "+index1+" index neu:"+index2);
+			 	if (index1 == alt.size() || neu.get(index2).title.compareTo(alt.get(index1).title) <= 0) {
+			            alt.add(index1, neu.get(index2++));
+			    }
+		 }
+		 //save_Database();
+		return alt;
 	 }
 	 
 	
@@ -680,7 +798,6 @@ public class Datenbank {
 						 			ArrayList<String> urlS = new ArrayList<>();
 								 	for(Element book: url_Books_list_x_page_n) {
 								 		urlS.add("https://www.goodreads.com"+book.attr("href"));
-								 		
 								 	}
 								 	//ubertrage anzThreads buecher von url-liste zu teilmengen-liste
 								 	while(urlS.size() > 0) {
@@ -691,12 +808,14 @@ public class Datenbank {
 							 				urlS_teil.add(urlS.remove(0));
 							 			}
 							 			
-							 			List<Buch> tmp = buchThreading(urlS_teil,anz_threads);
-							 			buecherliste.addAll(tmp);
-							 			 save_Database();
-							 			 repariere_database();
-							 			 sort_database();
-										 System.out.println("Länge Bücherliste: "+buecherliste.size());
+							 			ArrayList<Buch> tmp = buchThreading(urlS_teil,anz_threads);
+							 			//gehe durch tmp
+							 				//
+							 			
+							 			sortmerge(buecherliste, tmp);
+							 			repariere_database();
+							 			save_Database();
+										System.out.println("Länge Bücherliste: "+buecherliste.size());
 								 	}
 									
 							 page_books++;
@@ -711,7 +830,7 @@ public class Datenbank {
 	  * 		öffne jedes Buch
 	  * 			Lese Daten aus
 	  */
-	 public static void refresh_Database(int books_nr) throws IOException, ClassNotFoundException {
+	 public static void refresh_Database(int books_nr) throws IOException, ClassNotFoundException, InterruptedException {
 		 //
 		 BufferedReader br = new BufferedReader(new FileReader("./src/source/db"));     
 		 if (br.readLine() != null) {
@@ -769,7 +888,7 @@ public class Datenbank {
 		 return false;
 	 }
 	 
-	 public static boolean addBookToDatabase(String url) throws UnsupportedEncodingException, IOException {
+	 public static boolean addBookToDatabase(String url) throws UnsupportedEncodingException, IOException, InterruptedException {
 		 //prüfe ob Buch schon in Database
 		 Buch neu = Buch.buchToinfosBuecher("","",url);
 		 System.out.println("add: "+url);
