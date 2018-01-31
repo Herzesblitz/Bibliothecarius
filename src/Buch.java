@@ -48,9 +48,8 @@ public class Buch implements Serializable {
   
   	
 	public static void main(String[] args) throws UnsupportedEncodingException, IOException, InterruptedException, ClassNotFoundException {
-		//Datenbank.printBook(buchToinfosBuecher("Herr der Ringe", "",""));
+		Datenbank.printBook(buchToinfosBuecher("Herr der Ringe", "","", 10));
 		//System.out.println(BuchIDZuURL("Platon"));
-		buchZuAehnlicheBuecher("Der Staat", "", "", new Buch(), 10);
 	}
 	
 	
@@ -101,12 +100,11 @@ public class Buch implements Serializable {
 				System.out.println("________________________________________________");
 				
 			}
-			//FIXME
-//			if(Buchmeta.similar_Books.size()>0){
-//				System.out.println("Ähnliche Bücher: \n");
-//				for (Buch x: Buchmeta.similar_Books)	System.out.println(x.title);
-//				System.out.println("________________________________________________");
-//			}
+			if(Buchmeta.similar_Books.size()>0){
+				System.out.println("Ähnliche Bücher: \n");
+				for (Buch x: Buchmeta.similar_Books)	System.out.println(x.title);
+				System.out.println("________________________________________________");
+			}
 			if(!Buchmeta.blurb.equals("")) {
 				System.out.println("Blurb of the Book: \n");
 				System.out.println(Buchmeta.blurb);
