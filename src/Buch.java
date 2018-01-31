@@ -303,7 +303,9 @@ public class Buch implements Serializable {
 				book.similar_Books.add(result);
 			}
 			else {
-				book.similar_Books.add(buchToinfosBuecher(title, author, URL, 0));
+				Buch b = buchToinfosBuecher("", "", URL, 0);
+				System.out.println("Linke "+b.title);
+				book.similar_Books.add(b);
 				Thread.sleep(50);
 			}
 		}
