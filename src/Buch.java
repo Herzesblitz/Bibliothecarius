@@ -176,20 +176,21 @@ public class Buch implements Serializable {
 		else {
 			linkBuch = url;
 		}
-		System.out.println("btIB: "+url);
+		System.out.println("btIB: "+linkBuch);
 		//link oeffnen und daten lesen
 		if(linkBuch == null)return null;
     	doc = Jsoup.connect(linkBuch).userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:5.0) Gecko/20100101 Firefox/5.0").referrer("http://www.google.com").timeout(20000).get();
  
 		//Infos aus doc lesen
     		book.url = linkBuch;
+    		
     	
 			String publisher = ""; String blurb = ""; double rating = 0;
 			
 			//prüfe "Edition Language" auf Deutsch (mglw. auch Englisch)
 				String sprache = doc.getElementsByClass("infoBoxRowItem").select("[itemprop=inLanguage]").text(); 
-				if(sprache != "German" && sprache != "English")return null;
-				book.sprache = sprache;
+				System.out.println(sprache);
+				if(!sprache.equals("German") && !sprache.equals("English"))return null;
 			//if(doc.select("infoBoxRowItem.inLanguage").first().text() == "German")System.out.println("Deutsch!");
 			
 
@@ -304,7 +305,7 @@ public class Buch implements Serializable {
 			}
 			else {
 				Buch b = buchToinfosBuecher("", "", URL, 0);
-				System.out.println("Linke "+b.title);
+				if(b == null) continue;
 				book.similar_Books.add(b);
 				Thread.sleep(50);
 			}
