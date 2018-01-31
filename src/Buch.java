@@ -176,7 +176,6 @@ public class Buch implements Serializable {
 		else {
 			linkBuch = url;
 		}
-		System.out.println("btIB: "+linkBuch);
 		//link oeffnen und daten lesen
 		if(linkBuch == null)return null;
     	doc = Jsoup.connect(linkBuch).userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:5.0) Gecko/20100101 Firefox/5.0").referrer("http://www.google.com").timeout(20000).get();
@@ -189,7 +188,6 @@ public class Buch implements Serializable {
 			
 			//prüfe "Edition Language" auf Deutsch (mglw. auch Englisch)
 				String sprache = doc.getElementsByClass("infoBoxRowItem").select("[itemprop=inLanguage]").text(); 
-				System.out.println(sprache);
 				if(!sprache.equals("German") && !sprache.equals("English"))return null;
 			//if(doc.select("infoBoxRowItem.inLanguage").first().text() == "German")System.out.println("Deutsch!");
 			
@@ -200,7 +198,6 @@ public class Buch implements Serializable {
 			
 			//ggf. title von buchreihe trennen
 			if(title.matches(".+\\(.+\\)")) {
-				System.out.println(title);
 				book.buecherreihe = title.substring(title.lastIndexOf("(")+1, title.lastIndexOf(")")-1);
 				title = title.substring(0, title.lastIndexOf("(")-1);
 			}
@@ -273,7 +270,6 @@ public class Buch implements Serializable {
 		else {
 			link_book = url;
 		}
-		System.out.println(link_book);
 		
 		//prüfe ob url legal
 		if(!link_book.matches("https://www.goodreads.com/book/show/[0-9]+(\\.|-)(.)+?from_search=true"))return;
