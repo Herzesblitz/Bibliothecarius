@@ -91,7 +91,14 @@ public class Datenbank {
 	 	//..._LS benutzen die LevensteinDistanz zur Suche (werden immer die Buecher mit dem ähnlichsten String zurueckgeben)
 	 
 	 
-	 
+	 	/**
+	 	 * füge jedes buch hinzu was mind. einen awards
+	 	 * @param awards
+	 	 * @return
+	 	 * @throws FileNotFoundException
+	 	 * @throws ClassNotFoundException
+	 	 * @throws IOException
+	 	 */
 		 public static ArrayList<Buch> searchBook_awards(String awards) throws FileNotFoundException, ClassNotFoundException, IOException {
 			 load_Database();
 	 		 ArrayList<String> awardliste= new ArrayList<>(Arrays.asList(awards.split("\\s+")));
@@ -109,7 +116,7 @@ public class Datenbank {
 		 }
 	 	
 	 	/**
-	 	 * 
+	 	 * gibt genau die bücher 
 	 	 * @param thema
 	 	 * @return
 	 	 * @throws FileNotFoundException
@@ -444,11 +451,9 @@ public class Datenbank {
 	 
 	 	public static ArrayList<Buch> Vereinigung(ArrayList<Buch> a, ArrayList<Buch> b){
 	 		 Set<Buch> set = new HashSet<Buch>();
-
 		        set.addAll(a);
 		        set.addAll(b);
-
-		        return new ArrayList<Buch>(set);
+		     return new ArrayList<Buch>(set);
 	 	}
 	 
 	 	public static ArrayList<String> removeDoubles(ArrayList<String> a){
@@ -492,13 +497,13 @@ public class Datenbank {
 	 
 	 public static void save_Database() throws IOException, ClassNotFoundException { 
 		 System.out.println("sichere Datenbank ... "+buecherliste.size());
-		 ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("./src/source/db"));
+		 ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("./source/db"));
 		 oos.writeObject(buecherliste);
 		 oos.close();
 	 }
 	 
 	 public static void load_Database() throws FileNotFoundException, IOException, ClassNotFoundException {
-		 ObjectInputStream ois = new ObjectInputStream(new FileInputStream("./src/source/db"));
+		 ObjectInputStream ois = new ObjectInputStream(new FileInputStream("./source/db"));
 		 buecherliste = (ArrayList<Buch>) ois.readObject(); // cast is needed.
 		 System.out.println("load_Database - laenge: "+buecherliste.size());
 		 ois.close();
@@ -691,7 +696,6 @@ public class Datenbank {
 			int page_books;
 				 		if(pageoffset == -1) page_books= (int) (Math.random()*1000);
 				 		else page_books = pageoffset;
-			
 				 		while(true) {
 				 			String url_list_x_page_n= url+"?page="+page_books;		
 							org.jsoup.nodes.Document doc_list_X_page_x = Jsoup.connect(url_list_x_page_n).get();

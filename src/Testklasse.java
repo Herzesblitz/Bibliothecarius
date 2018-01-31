@@ -35,7 +35,7 @@ public class Testklasse {
 		while(true) {
 			//rufe seiten fuer ergbnisse auf
 			doc = Jsoup.connect(linkAutor+"?page="+page_results).ignoreHttpErrors(true).userAgent("bot101").get();
-			if(doc.html().toString().contains("hasn't written any books"))break; //seite existiert nicht //TODO eig schlecht
+			if(doc.html().toString().contains("hasn't written any books"))break; //seite existiert nicht //FIXME eig schlecht
 
 			org.jsoup.select.Elements results_doc = doc.getElementsByTag("tr");
 			for (Element result_doc : results_doc) {
@@ -88,14 +88,12 @@ public class Testklasse {
 		//booktitles holen
 			org.jsoup.select.Elements results_titles = doc.select("a").select(".bookTitle");
 			for (Element result_title : results_titles) {
-				//TODO: link-teil furchtbar, auswahl Ã¼ber html string. gibt es mÃ¶glichtkeit das <href>-tag des <title> tag auszuwÃ¤hlen??
 				title.add(result_title.text());
 			}
 		
 		//autoren holen
 			org.jsoup.select.Elements results_authors = doc.select("a").select(".authorName");
 			for (Element result_author : results_authors) {
-				//TODO: link-teil furchtbar, auswahl Ã¼ber html string. gibt es mÃ¶glichtkeit das <href>-tag des <title> tag auszuwÃ¤hlen??
 				author.add(result_author.text());
 			}
 
@@ -153,7 +151,6 @@ public class Testklasse {
 				//autoren holen
 				org.jsoup.select.Elements results_authors = doc.getElementsByTag("tr").select("td").select("a.authorName");
 				for (Element result_author : results_authors) {
-					//TODO: link-teil furchtbar, auswahl Ã¼ber html string. gibt es mÃ¶glichtkeit das <href>-tag des <title> tag auszuwÃ¤hlen??
 					authors.add(result_author.text());
 				}
 
