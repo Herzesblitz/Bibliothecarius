@@ -14,10 +14,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
-
 //BUGLISTE
-	//FIXME: manchmal taucht goodreads.com...goodreads.com auf 
 
 public class Buch implements Serializable {
 		/**
@@ -142,10 +139,7 @@ public class Buch implements Serializable {
     	String search_1 = "https://www.goodreads.com/search?page=1&query=" + suchterm;
 	    doc = Jsoup.connect(search_1).ignoreHttpErrors(true).get();
 		if(doc.select("h3.searchSubNavContainer").toString().toLowerCase().contains("no results")) return ""; 
-			//FIXME: keine substring suche
-		System.out.println(doc.select("td").select("a.bookTitle"));// doc.getElementsByAttribute("href"));
-		
-		return "https://www.goodreads.com"+doc.getElementsByTag("tr").first().html().substring(doc.getElementsByTag("tr").first().html().indexOf("href") + 6, doc.getElementsByTag("tr").first().html().indexOf(">", doc.getElementsByTag("tr").first().html().indexOf("href")) - 1);	
+		return "https://www.goodreads.com"+doc.select("td").select("a.bookTitle").first().attr("href");	
     }
 
     /**

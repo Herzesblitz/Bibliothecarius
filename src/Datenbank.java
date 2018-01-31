@@ -27,6 +27,12 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+//FIXME: Relevanzsortierung bei searchBook
+
+//TODO: Performancebremsen:
+	/* - toleranzEinbauen: O(|buecherliste|) -> O(|buecherliste|)*15
+	 * -  
+	 */
 public class Datenbank {
 	
 	static ArrayList<Buch> buecherliste = new ArrayList<>();
@@ -35,7 +41,7 @@ public class Datenbank {
 
 	 public static void main(String args[]) throws Exception{  
 		datenbankErweitern("https://www.goodreads.com/list/show/1.Best_Books_Ever");
-		 //test();
+		// test();
 
 	 }
 	 
@@ -43,7 +49,7 @@ public class Datenbank {
 		 //printAllTitles();
 		 //printBooklist(searchBook_thema("Humor"));
 		 //printBooklist(searchBook_author("Funky Chicken"));
-		 printBooklist(Schnitt(searchBook_rating_höher(3), searchBook_thema("Humor")));
+		 //printBooklist(Schnitt(searchBook_rating_höher(3), searchBook_thema(Arrays.asList("Humor"))));
 				 
 		 //printBooklist(Schnitt(searchBook_title("A"), searchBook_title("The Road")));
 	 }
@@ -90,6 +96,16 @@ public class Datenbank {
 	 //Kann durch RASA aufgerufen werden: 
 	 	//..._LS benutzen die LevensteinDistanz zur Suche (werden immer die Buecher mit dem ähnlichsten String zurueckgeben)
 	 
+	 /**
+	  * Nimmt folgende Änderungen an String vor, damit Matching verbessert wird 
+	  * @return
+	  */
+	 public static String toleranzEinbauen(String eingabe) {	
+		 eingabe = eingabe.toLowerCase().replaceAll("ü", "ue").replaceAll("ä", "ae").replaceAll("ö", "oe").replaceAll("ë", "e");
+		 eingabe = eingabe.replaceAll("ú", "u").replaceAll("é", "e").replaceAll("ó", "o").replaceAll("í", "i").replaceAll("á", "a");
+		 eingabe = eingabe.replaceAll("ù", "u").replaceAll("è", "e").replaceAll("ò", "o").replaceAll("ì", "i").replaceAll("à", "a");
+	  return eingabe;
+	 }
 	 
 	 	/**
 	 	 * füge jedes buch hinzu was mind. einen awards
@@ -99,16 +115,17 @@ public class Datenbank {
 	 	 * @throws ClassNotFoundException
 	 	 * @throws IOException
 	 	 */
-		 public static ArrayList<Buch> searchBook_awards(String awards) throws FileNotFoundException, ClassNotFoundException, IOException {
+		 public static ArrayList<Buch> searchBook_awards(ArrayList<String> awardliste) throws FileNotFoundException, ClassNotFoundException, IOException {
 			 load_Database();
-	 		 ArrayList<String> awardliste= new ArrayList<>(Arrays.asList(awards.split("\\s+")));
 	 		 ArrayList<Buch> results = new ArrayList<Buch>();
 	 		 //suche nach exaktem Autor
 			 for(Buch b: buecherliste) {
-				for(String a: awardliste) {
-					if(b.awards.contains(a)) {
-						results.add(b);
-						break;
+				for(String award_buch: b.awards) {
+					for(String award_suche: awardliste) {
+						if(toleranzEinbauen(award_buch).contains(toleranzEinbauen(award_suche))) {
+							results.add(b);
+							break;
+						}
 					}
 				}
 			 } 
@@ -140,16 +157,18 @@ public class Datenbank {
 	 	* @throws ClassNotFoundException
 	    * @throws IOException
 	 	*/
-		public static ArrayList<Buch> searchBook_thema(String thema) throws FileNotFoundException, ClassNotFoundException, IOException {
-			 load_Database();
-	 		 ArrayList<String> themenliste= new ArrayList<>(Arrays.asList(thema.split("\\s+")));
+		public static ArrayList<Buch> searchBook_thema(ArrayList<String> themenliste) throws FileNotFoundException, ClassNotFoundException, IOException {
+			load_Database();
 	 		 ArrayList<Buch> results = new ArrayList<Buch>();
 	 		 //suche nach exaktem Autor
 			 for(Buch b: buecherliste) {
-				for(String a: themenliste) {
-					if(b.shelves.contains(a)) {
-						results.add(b);
-						break;
+				for(String thema_buch: b.shelves) {
+					for(String thema_suche: themenliste) {
+						//kaiserin -> auf kindliche kaiserin matchen
+						if(toleranzEinbauen(thema_buch).contains(toleranzEinbauen(thema_suche))) {
+							results.add(b);
+							break;
+						}
 					}
 				}
 			 } 
@@ -164,20 +183,22 @@ public class Datenbank {
 	 	* @throws ClassNotFoundException
 	    * @throws IOException
 	 	*/
-	    public static ArrayList<Buch> searchBook_characters(String character) throws FileNotFoundException, ClassNotFoundException, IOException {
-	 		 load_Database();
-	 		 ArrayList<String> charakterliste= new ArrayList<>(Arrays.asList(character.split("\\s+")));
+	    public static ArrayList<Buch> searchBook_characters(ArrayList<String> charakterliste) throws FileNotFoundException, ClassNotFoundException, IOException {
+	    	load_Database();
 	 		 ArrayList<Buch> results = new ArrayList<Buch>();
 	 		 //suche nach exaktem Autor
 			 for(Buch b: buecherliste) {
-				for(String a: charakterliste) {
-					if(b.Characters.contains(a)) {
-						results.add(b);
-						break;
+				for(String charakter_buch: b.Characters) {
+					for(String charakter_suche: charakterliste) {
+						//kaiserin -> auf kindliche kaiserin matchen
+						if(toleranzEinbauen(charakter_buch).toLowerCase().contains(toleranzEinbauen(charakter_suche))) {
+							results.add(b);
+							break;
+						}
 					}
 				}
 			 } 
-	 		 return results;
+	 		return results;
 	 	 }
 	 	 
 	 	/**
@@ -188,19 +209,22 @@ public class Datenbank {
 	 	 * @throws ClassNotFoundException
 	 	 * @throws IOException
 	 	 */
-	 	public static ArrayList<Buch> searchBook_author(String author) throws FileNotFoundException, ClassNotFoundException, IOException {
-	 		 load_Database();
+	 	public static ArrayList<Buch> searchBook_author(ArrayList<String> authorliste) throws FileNotFoundException, ClassNotFoundException, IOException {
+	 		load_Database();
 	 		 ArrayList<Buch> results = new ArrayList<Buch>();
 	 		 //suche nach exaktem Autor
 			 for(Buch b: buecherliste) {
-				for(String a: b.Author) {
-					if(b.Author.contains(a)) {
-						results.add(b);
-						break;
+				for(String author_buch: b.Author) {
+					for(String author_suche: authorliste) {
+						//kaiserin -> auf kindliche kaiserin matchen
+						if(toleranzEinbauen(author_buch).contains(toleranzEinbauen(author_suche))) {
+							results.add(b);
+							break;
+						}
 					}
 				}
 			 } 
-	 		 return results;
+	 		return results;
 	 	}
 	 	
 	 	public static ArrayList<Buch> searchBook_rating_höher(double rating) throws FileNotFoundException, ClassNotFoundException, IOException {
@@ -228,7 +252,7 @@ public class Datenbank {
 	 		 ArrayList<Buch> results = new ArrayList<Buch>();
 	 		 //suche nach exaktem Titel
 			 for(Buch b: buecherliste) {
-				 if(b.title.toLowerCase().contains(title.toLowerCase())) {
+				 if(toleranzEinbauen(b.title).contains(toleranzEinbauen(title))) {
 					 results.add(b);
 				 }
 			 }
@@ -308,53 +332,6 @@ public class Datenbank {
 					 } 
 				 }
 			 }
-	 	 }
-	
-	 	/**
-	 	 * 
-	 	 * @param empfehlungen
-	 	 * @param schnitt
-	 	 * @param qualitaet
-	 	 * @param inhalt
-	 	 * @throws FileNotFoundException
-	 	 * @throws ClassNotFoundException
-	 	 * @throws IOException
-	 	 */
-	 	public static void empfehlungsschritt(ArrayList<Buch> empfehlungen, boolean schnitt, String qualitaet, String inhalt) throws FileNotFoundException, ClassNotFoundException, IOException {
-	 		load_empfehlungsliste();
-	 		if(qualitaet.contains("charakter")) {
-	 			if(schnitt) {
-	 				empfehlungsliste = Schnitt(empfehlungsliste, searchBook_characters(qualitaet));
-	 			}
-	 			else {
-	 				empfehlungsliste = Vereinigung(empfehlungsliste, searchBook_characters(qualitaet));
-	 			}
-	 		}
-	 		if(qualitaet.contains("title")) {
-	 			if(schnitt) {
-	 				empfehlungsliste = Schnitt(empfehlungsliste, searchBook_title(qualitaet));
-	 			}
-	 			else {
-	 				empfehlungsliste = Vereinigung(empfehlungsliste, searchBook_title(qualitaet));
-	 			}
-	 		}
-	 		if(qualitaet.contains("author")) {
-	 			if(schnitt) {
-	 				empfehlungsliste = Schnitt(empfehlungsliste, searchBook_author(qualitaet));
-	 			}
-	 			else {
-	 				empfehlungsliste = Vereinigung(empfehlungsliste, searchBook_author(qualitaet));
-	 			}
-	 		}
-	 		if(qualitaet.contains("thema")) {
-	 			if(schnitt) {
-	 				empfehlungsliste = Schnitt(empfehlungsliste, searchBook_thema(qualitaet));
-	 			}
-	 			else {
-	 				empfehlungsliste = Vereinigung(empfehlungsliste, searchBook_thema(qualitaet));
-	 			}
-	 		}
-	 		save_empfehlungsliste();
 	 	 }
 	 	 
 	 	public static void printBook(Buch b) {
@@ -483,9 +460,10 @@ public class Datenbank {
 	 }
 	 
 	 public static void load_Database() throws FileNotFoundException, IOException, ClassNotFoundException {
+		 if(buecherliste.size() > 0)return;
 		 ObjectInputStream ois = new ObjectInputStream(new FileInputStream("./source/db"));
 		 buecherliste = (ArrayList<Buch>) ois.readObject(); // cast is needed.
-		 System.out.println("load_Database - laenge: "+buecherliste.size());
+		 System.out.println("load_Database ... : "+buecherliste.size());
 		 ois.close();
 	 }
 	 
@@ -514,8 +492,20 @@ public class Datenbank {
 		 save_Database();
 	 }
 	 
-	 public static void merge_and_sort(ArrayList<Buch> neu) throws FileNotFoundException, ClassNotFoundException, IOException {
-		 
+	 public static ArrayList<Buch> sortAL(ArrayList<Buch> neu) {
+		// Sorting
+				 Collections.sort(neu, new Comparator<Buch>() {
+				         @Override
+				         public int compare(Buch a, Buch b)
+				         {
+				             return  a.title.compareTo(b.title);
+				         }
+				     });
+				return neu;
+	 }
+	 
+	 public static void mergewith_and_sort(ArrayList<Buch> neu) throws FileNotFoundException, ClassNotFoundException, IOException {
+		 if(buecherliste == null) load_Database();
 	 }
 	 
 	

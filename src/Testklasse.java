@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 import org.jsoup.Jsoup;
@@ -19,8 +20,8 @@ public class Testklasse {
 	Datenbank db = new Datenbank();
 
 	public static void main(String[] args) throws UnsupportedEncodingException, IOException, ClassNotFoundException {
-		test_hilfsfkt();
-		}
+		test();
+	}
 
 	public static ArrayList<Buch> autorZuBuecherliste(String autor) throws UnsupportedEncodingException, IOException {
 		ArrayList<Buch> results = new ArrayList<>();
@@ -172,17 +173,24 @@ public class Testklasse {
 
 	
 	//TODO: funktionen javadoc ergaenzen
-  	private static void test() throws UnsupportedEncodingException, IOException {
+  	private static void test() throws UnsupportedEncodingException, IOException, ClassNotFoundException {
   		//  	for(int i=0; i<1000; i++) {
 //			String randomBook = randomBookURL();
 //			ArrayList<String> b= buchZuAehnlicheBuecher("", "", randomBook);
 //			for(String a: b)System.out.println("   "+a);
 //		}
+  		
   
   	//Name(Buch) -> Autor, aehnlicheBücher, Charaktere, Genre
 //  		ArrayList<String> b= buchZuAehnlicheBuecher("Alexander", "");
-  		Buch.ausgebenBuch(Buch.buchToinfosBuecher("Platon's Republic", "Platon", ""));
-  	//Name(Buch) -> Autor, aehnlicheBücher, Charaktere, Genre
+  		
+  		//Datenbank.printBooklist(Datenbank.searchBook_author(new ArrayList<String>(Arrays.asList("Tolkien"))));
+  		Datenbank.printBooklist(Datenbank.searchBook_characters(new ArrayList<String>(Arrays.asList("Hurin"))));
+
+  		
+  		//Datenbank.printBooklist(Datenbank.Schnitt(Datenbank.searchBook_rating_höher(3), Datenbank.searchBook_thema("Humor")));
+  	
+  		//Name(Buch) -> Autor, aehnlicheBücher, Charaktere, Genre
 //  		ArrayList<String> b= buchZuAehnlicheBuecher("Holy Bible: King James Version", "");
 //  			for(String a: b)System.out.println(a);
   		//printBook(buchToinfosBuecher("The Name of the Wind (The Kingkiller Chronicle, #1)","",""));
