@@ -20,44 +20,10 @@ import org.jsoup.select.Elements;
  */
 public class Testklasse {
 	Datenbank db = new Datenbank();
-	public static void main(String[] args) throws UnsupportedEncodingException, IOException, ClassNotFoundException {
-//		String[] trainingsdaten_charakter = "Ein Charakter ist CHARAKTER.Der Charakter CHARAKTER ist beschrieben.Der Autor schreibt von CHARAKTER.Der Protagonist ist CHARAKTER.Es handelt um CHARAKTER.CHARAKTER spielt eine große Rolle.CHARAKTER spielt mit.Ein Charakter war CHARAKTER.CHARAKTER denke ich.CHARAKTER glaube ich.Das ist CHARAKTER.Ich suche das Buch mit CHARAKTER.Ein Charakter heißt CHARAKTER.CHARAKTER ist darin.".split("\\.");
-//		erstelleTrainingsdaten(gebeCharacterZurueck(1000), trainingsdaten_charakter, "CHARAKTER");
-		
-//		String[] trainingsdaten_titel = "Das Buch heißt TITEL.TITEL heißt es.TITEL.Es heißt TITEL oder so ähnlich.Das Buch trägt den Titel TITEL.Es hat den Titel TITEL.Es heißt TITEL.Der Name ist TITEL.Ich glaube es ist TITEL.Ich denke es heißt TITEL.TITEL denke ich.TITEL glaube ich.Das ist TITEL.Ich suche das Buch TITEL.Es wird TITEL genannt.".split("\\.");
-//		erstelleTrainingsdaten(gebeTitelZurueck(1000), trainingsdaten_titel, "TITEL");
-		
-//		String[] trainingsdaten_autor = "Das Buch heißt TITEL.TITEL heißt es.TITEL.Es heißt TITEL oder so ähnlich.Das Buch trägt den Titel TITEL.Es hat den Titel TITEL.Es heißt TITEL.Der Name ist TITEL.Ich glaube es ist TITEL.Ich denke es heißt TITEL.TITEL denke ich.TITEL glaube ich.Das ist TITEL.Ich suche das Buch TITEL.Es wird TITEL genannt.".split("\\.");
-//		erstelleTrainingsdaten(gebeTitelZurueck(1000), trainingsdaten_titel, "TITEL");
-		
-//		"Ich suche ein Buch von AUTOR.Es wurde von AUTOR geschrieben.AUTOR ist der Autor.Der Autor ist AUTOR.
-//		Es ist von AUTOR.Von AUTOR wurde es geschrieben.AUTOR hat es geschrieben.Ich glaube es ist AUTOR.Ich denke es heiÃŸt AUTOR.AUTOR denke ich.Sein Name ist AUTOR.Ihr Name ist AUTOR.
-//		AUTOR glaube ich.Das ist AUTOR.Er heiÃŸt AUTOR.Sie heißt AUTOR.
-
-		
-	/*  characters author year thema title
-	 * {
-				"text": "Ich suche das Buch mit dem Titel Metro 2033",
-				"intent": "inform",
-				"entities": 
-				[
-					{
-						"start": 33,
-						"end": 43,
-						"value": "Metro 2033",
-						"entity": "title"
-					},
-					{
-						"start": 4,
-						"end": 9,
-						"value": "1",
-						"entity": "buchinfo_true"
-					}
-				]
-			},
-	 * 
-	 */
-	}
+	public static void main(String[] args) throws UnsupportedEncodingException, IOException, ClassNotFoundException {	
+		Set<String> ch = gebeCharacterZurueck(1000);
+		for(String s: ch)System.out.println(s);
+ 	}
 
 	public static ArrayList<Buch> autorZuBuecherliste(String autor) throws UnsupportedEncodingException, IOException {
 		ArrayList<Buch> results = new ArrayList<>();
@@ -256,26 +222,40 @@ public class Testklasse {
   		return titel;
   	}
   	
+  	//"t1, t2 und t3" "t1 und t2"
   	public static Set<String> gebeThemaZurueck(int anzahl) throws FileNotFoundException, ClassNotFoundException, IOException{
   		Datenbank.load_Database();
   		Set<String> thema = new HashSet<String>();
   		for(Buch b: Datenbank.buecherliste) {
-  			for(String s: b.shelves) {
-  				if(thema.size() == anzahl) break;
-  	  			thema.add(s);
-  			}
+				if(thema.size() == anzahl) break;
+	  			String s="";
+	  			for(int i=0; i<b.shelves.size(); i++) {
+	  				String l=b.shelves.get(i).replaceAll(" ", " ").trim();
+	  				if(l.contains(">"))l = l.substring(l.lastIndexOf(">")+1).replaceAll("  ", " ");
+	  				while(l.contains(" +"))l = l.replaceAll(" +", " ");
+	  	  			if(b.shelves.size()>=3 && i >= 0 && i<b.shelves.size()-2) {s+=l+", ";continue;}
+	  				if(i == b.shelves.size()-1) {s+=l;continue;}
+	  	  			if(b.shelves.size()>=2 && i == b.shelves.size()-2) {s+=l+" und ";continue;}
+	  			}
+	  			thema.add(s);
   		}
   		return thema;
   	}
   	
+
   	public static Set<String> gebeAutorZurueck(int anzahl) throws FileNotFoundException, ClassNotFoundException, IOException{
   		Datenbank.load_Database();
   		Set<String> autor = new HashSet<String>();
   		for(Buch b: Datenbank.buecherliste) {
-  			for(String a: b.Author) {
-  	  			if(autor.size() == anzahl) break;
-  	  			autor.add(a);
-  			}
+				if(autor.size() == anzahl) break;
+	  			String s="";
+	  			for(int i=0; i<b.Author.size(); i++) {
+	  				String l=b.Author.get(i);
+	  	  			if(b.Author.size()>=2 && i == b.Author.size()-2) {s+=l+" und ";continue;}
+	  				if(i == b.Author.size()-1) {s+=l;continue;}
+	  	  			if(b.Author.size()>=3 && i >= 0 && i<b.Author.size()-2) {s+=l+", ";continue;}
+	  			}
+	  			autor.add(s);
   		}
   		return autor;
   	}
@@ -284,10 +264,15 @@ public class Testklasse {
   		Datenbank.load_Database();
   		Set<String> character = new HashSet<String>();
   		for(Buch b: Datenbank.buecherliste) {
-  			for(String a: b.Characters) {
-  	  			if(character.size() == anzahl) break;
-  	  			character.add(a);
-  			}
+				if(character.size() == anzahl) break;
+	  			String s="";
+	  			for(int i=0; i<b.Characters.size(); i++) {
+	  				String l=b.Characters.get(i);
+	  	  			if(b.Characters.size()>=2 && i == b.Characters.size()-2) {s+=l+" und ";continue;}
+	  				if(i == b.Characters.size()-1) {s+=l;continue;}
+	  	  			if(b.Characters.size()>=3 && i >= 0 && i<b.Characters.size()-2) {s+=l+", ";continue;}
+	  			}
+	  			character.add(s);
   		}
   		return character;
   	}
