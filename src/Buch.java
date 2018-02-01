@@ -1,26 +1,16 @@
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
-
-import javax.swing.text.Document;
-
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 //BUGLISTE
+//TODO: wenn Buch nicht in Datenbank -> suche online
 //TODO: quotes
 //TODO: inhaltszusammenfassung => alle fkt. database 
 public class Buch implements Serializable {
-		/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 		public int year = Integer.MIN_VALUE;
 		public String url="";
@@ -34,11 +24,12 @@ public class Buch implements Serializable {
         public double rating=Integer.MIN_VALUE;
         public List<String> awards =  new ArrayList<>();
         public List<String> shelves =  new ArrayList<>();
-        public ArrayList<Buch> similar_Books =  new ArrayList<>();
+        public ArrayList<String> similar_Books =  new ArrayList<>(); //FIXME speicher Titel und Autor
         public List<String> Characters =  new ArrayList<>();
         public List<String> Author =  new ArrayList<>();
 
     public Buch() {
+    	
 	}    
         
     public Buch (String title, String author) throws UnsupportedEncodingException, IOException, InterruptedException, ClassNotFoundException {
@@ -48,7 +39,9 @@ public class Buch implements Serializable {
   
   	
 	public static void main(String[] args) throws UnsupportedEncodingException, IOException, InterruptedException, ClassNotFoundException {
-		Datenbank.printBook(buchToinfosBuecher("Dante", "","", 10));
+		//Datenbank.printBook(buchToinfosBuecher("Dante", "","", 10));
+			//buchZuAehnlicheBuecher("Lord of the Rings", "", "", 10);
+				Datenbank.printBook(buchToinfosBuecher("Lord of the Rings", "", "", 10));
 		//System.out.println(BuchIDZuURL("Platon"));
 		
 	}
@@ -103,14 +96,13 @@ public class Buch implements Serializable {
 			}
 			if(Buchmeta.similar_Books != null && Buchmeta.similar_Books.size()>0){
 				System.out.println("Ähnliche Bücher: \n");
-				for (Buch x: Buchmeta.similar_Books)	System.out.println(x.title);
+				for (String x: Buchmeta.similar_Books)	System.out.println(x);
 				System.out.println("________________________________________________");
 			}
 			if(!Buchmeta.blurb.equals("")) {
 				System.out.println("Blurb of the Book: \n");
 				System.out.println(Buchmeta.blurb);
 			}
-			
 	}
     
     public static ArrayList<Buch> Schnitt(ArrayList<Buch> a, ArrayList<Buch> b){
@@ -149,7 +141,7 @@ public class Buch implements Serializable {
 		if(doc.select("h3.searchSubNavContainer").toString().toLowerCase().contains("no results")) return ""; 
 		try {return "https://www.goodreads.com"+doc.select("td").select("a.bookTitle").first().attr("href");}
 		catch(NullPointerException e){
-			return null;
+			return "";
 		}
     }
 
@@ -176,21 +168,18 @@ public class Buch implements Serializable {
 			linkBuch = url;
 		}
 		//link oeffnen und daten lesen
-		if(linkBuch == null)return null;
+		if(linkBuch == null)return new Buch();
     	doc = Jsoup.connect(linkBuch).userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:5.0) Gecko/20100101 Firefox/5.0").referrer("http://www.google.com").timeout(20000).get();
  
 		//Infos aus doc lesen
     		book.url = linkBuch;
-    		
-    	
 			String publisher = ""; String blurb = ""; double rating = 0;
 			
 			//prüfe "Edition Language" auf Deutsch (mglw. auch Englisch)
 				String sprache = doc.getElementsByClass("infoBoxRowItem").select("[itemprop=inLanguage]").text(); 
-				if(!sprache.equals("German") && !sprache.equals("English"))return null;
+				if(!sprache.equals("German") && !sprache.equals("English"))return new Buch();
 			//if(doc.select("infoBoxRowItem.inLanguage").first().text() == "German")System.out.println("Deutsch!");
-			
-
+				
 			//Suche Title
 			title = doc.select("title").text();
 					if(title.contains("by"))title = title.substring(0, doc.select("title").text().indexOf("by") - 1);
@@ -228,8 +217,9 @@ public class Buch implements Serializable {
 			
 			
 			//aehnlicheBuecher
-				buchZuAehnlicheBuecher("","",linkBuch, book, 10);
-				//System.out.println("similar size"+book.similar_Books.size());
+			//FIXME: prüfe ob bücher in datenbank sonst in fehlt list eintragen
+				book.similar_Books = buchZuAehnlicheBuecher("","",linkBuch, anz_ähnliche );
+				System.out.println("similar size"+book.similar_Books.size());
 				
 			//ISBN	
 				String isbn= doc.select("div.infoBoxRowItem").select("span.greyText").text().toLowerCase();
@@ -237,7 +227,6 @@ public class Buch implements Serializable {
 			
 					
 					//System.out.println("test");isbn = doc.select("META[property=isbn]").toString();
-				
 			//publisher
 				elements = doc.select("div.row");
 				for(Element el: elements) {
@@ -252,15 +241,14 @@ public class Buch implements Serializable {
 			
 			//year
 				if(book.publisher.matches(".*\\d+.*")) book.year = Integer.valueOf(book.publisher.replaceAll("\\D+",""));
-
 				System.out.println("Title: "+title);
 		book.title = title; book.publisher = publisher; book.blurb = blurb; book.rating = rating;
 		return book;
 	}
 		
-	public static void buchZuAehnlicheBuecher(String title, String author, String url, Buch book, int anz_ähnliche) throws UnsupportedEncodingException, IOException, InterruptedException, ClassNotFoundException {
+    //FIXME: funktioniert das übergeben von book
+	public static ArrayList<String> buchZuAehnlicheBuecher(String title, String author, String url, int anz_ähnliche) throws UnsupportedEncodingException, IOException, InterruptedException, ClassNotFoundException {
 		ArrayList<String> results = new ArrayList<>();
-		System.out.println(book.title);
 		int groeße = 10;
 		
 		//finde link zu buch
@@ -271,49 +259,53 @@ public class Buch implements Serializable {
 		else {
 			link_book = url;
 		}
-		
 		//prüfe ob url legal
-		if(!link_book.matches("https://www.goodreads.com/book/show/[0-9]+(\\.|-)(.)+?from_search=true"))return;
+		if(!link_book.matches("https://www.goodreads.com/book/show/[0-9]+(\\.|-)(.)+?from_search=true") && !link_book.matches("https://www.goodreads.com/book/show/[0-9]+(\\.|-)(.)+")) {
+			System.err.println("");
+			return new ArrayList<>();
+		}
 
 		//öffne similar link
 		org.jsoup.nodes.Document doc = Jsoup.connect(link_book).userAgent("bot101").get();
 		String similar_link = doc.getElementsMatchingText("Readers Also Enjoyed").attr("href");
+		if(similar_link.equals(null) || !similar_link.matches("https://www.goodreads.com/book/similar/[0-9]+(.)+"))return new ArrayList<String>(); 
+		System.out.println("similar link: "+similar_link);
 		doc = Jsoup.connect(similar_link).userAgent("bot101").get();
 	
 		//sammle die ersten 10 bücher
-		ArrayList<String> urls = new ArrayList<String>();
+		ArrayList<String> authors = new ArrayList<String>();
 		ArrayList<String> titles = new ArrayList<String>();
-
-		Elements similars= doc.select("tr").select("td").select("a[title]");
 		
-		for(Element s: similars) {
+		
+
+		Elements similars_title= doc.select("tr").select("td").select("a[title]");
+		Elements similars_autor= doc.getElementsByClass("authorName");
+		//FIXME: "Exception in thread "main" java.util.concurrent.ExecutionException: java.lang.IndexOutOfBoundsException: Index: 9, Size: 9" -> title oder autor nicht gefunden?
+		for(Element s: similars_title) {
 			if(groeße == 0)break;
 			if(!s.attr("abs:href").contains("show"))continue;
-				//System.out.println(s.attr("title"));
-			urls.add(s.attr("abs:href"));
 			titles.add(s.attr("title"));
 			groeße--;
 		}		
-		//FIXME: prüfe ob bücher in Datenbank (über urls) sind
-		for(String URL: urls) {
-			Buch result = Datenbank.searchBook_URL(URL);
-			if(result != null) {
-				book.similar_Books.add(result);
-			}
-			else {
-				Buch b = buchToinfosBuecher("", "", URL, 0);
-				if(b == null) continue;
-				//System.out.println(b.title);
-				book.similar_Books.add(b);
-				Thread.sleep(50);
-			}
+		groeße = 10;
+		for(Element a: similars_autor) {
+			if(a.text() != null)authors.add(a.text());
+			else authors.add("unbekannt");
+			groeße--;
 		}
+		
+		for(int i=0; i<10; i++) {
+			results.add(titles.get(i)+" von "+authors.get(i));
+		}
+		
+		//FIXME: prüfe ob bücher in Datenbank (über urls) sind
+		
 		
 		//FIXME //wenn ja füge ähnliche zu similar von Book hinzu
 				//wenn nicht rufe infoToBuch für entsprechende Bücher auf
 				//- WICHTIG warte 50ms Thread.sleep(50);
 				// und füge ähnliche zu similar von Book hinzu
-		return;
+		return results;
 	}
 		
 	//testfunktionen

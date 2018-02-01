@@ -36,25 +36,31 @@ import org.jsoup.select.Elements;
 public class Datenbank {
 	
 	static ArrayList<Buch> buecherliste = new ArrayList<>();
-	static ArrayList<Buch> empfehlungsliste = new ArrayList<>();
+	static ArrayList<Buch> dieBücherFehlen = new ArrayList<>();
 
 
 	 public static void main(String args[]) throws Exception{  
 		//printAllTitles();
 		//save_Database();
 		 datenbankErweitern("https://www.goodreads.com/list/show/1.Best_Books_Ever");
+		// buecher_similarBerechnen();
+		 //printAllSimilar();
 		 //printBooklist(searchBook_title("Lord"));
 		 //test();
 
 	 }
 	 
-	 private static void test() throws FileNotFoundException, ClassNotFoundException, IOException {
+	 private static void test() throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException {
 		 //printAllSimilar();
 		 //printAllTitles();
+		//printBooklist(searchBook_title("The Dante Club"));
+		 
+		 printBooklist(searchBook_online_titel("Lord of the rings"));
 		 //printBooklist(searchBook_thema("Humor"));
 		 //printBooklist(searchBook_author("Funky Chicken"));
-		 ArrayList<String> genre = new ArrayList<String>(); genre.add("Humor");
-		 printBooklist(Schnitt(searchBook_rating_höher(3), searchBook_thema(genre)));
+		 
+		//ArrayList<String> genre = new ArrayList<String>(); genre.add("Humor");
+		 //printBooklist(Schnitt(searchBook_rating_höher(3), searchBook_thema(genre)));
 				
 		 //printBooklist(Schnitt(searchBook_title("A"), searchBook_title("The Road")));
 	 }
@@ -443,6 +449,18 @@ public class Datenbank {
 				 }
 			 }
 	 	 }
+	 	
+	 	//TODO: titel von ersten Ergebnisseite https://www.goodreads.com/search+autor ausgeben
+	 	public static ArrayList<String> searchBook_online_autor(String autor) {
+	 		return null;	 		
+	 	}
+	 	
+	 	public static ArrayList<Buch> searchBook_online_titel(String titel) throws UnsupportedEncodingException, ClassNotFoundException, IOException, InterruptedException {
+	 		System.out.println("Buch in der Datenbank nicht gefunden. Suche Online danach ...");
+	 		ArrayList<Buch> results = new ArrayList<Buch>();
+	 		results.add(Buch.buchToinfosBuecher(titel, "", "", 10));
+	 		return results;
+	 	}
 	 	 
 	 	public static void printBook(Buch b) {
 	 		 Buch.ausgebenBuch(b);
@@ -553,32 +571,33 @@ public class Datenbank {
 		    return liste;
 	 }
 	 
-	 public static void save_empfehlungsliste() throws IOException { 
+	 public static void load_dieBücherFehlen() throws IOException { 
 		 ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("./src/source/el"));
-		 oos.writeObject(empfehlungsliste);
+		 oos.writeObject(dieBücherFehlen);
 		 oos.close();
 	 }
 	 
-	 public static void load_empfehlungsliste() throws FileNotFoundException, IOException, ClassNotFoundException {
+	 public static void save_dieBücherFehlen() throws FileNotFoundException, IOException, ClassNotFoundException {
 		 ObjectInputStream ois = new ObjectInputStream(new FileInputStream("./src/source/el"));
-		 empfehlungsliste = (ArrayList<Buch>) ois.readObject(); // cast is needed.
-		 System.out.println("laenge: "+empfehlungsliste.size());
+		 dieBücherFehlen = (ArrayList<Buch>) ois.readObject(); // cast is needed.
+		 System.out.println("laenge: "+dieBücherFehlen.size());
 		 ois.close();
 	 }
 	 
 	 public static void save_Database() throws IOException, ClassNotFoundException { 
 		 System.out.println("sichere Datenbank ... "+buecherliste.size());
-		 ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("./src/source/db"));
+		 ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("./source/db"));
 		 oos.writeObject(buecherliste);
 		 oos.close();
 	 }
 	 
 	 public static void load_Database() throws FileNotFoundException, IOException, ClassNotFoundException {
 		 if(buecherliste.size() > 0)return;
-		 ObjectInputStream ois = new ObjectInputStream(new FileInputStream("./src/source/db"));
+		 ObjectInputStream ois = new ObjectInputStream(new FileInputStream("./source/db"));
 		 Object o = ois.readObject();
 		 buecherliste = (ArrayList<Buch>) o;// cast is needed.
 		 System.out.println("load_Database ... : "+buecherliste.size());
+		 repariere_database();
 		 ois.close();
 	 }
 	 
@@ -586,10 +605,10 @@ public class Datenbank {
 		 load_Database();
 		 System.out.println("Datenbank geladen");
 		 for(Buch b: buecherliste) {
-			 System.out.println();
+			 System.out.println(b.title);
 			 if(b.similar_Books.size() > 0) {
 				 //FIXME:
-				// for(Buch a: b.similar_Books)System.out.println(a.title);
+				 for(String a: b.similar_Books)System.out.println(" "+a);
 			 }
 			 else System.out.println();
 		 }
@@ -606,7 +625,7 @@ public class Datenbank {
 		 }
 		 System.out.println(buecherliste.size());
 	 }
-	 
+	 	 
 	 //TODO: moeglicherweise ineffizient
 	 public static void sort_database() throws FileNotFoundException, ClassNotFoundException, IOException {
 		if(buecherliste == null) load_Database();
@@ -670,8 +689,9 @@ public class Datenbank {
 		if(buecherliste == null)load_Database();
 		int anz =0;
 	    ArrayList<Buch> bl = new ArrayList<Buch>();
+	    buecherliste.removeAll(Collections.singleton(null));
 		for(Buch a: buecherliste) {
-			if(a == null) {  anz++;continue;}
+			if(a.similar_Books == null) {a.similar_Books = new ArrayList<String>();}
 			if(!contains_duplicates(bl, a.title)) {bl.add(a); anz++;}
 		}
 		//System.out.println(bl.size()+" / "+buecherliste.size());
@@ -728,6 +748,18 @@ public class Datenbank {
 		    int dif_len = Math.abs(lhs.length() - rhs.length())+1;
 		    return cost[len0 - 1] / dif_len ;                                                          
 		}
+	 
+	 //TODO: testen
+	 public static void buecher_similarBerechnen() throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException {
+		 if(buecherliste.size() == 0)load_Database();
+		 repariere_database();
+		 for(Buch b: buecherliste) {
+			 if(b.similar_Books.size() == 0) {
+				System.out.println("ähnliche Bücher für "+b.title);
+				b.similar_Books =  Buch.buchZuAehnlicheBuecher("", "", b.url, 10);
+			 }
+		 }
+	 }
 	
 	/**
 	 * 
