@@ -5,7 +5,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
@@ -18,9 +20,43 @@ import org.jsoup.select.Elements;
  */
 public class Testklasse {
 	Datenbank db = new Datenbank();
-
 	public static void main(String[] args) throws UnsupportedEncodingException, IOException, ClassNotFoundException {
-		test();
+//		String[] trainingsdaten_charakter = "Ein Charakter ist CHARAKTER.Der Charakter CHARAKTER ist beschrieben.Der Autor schreibt von CHARAKTER.Der Protagonist ist CHARAKTER.Es handelt um CHARAKTER.CHARAKTER spielt eine große Rolle.CHARAKTER spielt mit.Ein Charakter war CHARAKTER.CHARAKTER denke ich.CHARAKTER glaube ich.Das ist CHARAKTER.Ich suche das Buch mit CHARAKTER.Ein Charakter heißt CHARAKTER.CHARAKTER ist darin.".split("\\.");
+//		erstelleTrainingsdaten(gebeCharacterZurueck(1000), trainingsdaten_charakter, "CHARAKTER");
+		
+//		String[] trainingsdaten_titel = "Das Buch heißt TITEL.TITEL heißt es.TITEL.Es heißt TITEL oder so ähnlich.Das Buch trägt den Titel TITEL.Es hat den Titel TITEL.Es heißt TITEL.Der Name ist TITEL.Ich glaube es ist TITEL.Ich denke es heißt TITEL.TITEL denke ich.TITEL glaube ich.Das ist TITEL.Ich suche das Buch TITEL.Es wird TITEL genannt.".split("\\.");
+//		erstelleTrainingsdaten(gebeTitelZurueck(1000), trainingsdaten_titel, "TITEL");
+		
+//		String[] trainingsdaten_autor = "Das Buch heißt TITEL.TITEL heißt es.TITEL.Es heißt TITEL oder so ähnlich.Das Buch trägt den Titel TITEL.Es hat den Titel TITEL.Es heißt TITEL.Der Name ist TITEL.Ich glaube es ist TITEL.Ich denke es heißt TITEL.TITEL denke ich.TITEL glaube ich.Das ist TITEL.Ich suche das Buch TITEL.Es wird TITEL genannt.".split("\\.");
+//		erstelleTrainingsdaten(gebeTitelZurueck(1000), trainingsdaten_titel, "TITEL");
+		
+//		"Ich suche ein Buch von AUTOR.Es wurde von AUTOR geschrieben.AUTOR ist der Autor.Der Autor ist AUTOR.
+//		Es ist von AUTOR.Von AUTOR wurde es geschrieben.AUTOR hat es geschrieben.Ich glaube es ist AUTOR.Ich denke es heiÃŸt AUTOR.AUTOR denke ich.Sein Name ist AUTOR.Ihr Name ist AUTOR.
+//		AUTOR glaube ich.Das ist AUTOR.Er heiÃŸt AUTOR.Sie heißt AUTOR.
+
+		
+	/*  characters author year thema title
+	 * {
+				"text": "Ich suche das Buch mit dem Titel Metro 2033",
+				"intent": "inform",
+				"entities": 
+				[
+					{
+						"start": 33,
+						"end": 43,
+						"value": "Metro 2033",
+						"entity": "title"
+					},
+					{
+						"start": 4,
+						"end": 9,
+						"value": "1",
+						"entity": "buchinfo_true"
+					}
+				]
+			},
+	 * 
+	 */
 	}
 
 	public static ArrayList<Buch> autorZuBuecherliste(String autor) throws UnsupportedEncodingException, IOException {
@@ -194,7 +230,77 @@ public class Testklasse {
   		A =Datenbank.sortmerge(A, B);
   		for(Buch buch: A)System.out.println(buch.title);
   	}
-
+  	
+    /**wichtig alle SÃ¤tze in einer Zeile,  keine LÃ¼cke zwischen Satzende(.) und nÃ¤chste Satzamfang
+     *
+     */
+  	public static void erstelleTrainingsdaten(Set<String> daten, String[] trainingssatze, String Ersetzungstag) {
+  			ArrayList<String> data = new ArrayList<String>(daten);
+  		  	ArrayList<String> tr = new ArrayList<String>();
+  		  	for(int i=0;  i<daten.size();  i++){
+  		  		String t = trainingssatze[i%trainingssatze.length].replace(Ersetzungstag, data.get(i));
+  		  		tr.add(t+".");
+  		  	}
+  		  	for(String t: tr) {
+  		  		System.out.println(t);
+  		  	}
+  	}
+  	
+  	public static Set<String> gebeTitelZurueck(int anzahl) throws FileNotFoundException, ClassNotFoundException, IOException{
+  		Datenbank.load_Database();
+  		Set<String> titel = new HashSet<String>();
+  		for(Buch b: Datenbank.buecherliste) {
+  			if(titel.size() == anzahl) break;
+  			titel.add(b.title);
+  		}
+  		return titel;
+  	}
+  	
+  	public static Set<String> gebeThemaZurueck(int anzahl) throws FileNotFoundException, ClassNotFoundException, IOException{
+  		Datenbank.load_Database();
+  		Set<String> thema = new HashSet<String>();
+  		for(Buch b: Datenbank.buecherliste) {
+  			for(String s: b.shelves) {
+  				if(thema.size() == anzahl) break;
+  	  			thema.add(s);
+  			}
+  		}
+  		return thema;
+  	}
+  	
+  	public static Set<String> gebeAutorZurueck(int anzahl) throws FileNotFoundException, ClassNotFoundException, IOException{
+  		Datenbank.load_Database();
+  		Set<String> autor = new HashSet<String>();
+  		for(Buch b: Datenbank.buecherliste) {
+  			for(String a: b.Author) {
+  	  			if(autor.size() == anzahl) break;
+  	  			autor.add(a);
+  			}
+  		}
+  		return autor;
+  	}
+  
+  	public static Set<String> gebeCharacterZurueck(int anzahl) throws FileNotFoundException, ClassNotFoundException, IOException{
+  		Datenbank.load_Database();
+  		Set<String> character = new HashSet<String>();
+  		for(Buch b: Datenbank.buecherliste) {
+  			for(String a: b.Characters) {
+  	  			if(character.size() == anzahl) break;
+  	  			character.add(a);
+  			}
+  		}
+  		return character;
+  	}
+  	
+  	public static Set<String> gebeYearZurueck(int anzahl){
+  		Set<String> year = new HashSet<String>();
+  		while(year.size() < anzahl) {
+  			year.add(String.valueOf((int) (Math.random()*2000)));
+  		}
+  		return year;
+  	}
+  	
+  	
 	
 	//TODO: funktionen javadoc ergaenzen
   	private static void test() throws UnsupportedEncodingException, IOException, ClassNotFoundException {

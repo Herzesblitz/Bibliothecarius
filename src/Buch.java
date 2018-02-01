@@ -1,11 +1,14 @@
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
 //BUGLISTE
 //TODO: wenn Buch nicht in Datenbank -> suche online
 //TODO: quotes
@@ -40,7 +43,7 @@ public class Buch implements Serializable {
   	
 	public static void main(String[] args) throws UnsupportedEncodingException, IOException, InterruptedException, ClassNotFoundException {
 		//Datenbank.printBook(buchToinfosBuecher("Dante", "","", 10));
-			buchZuAehnlicheBuecher("The Origins of the Second World War", "", "", 10);
+			buchZuAehnlicheBuecher("Me and Him: A Guide to Recovery " , "", "", 10);
 				//Datenbank.printBook(buchToinfosBuecher("Lord of the Rings", "", "", 10));
 		//System.out.println(BuchIDZuURL("Platon"));
 		
@@ -270,7 +273,28 @@ public class Buch implements Serializable {
 		String similar_link = doc.getElementsMatchingText("Readers Also Enjoyed").attr("href");
 		if(similar_link.equals(null) || !similar_link.matches("https://www.goodreads.com/book/similar/[0-9]+(.)+")) {
 			System.err.println("similar_link nicht gefunden! für"+link_book);
-			return results; 
+			//"versuche die liste mit diesem Buch"-Funktion von goodreads.com zu nutzen
+//				Elements  a= doc.getElementsByClass("actionLink");
+//				String url_more_lists="";
+//				for(Element el: a) {
+//					if(el.text().contains("lists")) {
+//						url_more_lists = el.attr("href").replace(" ", "");
+//					}
+//				}
+//				if(url_more_lists.matches("/list/book/[0-9]+")) {
+//					url_more_lists = "https://www.goodreads.com"+url_more_lists;
+//					System.out.println(url_more_lists);
+//					
+//					URL url1 = new URL(url_more_lists);   
+//					HttpURLConnection conn = (HttpURLConnection) url1.openConnection();
+//					conn.setRequestMethod("GET");
+//					conn.connect();
+//					System.out.println(conn.getContentType());
+//					
+//					org.jsoup.nodes.Document  docG = Jsoup.connect(url_more_lists).userAgent("bot101").get();
+					
+//				}
+			 return results; 
 		}
 		doc = Jsoup.connect(similar_link).userAgent("bot101").get();
 	
@@ -282,22 +306,24 @@ public class Buch implements Serializable {
 
 		Elements similars_title= doc.select("tr").select("td").select("a[title]");
 		Elements similars_autor= doc.getElementsByClass("authorName");
+		
+		ArrayList<Integer> uebersprungen = new ArrayList<Integer>();
 		//FIXME: "Exception in thread "main" java.util.concurrent.ExecutionException: java.lang.IndexOutOfBoundsException: Index: 9, Size: 9" -> title oder autor nicht gefunden?
 		for(Element s: similars_title) {
 			if(groeße == anz_ähnliche)break;
 			if(!s.attr("abs:href").contains("show")) {
+				if(s.text().matches("[0-9] of [0-9] stars"))continue;
 				//mglw.  aus https://www.goodreads.com/book/similar/2528139-shadow-of-the-hegemon# => https://www.goodreads.com/book/show/2528139-shadow-of-the-hegemon#
-
-
-				System.err.println(s.attr("abs:href"));
-				System.err.println("für mindestens ein Element aus similar konnte kein titel gefunden werden! "+link_book);
-				return results;
+				System.err.println("für mindestens ein Element aus similar konnte kein titel gefunden werden! "+s.text());
+				uebersprungen.add(groeße);
+				continue;
 			}
 				//System.out.println(s.attr("title"));
 			titles.add(s.attr("title"));
 			groeße++;
 		}		
 		for(Element a: similars_autor) {
+			if(uebersprungen.contains(anz_ähnliche-groeße))continue;
 			if(groeße == 0)break;
 				//System.out.println(a.text());
 			if(a.text() != null)authors.add(a.text());

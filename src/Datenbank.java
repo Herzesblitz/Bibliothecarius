@@ -39,9 +39,9 @@ public class Datenbank {
 	 public static void main(String args[]) throws Exception{  
 		//printAllTitles();
 		//save_Database();
-		 datenbankErweitern("https://www.goodreads.com/list/show/1.Best_Books_Ever");
+		// datenbankErweitern("https://www.goodreads.com/list/show/1.Best_Books_Ever");
 		// buecher_similarBerechnen();
-		 //printAllSimilar();
+		 printAllSimilar();
 		 //printBooklist(searchBook_title("Lord"));
 		 //test();
 
@@ -583,14 +583,14 @@ public class Datenbank {
 	 
 	 public static void save_Database() throws IOException, ClassNotFoundException { 
 		 System.out.println("sichere Datenbank ... "+buecherliste.size());
-		 ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("./source/db"));
+		 ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("./src/source/db"));
 		 oos.writeObject(buecherliste);
 		 oos.close();
 	 }
 	 
 	 public static void load_Database() throws FileNotFoundException, IOException, ClassNotFoundException {
 		 if(buecherliste.size() > 0)return;
-		 ObjectInputStream ois = new ObjectInputStream(new FileInputStream("./source/db"));
+		 ObjectInputStream ois = new ObjectInputStream(new FileInputStream("./src/source/db"));
 		 Object o = ois.readObject();
 		 buecherliste = (ArrayList<Buch>) o;// cast is needed.
 		 System.out.println("load_Database ... : "+buecherliste.size());
@@ -602,6 +602,7 @@ public class Datenbank {
 		 load_Database();
 		 System.out.println("Datenbank geladen");
 		 for(Buch b: buecherliste) {
+			 if(b.similar_Books.size() == 0)continue;
 			 System.out.println(b.title);
 			 if(b.similar_Books.size() > 0) {
 				 //FIXME:
