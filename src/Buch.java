@@ -40,8 +40,8 @@ public class Buch implements Serializable {
   	
 	public static void main(String[] args) throws UnsupportedEncodingException, IOException, InterruptedException, ClassNotFoundException {
 		//Datenbank.printBook(buchToinfosBuecher("Dante", "","", 10));
-			//buchZuAehnlicheBuecher("Lord of the Rings", "", "", 10);
-				Datenbank.printBook(buchToinfosBuecher("Lord of the Rings", "", "", 10));
+			buchZuAehnlicheBuecher("The Origins of the Second World War", "", "", 10);
+				//Datenbank.printBook(buchToinfosBuecher("Lord of the Rings", "", "", 10));
 		//System.out.println(BuchIDZuURL("Platon"));
 		
 	}
@@ -249,7 +249,7 @@ public class Buch implements Serializable {
     //FIXME: funktioniert das übergeben von book
 	public static ArrayList<String> buchZuAehnlicheBuecher(String title, String author, String url, int anz_ähnliche) throws UnsupportedEncodingException, IOException, InterruptedException, ClassNotFoundException {
 		ArrayList<String> results = new ArrayList<>();
-		int groeße = 10;
+		int groeße = 0;
 		
 		//finde link zu buch
 		String link_book ="";
@@ -261,15 +261,17 @@ public class Buch implements Serializable {
 		}
 		//prüfe ob url legal
 		if(!link_book.matches("https://www.goodreads.com/book/show/[0-9]+(\\.|-)(.)+?from_search=true") && !link_book.matches("https://www.goodreads.com/book/show/[0-9]+(\\.|-)(.)+")) {
-			System.err.println("");
+			System.err.println("link für Buch nicht gefunden!");
 			return new ArrayList<>();
 		}
 
 		//öffne similar link
 		org.jsoup.nodes.Document doc = Jsoup.connect(link_book).userAgent("bot101").get();
 		String similar_link = doc.getElementsMatchingText("Readers Also Enjoyed").attr("href");
-		if(similar_link.equals(null) || !similar_link.matches("https://www.goodreads.com/book/similar/[0-9]+(.)+"))return new ArrayList<String>(); 
-		System.out.println("similar link: "+similar_link);
+		if(similar_link.equals(null) || !similar_link.matches("https://www.goodreads.com/book/similar/[0-9]+(.)+")) {
+			System.err.println("similar_link nicht gefunden! für"+link_book);
+			return results; 
+		}
 		doc = Jsoup.connect(similar_link).userAgent("bot101").get();
 	
 		//sammle die ersten 10 bücher
@@ -282,21 +284,32 @@ public class Buch implements Serializable {
 		Elements similars_autor= doc.getElementsByClass("authorName");
 		//FIXME: "Exception in thread "main" java.util.concurrent.ExecutionException: java.lang.IndexOutOfBoundsException: Index: 9, Size: 9" -> title oder autor nicht gefunden?
 		for(Element s: similars_title) {
-			if(groeße == 0)break;
-			if(!s.attr("abs:href").contains("show"))continue;
+			if(groeße == anz_ähnliche)break;
+			if(!s.attr("abs:href").contains("show")) {
+				//mglw.  aus https://www.goodreads.com/book/similar/2528139-shadow-of-the-hegemon# => https://www.goodreads.com/book/show/2528139-shadow-of-the-hegemon#
+
+
+				System.err.println(s.attr("abs:href"));
+				System.err.println("für mindestens ein Element aus similar konnte kein titel gefunden werden! "+link_book);
+				return results;
+			}
+				//System.out.println(s.attr("title"));
 			titles.add(s.attr("title"));
-			groeße--;
+			groeße++;
 		}		
-		groeße = 10;
 		for(Element a: similars_autor) {
+			if(groeße == 0)break;
+				//System.out.println(a.text());
 			if(a.text() != null)authors.add(a.text());
 			else authors.add("unbekannt");
 			groeße--;
 		}
-		
+		if(similars_autor.size() != similars_title.size())return results;
 		for(int i=0; i<10; i++) {
 			results.add(titles.get(i)+" von "+authors.get(i));
 		}
+		
+		for(String r: results)System.out.println(r);
 		
 		//FIXME: prüfe ob bücher in Datenbank (über urls) sind
 		

@@ -2,13 +2,13 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -19,9 +19,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
-import javax.swing.plaf.BorderUIResource.BevelBorderUIResource;
-import javax.swing.text.Document;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
@@ -619,7 +616,7 @@ public class Datenbank {
 		 load_Database();
 		 System.out.println("Datenbank geladen");
 		 for(Buch b: buecherliste) {
-			 System.out.print(b.title);
+			 System.out.print(b.title+" "+b.similar_Books.size());
 			 if(!b.buecherreihe.equals(""))System.out.println(" ... aus der Reihe ..."+b.buecherreihe);
 			 else System.out.println();
 		 }
@@ -837,7 +834,7 @@ public class Datenbank {
 	 public static void refresh_Database_threading(int anz_threads, String url, int pageoffset) throws IOException, ClassNotFoundException, InterruptedException, ExecutionException {
 			if(buecherliste != null) load_Database();
 			int page_books;
-				 		if(pageoffset == -1) page_books= (int) (Math.random()*1000);
+				 		if(pageoffset == -1) page_books= (int) (Math.random()*300);
 				 		else page_books = pageoffset;
 				 		while(true) {
 				 			String url_list_x_page_n= url+"?page="+page_books;		
