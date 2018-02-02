@@ -127,7 +127,12 @@ public class Datenbank {
 	 		else return new ArrayList<String>();
 	 	}
 	
-	 	
+	 	public static ArrayList<String> relevanz_title(ArrayList<Buch>results, String title){
+
+	 		for(Buch b: results) {
+	 			dif.add(levenshteinDistance(b.title, title));
+	 		}
+	 	}
 	 	
 	 	/**
 	 	 * Großschreibung! gibt alle Bücher mit angegebener Sprache zurück
