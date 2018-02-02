@@ -20,6 +20,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.h2.util.NetUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -37,15 +38,17 @@ public class Datenbank {
 
 
 	 public static void main(String args[]) throws Exception{  
-		//printBooklist(searchBook_title("ring"));
+		 //repariere_database();
+		//printBooklist(searchBook_title("Crimson Shell"));
 		// buecher_similarBerechnen();
-		 
+		 //printAllTitles();
 		
+		 
 		 //save_Database();
-		 //datenbankErweitern("https://www.goodreads.com/list/show/1.Best_Books_Ever");
+		 datenbankErweitern("https://www.goodreads.com/list/show/1.Best_Books_Ever");
 		// buecher_similarBerechnen();
-		 ArrayList<String> a = new ArrayList<String>(); a.add("Graphic Novels");
-		 printBooklist(searchBook_thema(a));
+//		 ArrayList<String> a = new ArrayList<String>(); a.add("Graphic Novels");
+//		 printBooklist(searchBook_thema(a));
 		 //test();
 
 	 }
@@ -596,7 +599,7 @@ public class Datenbank {
 		 Object o = ois.readObject();
 		 buecherliste = (ArrayList<Buch>) o;// cast is needed.
 		 System.out.println("load_Database ... : "+buecherliste.size());
-		 repariere_database();
+		 //repariere_database();
 		 ois.close();
 	 }
 	 
@@ -693,7 +696,24 @@ public class Datenbank {
 			//diverse reperaturen
 			if(a.similar_Books == null) {a.similar_Books = new ArrayList<String>();}
 			if(!contains_duplicates(bl, a.title)) {bl.add(a); anz++;}
-			// thema x1 > x2 -> x2
+			//FIXME: thema x1 > x2 -> x2
+			ArrayList<String> neu = new ArrayList<String>();
+			ArrayList<String> remove = new ArrayList<String>();
+
+			for(String t:a.shelves) {
+				if(t.contains(">")) {
+					neu.add(t.substring(t.lastIndexOf(">")+1)); 
+				}
+			}
+			for(String t:a.shelves) {
+				if(t.contains(">")) {
+					remove.add(t);
+				}
+			}
+			for(String n: neu) {
+				a.shelves.add(n);
+			}
+			a.shelves.removeAll(remove);
 			
 		}
 		//System.out.println(bl.size()+" / "+buecherliste.size());

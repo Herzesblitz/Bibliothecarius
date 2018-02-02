@@ -216,7 +216,11 @@ public class Buch implements Serializable {
 			//Suche Genres
 				Elements elements= doc.select("div.elementList").select("div.left");//select("a.ationLink right bookPageGenreLink__seeMoreLink").toString();
 				
-				for(Element el: elements) book.shelves.add(el.text());
+				for(Element el: elements) {
+					String thema = el.text();
+					if(thema.contains(">"))thema = thema.substring(thema.lastIndexOf(">")+1); 
+					book.shelves.add(el.text());
+				}
 			
 			
 			//aehnlicheBuecher
