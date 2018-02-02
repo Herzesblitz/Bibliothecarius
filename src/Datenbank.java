@@ -9,10 +9,15 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -31,6 +36,12 @@ import org.jsoup.select.Elements;
 	/* - toleranzEinbauen: O(|buecherliste|) -> O(|buecherliste|)*15
 	 * -  
 	 */
+
+class Benutzer{
+	String name;
+	ArrayList<Buch> favoriten;
+}
+
 public class Datenbank {
 	
 	static ArrayList<Buch> buecherliste = new ArrayList<>();
@@ -42,10 +53,16 @@ public class Datenbank {
 		//printBooklist(searchBook_title("Crimson Shell"));
 		// buecher_similarBerechnen();
 		 //printAllTitles();
+		 
+		 
+		// printBooklist(searchBook_title("Lord"));		 
+		// System.out.println("\n\nSORTIERT\n\n");
+		ArrayList<Buch> a = (relevanz_thema(searchBook_thema(new ArrayList<String>(Arrays.asList("Humor", "Science Fiction"))), new ArrayList<String>(Arrays.asList("Humor", "Science Fiction"))));
+		for(Buch b: a)System.out.println(b.shelves);
 		
 		 
 		 //save_Database();
-		 datenbankErweitern("https://www.goodreads.com/list/show/1.Best_Books_Ever");
+		 //datenbankErweitern("https://www.goodreads.com/list/show/1.Best_Books_Ever");
 		// buecher_similarBerechnen();
 //		 ArrayList<String> a = new ArrayList<String>(); a.add("Graphic Novels");
 //		 printBooklist(searchBook_thema(a));
@@ -130,11 +147,53 @@ public class Datenbank {
 	 		else return new ArrayList<String>();
 	 	}
 	
-	 	public static ArrayList<String> relevanz_title(ArrayList<Buch>results, String title){
-
+	 	
+	 	
+	 	/**
+	 	 * @param results
+	 	 * @param title
+	 	 * @return
+	 	 */
+	 	private static ArrayList<Buch> relevanz_title(ArrayList<Buch>results, String title){
+	 		HashMap<Buch, Integer> dif = new HashMap<Buch, Integer>();
+	 		//levenshteinDistance berechnen
 	 		for(Buch b: results) {
-	 			dif.add(levenshteinDistance(b.title, title));
+	 			dif.put(b, levenshteinDistance(b.title, title));
 	 		}
+	 		return sort_aufsteigend(dif);
+	 	}
+	 	
+	 	private static ArrayList<Buch> relevanz_sprache(ArrayList<Buch>results, String sprache){
+	 		HashMap<Buch, Integer> dif = new HashMap<Buch, Integer>();
+	 		//levenshteinDistance berechnen
+	 		for(Buch b: results) {
+	 			dif.put(b, levenshteinDistance(b.sprache, sprache));
+	 		}
+	 		return sort_aufsteigend(dif);
+	 	}
+	 	
+	 	private static ArrayList<Buch> relevanz_year(ArrayList<Buch>results, int year){
+	 		HashMap<Buch, Integer> dif = new HashMap<Buch, Integer>();
+	 		//levenshteinDistance berechnen
+	 		for(Buch b: results) {
+	 			dif.put(b, Math.abs(b.year - year));
+	 		}
+	 		return sort_aufsteigend(dif);
+	 	}
+	 	
+	 	private static ArrayList<Buch> relevanz_thema(ArrayList<Buch>results, ArrayList<String> themen){
+	 		HashMap<Buch, Integer> dif = new HashMap<Buch, Integer>();
+	 		//levenshteinDistance berechnen
+	 		for(Buch b: results) {
+	 			int autor_dif=0;
+	 			for(String tB: b.shelves) {
+	 				for(String tS: themen) {
+		 				autor_dif += levenshteinDistance(tB, tS);
+	 				}
+	 			}
+	 			dif.put(b, autor_dif);
+	 		}
+	 		return sort_aufsteigend(dif);
 	 	}
 	 	
 	 	/**
@@ -368,7 +427,7 @@ public class Datenbank {
 	 	 * @throws IOException
 	 	 */
 	 	public static ArrayList<Buch> searchBook_title(String title) throws FileNotFoundException, ClassNotFoundException, IOException {
-	 		 load_Database();
+	 		 if(buecherliste.size() == 0)load_Database();
 	 		 ArrayList<Buch> results = new ArrayList<Buch>();
 	 		 //suche nach exaktem Titel
 			 for(Buch b: buecherliste) {
@@ -728,54 +787,67 @@ public class Datenbank {
 		}	
 	 }
 	 
-	 /**
-	  * levenshteinDistance ist ein Maß fuer Aehnlichkeit von Strings
-	  * @param lhs
-	  * @param rhs
-	  * @return
-	  */
-	 public static int levenshteinDistance(String lhs, String rhs) {     
-		 	rhs = rhs.toLowerCase(); lhs = lhs.toLowerCase();
-		    int len0 = lhs.length() + 1;                                                     
-		    int len1 = rhs.length() + 1;                                                     
-		                                                                                    
-		    // the array of distances                                                       
-		    int[] cost = new int[len0];                                                     
-		    int[] newcost = new int[len0];                                                  
-		                                                                                    
-		    // initial cost of skipping prefix in String s0                                 
-		    for (int i = 0; i < len0; i++) cost[i] = i;                                     
-		                                                                                    
-		    // dynamically computing the array of distances                                  
-		                                                                                    
-		    // transformation cost for each letter in s1                                    
-		    for (int j = 1; j < len1; j++) {                                                
-		        // initial cost of skipping prefix in String s1                             
-		        newcost[0] = j;                                                             
-		                                                                                    
-		        // transformation cost for each letter in s0                                
-		        for(int i = 1; i < len0; i++) {                                             
-		            // matching current letters in both strings                             
-		            int match = (lhs.charAt(i - 1) == rhs.charAt(j - 1)) ? 0 : 1;             
-		                                                                                    
-		            // computing cost for each transformation                               
-		            int cost_replace = cost[i - 1] + match;                                 
-		            int cost_insert  = cost[i] + 1;                                         
-		            int cost_delete  = newcost[i - 1] + 1;                                  
-		                                                                                    
-		            // keep minimum cost                                                    
-		            newcost[i] = Math.min(Math.min(cost_insert, cost_delete), cost_replace);
-		        }                                                                           
-		                                                                                    
-		        // swap cost/newcost arrays                                                 
-		        int[] swap = cost; cost = newcost; newcost = swap;                          
-		    }                                                                               
-		                                                                                    
-		    // the distance is the cost for transforming all letters in both strings       
-		    int dif_len = Math.abs(lhs.length() - rhs.length())+1;
-		    return cost[len0 - 1] / dif_len ;                                                          
+	 		private static int min(int... numbers) {return Arrays.stream(numbers).min().orElse(Integer.MAX_VALUE);}
+	 		private static int costOfSubstitution(char a, char b) {return a == b ? 0 : 1;}
+	 private static int levenshteinDistance(String x, String y) {
+		    int[][] dp = new int[x.length() + 1][y.length() + 1];
+		 
+		    for (int i = 0; i <= x.length(); i++) {
+		        for (int j = 0; j <= y.length(); j++) {
+		            if (i == 0) {
+		                dp[i][j] = j;
+		            }
+		            else if (j == 0) {
+		                dp[i][j] = i;
+		            }
+		            else {
+		                dp[i][j] = min(dp[i - 1][j - 1] + costOfSubstitution(x.charAt(i - 1), y.charAt(j - 1)), 
+		                  dp[i - 1][j] + 1, 
+		                  dp[i][j - 1] + 1);
+		            }
+		        }
+		    }
+		 
+		    return dp[x.length()][y.length()];
 		}
 	 
+	 /**
+	 	 * sortiert eine HashMap<Buch, Integer> aufsteigend nach ihren Values in O(n²)
+	 	 * @param dif
+	 	 * @return
+	 	 */
+	 	private static ArrayList<Buch> sort_aufsteigend(HashMap<Buch,Integer> dif) {
+	 		ArrayList<Buch> results_aufsteigend = new ArrayList<Buch>();
+	 		int minV = Integer.MAX_VALUE;
+	 		Buch minB = new Buch();
+	 		while(dif.size() > 0) {
+	 			for(Buch b: dif.keySet()) {
+	 				if(dif.get(b).intValue() < minV) {
+	 					minB = b;
+	 					minV = dif.get(b).intValue();
+	 				}
+	 			}
+	 			minV = Integer.MAX_VALUE;
+	 			results_aufsteigend.add(minB);
+	 			dif.remove(minB);
+	 		}
+	 		return results_aufsteigend;
+		}
+	 
+	 public static <Buch, Integer extends Comparable<? super Integer>> Map<Buch, Integer> sortByValue(Map<Buch, Integer> map) {
+	     List<Map.Entry<Buch, Integer>> list = new LinkedList<Map.Entry<Buch, Integer>>(map.entrySet());
+	     Collections.sort( list, new Comparator<Map.Entry<Buch, Integer>>() {
+	         public int compare(Map.Entry<Buch, Integer> o1, Map.Entry<Buch, Integer> o2) {
+	             return (o1.getValue()).compareTo( o2.getValue() );
+	         }
+	     });
+	
+	     Map<Buch, Integer> result = new LinkedHashMap<Buch, Integer>();
+	     for (Map.Entry<Buch, Integer> entry : list) {
+	         result.put(entry.getKey(), entry.getValue());
+	     }
+     return result;
+	 }
 	
 	/**
 	 * 
