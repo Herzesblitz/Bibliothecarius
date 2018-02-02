@@ -4,10 +4,13 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import javafx.util.converter.ShortStringConverter;
 
 //BUGLISTE
 //TODO: quotes
@@ -41,10 +44,12 @@ public class Buch implements Serializable {
   
   	
 	public static void main(String[] args) throws UnsupportedEncodingException, IOException, InterruptedException, ClassNotFoundException {
-		Datenbank.printBook(buchToinfosBuecher("Der Herr der Ringe. Anhänge und Register", "","", 10));
+		//Datenbank.printBook(buchToinfosBuecher("Der Herr der Ringe. Anhänge und Register", "","", 10));
 			//buchZuAehnlicheBuecher("The Valentine Date: Long Distance, Billionaires and Former Bad Boy's Collection" , "", "", 10);
 				//Datenbank.printBook(buchToinfosBuecher("Lord of the Rings", "", "", 10));
 		//System.out.println(BuchIDZuURL("Platon"));
+		
+		
 		
 	}
 	
@@ -249,6 +254,7 @@ public class Buch implements Serializable {
 				if(book.publisher.matches(".*\\d+.*")) book.year = Integer.valueOf(book.publisher.replaceAll("\\D+",""));
 				System.out.println("Title: "+title);
 		book.title = title; book.publisher = publisher; book.blurb = blurb; book.rating = rating;
+		book.sortAuthors(); book.sortAwards(); book.sortCharacter(); book.sortSimilarBooks(); book.sortThemen();
 		return book;
 	}
     
@@ -349,6 +355,28 @@ public class Buch implements Serializable {
 			results.add(titles.get(i)+" von "+authors.get(i));
 		}
 		return results;
+	}
+	
+	
+	
+	public void sortCharacter() {
+		 Collections.sort(this.Characters);		
+	}
+	
+	public void sortThemen() {
+		 Collections.sort(this.shelves);		
+	}
+	
+	public void sortAwards() {
+		 Collections.sort(this.awards);		
+	}
+	
+	public void sortSimilarBooks() {
+		 Collections.sort(this.similar_Books);		
+	}
+	
+	public void sortAuthors() {
+		 Collections.sort(this.Author);		
 	}
 		
 	//testfunktionen

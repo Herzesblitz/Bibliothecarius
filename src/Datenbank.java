@@ -25,7 +25,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.h2.util.NetUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -54,18 +53,16 @@ public class Datenbank {
 		// buecher_similarBerechnen();
 		 //printAllTitles();
 		 
-		 
 		// printBooklist(searchBook_title("Lord"));		 
 		// System.out.println("\n\nSORTIERT\n\n");
-		ArrayList<Buch> a = (relevanz_thema(searchBook_thema(new ArrayList<String>(Arrays.asList("Humor", "Science Fiction"))), new ArrayList<String>(Arrays.asList("Humor", "Science Fiction"))));
+		ArrayList<Buch> a = (relevanz_thema(searchBook_thema(new ArrayList<String>(Arrays.asList("Horror", "Science Fiction", "Short Stories"))), new ArrayList<String>(Arrays.asList("Humor", "Science Fiction"))));
 		for(Buch b: a)System.out.println(b.shelves);
-		
 		 
 		 //save_Database();
 		 //datenbankErweitern("https://www.goodreads.com/list/show/1.Best_Books_Ever");
-		// buecher_similarBerechnen();
-//		 ArrayList<String> a = new ArrayList<String>(); a.add("Graphic Novels");
-//		 printBooklist(searchBook_thema(a));
+		 // buecher_similarBerechnen();
+		 // ArrayList<String> a = new ArrayList<String>(); a.add("Graphic Novels");
+		 // printBooklist(searchBook_thema(a));
 		 //test();
 
 	 }
@@ -142,7 +139,7 @@ public class Datenbank {
 	 	 * @throws IOException
 	 	 */
 	 	//TODO: klapptext, publisher, blurb 	
-	 	public static ArrayList<String> searchBook_ähnlich(Buch b){
+	 	public static ArrayList<String> searchBook_aehnlich(Buch b){
 	 		if(b.similar_Books != null) return b.similar_Books;
 	 		else return new ArrayList<String>();
 	 	}
@@ -183,15 +180,54 @@ public class Datenbank {
 	 	
 	 	private static ArrayList<Buch> relevanz_thema(ArrayList<Buch>results, ArrayList<String> themen){
 	 		HashMap<Buch, Integer> dif = new HashMap<Buch, Integer>();
+	 		Collections.sort(themen);
 	 		//levenshteinDistance berechnen
 	 		for(Buch b: results) {
 	 			int autor_dif=0;
-	 			for(String tB: b.shelves) {
-	 				for(String tS: themen) {
-		 				autor_dif += levenshteinDistance(tB, tS);
-	 				}
+	 			for(int i=0; i<Math.min(b.shelves.size(), themen.size()); i++) {
+	 				autor_dif += levenshteinDistance(b.shelves.get(i), themen.get(i))*levenshteinDistance(b.shelves.get(i), themen.get(i));
 	 			}
-	 			dif.put(b, autor_dif);
+	 			dif.put(b, (int) Math.sqrt(autor_dif));
+	 		}
+	 		return sort_aufsteigend(dif);
+	 	}
+	 	
+	 	private static ArrayList<Buch> relevanz_character(ArrayList<Buch>results, ArrayList<String> characters){
+	 		HashMap<Buch, Integer> dif = new HashMap<Buch, Integer>();
+	 		//levenshteinDistance berechnen
+	 		for(Buch b: results) {
+	 			int autor_dif=0;
+	 			for(int i=0; i<Math.min(b.Characters.size(), characters.size()); i++) {
+	 				autor_dif += levenshteinDistance(b.Characters.get(i), characters.get(i))*levenshteinDistance(b.Characters.get(i), characters.get(i));
+	 			}
+	 			dif.put(b, (int) Math.sqrt(autor_dif));
+	 		}
+	 		return sort_aufsteigend(dif);
+	 	}
+	 	
+	 	private static ArrayList<Buch> relevanz_award(ArrayList<Buch>results, ArrayList<String> award){
+	 		HashMap<Buch, Integer> dif = new HashMap<Buch, Integer>();
+	 		//levenshteinDistance berechnen
+	 		for(Buch b: results) {
+	 			int autor_dif=0;
+	 			for(int i=0; i<Math.min(b.awards.size(), award.size()); i++) {
+	 				autor_dif += levenshteinDistance(b.awards.get(i), award.get(i))*levenshteinDistance(b.awards.get(i), award.get(i));
+	 			}
+	 			dif.put(b, (int) Math.sqrt(autor_dif));
+	 		}
+	 		return sort_aufsteigend(dif);
+	 	}
+	 	
+	 	@SuppressWarnings("unused")
+		private static ArrayList<Buch> relevanz_autoren(ArrayList<Buch>results, ArrayList<String> authoren){
+	 		HashMap<Buch, Integer> dif = new HashMap<Buch, Integer>();
+	 		//levenshteinDistance berechnen
+	 		for(Buch b: results) {
+	 			int autor_dif=0;
+	 			for(int i=0; i<Math.min(b.Author.size(), authoren.size()); i++) {
+	 				autor_dif += levenshteinDistance(b.Author.get(i), authoren.get(i))*levenshteinDistance(b.Author.get(i), authoren.get(i));
+	 			}
+	 			dif.put(b, (int) Math.sqrt(autor_dif));
 	 		}
 	 		return sort_aufsteigend(dif);
 	 	}
@@ -227,7 +263,7 @@ public class Datenbank {
 	 				return null;
 	 			}
 	 		}
-	 		return results;
+	 		return relevanz_sprache(results, sprache);
 	 	}
 	 
 	 	/**
@@ -272,7 +308,7 @@ public class Datenbank {
 	 			 	}break;
 	 			 }
 				
-				 return results;
+				 return relevanz_year(results, year);
 	 		 }
 	 	 }
 	 
@@ -290,7 +326,7 @@ public class Datenbank {
 					}
 				}
 			 } 
-	 		return results;
+	 		return relevanz_award(results,awardliste);
 		 }
 	 	
 		 /**
@@ -351,7 +387,7 @@ public class Datenbank {
 					}
 				}
 			 } 
-	 		return results;
+	 		return relevanz_thema(results, themenliste);
 	 	 }
 	 
 	 	/**
@@ -377,7 +413,7 @@ public class Datenbank {
 					}
 				}
 			 } 
-	 		return results;
+	 		return relevanz_character(results, charakterliste);
 	 	 }
 	 	 
 	 	/**
@@ -403,7 +439,7 @@ public class Datenbank {
 					}
 				}
 			 } 
-	 		return results;
+	 		return relevanz_autoren(results, authorliste);
 	 	}
 	 	
 	 	public static ArrayList<Buch> searchBook_rating_höher(double rating) throws FileNotFoundException, ClassNotFoundException, IOException {
@@ -471,7 +507,7 @@ public class Datenbank {
 //	 		 }
 //	 		 ArrayList<Buch> r = new ArrayList<Buch>();
 //	 		 r.addAll(results);
-	 		 return results ;
+	 		 return relevanz_title(results, title);
 	 	}
 	 	
 	 	/**
@@ -745,6 +781,19 @@ public class Datenbank {
 		 else return true;
 	 }
 	 
+	 public static void attr_sort_database() throws ClassNotFoundException, IOException {
+		if(buecherliste.size() == 0)load_Database();
+		for(Buch b: buecherliste) {
+			System.out.println(buecherliste.indexOf(b)+" / "+buecherliste.size());
+			b.sortAuthors();
+			b.sortAwards();
+			b.sortCharacter();
+			b.sortSimilarBooks();
+			b.sortThemen();
+		}
+		save_Database();
+	 }
+	 
 	 /**
 	  * löscht null objekte und duplikate
 	  * @throws FileNotFoundException
@@ -789,7 +838,7 @@ public class Datenbank {
 	 
 	 		private static int min(int... numbers) {return Arrays.stream(numbers).min().orElse(Integer.MAX_VALUE);}
 	 		private static int costOfSubstitution(char a, char b) {return a == b ? 0 : 1;}
-	 private static int levenshteinDistance(String x, String y) {
+	 	private static int levenshteinDistance(String x, String y) {
 		    int[][] dp = new int[x.length() + 1][y.length() + 1];
 		 
 		    for (int i = 0; i <= x.length(); i++) {
@@ -806,8 +855,7 @@ public class Datenbank {
 		                  dp[i][j - 1] + 1);
 		            }
 		        }
-		    }
-		 
+		    }		 
 		    return dp[x.length()][y.length()];
 		}
 	 
