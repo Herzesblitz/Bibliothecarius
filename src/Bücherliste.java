@@ -8,7 +8,7 @@ public class Bücherliste {
 String thema;
 List<String> title;
 List<String> autor;
-List<Buch> Liste_von_Informationen_der_Buecher; //TODO:muss noch erstellt werden
+List<Buch> Liste_von_Informationen_der_Buecher;
     public Bücherliste() {
         Liste_von_Informationen_der_Buecher=new ArrayList<Buch>();
         title =new ArrayList<String>();

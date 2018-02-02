@@ -286,43 +286,13 @@ public class Testklasse {
   	}
   	
   	
+  	
 	
 	//TODO: funktionen javadoc ergaenzen
   	private static void test() throws UnsupportedEncodingException, IOException, ClassNotFoundException {
   	//Datenbank.printBooklist(Datenbank.searchBook_author(new ArrayList<String>(Arrays.asList("Tolkien"))));
   		//Datenbank.printBooklist(Datenbank.searchBook_characters(new ArrayList<String>(Arrays.asList("Hurin"))));
-  	Datenbank.printBooklist(Datenbank.searchBook_sprache(("Deutsch")));
-  	
-  
-  		
-  		
-  		//Name(Buch) -> Autor, aehnlicheBücher, Charaktere, Genre
-//  		ArrayList<String> b= buchZuAehnlicheBuecher("Holy Bible: King James Version", "");
-//  			for(String a: b)System.out.println(a);
-  		//printBook(buchToinfosBuecher("The Name of the Wind (The Kingkiller Chronicle, #1)","",""));
-  			//a=  aehnlicheBuecher(testAehnlicheBuecher,"Metro 2033","");
-  			//infosBuecher(testInfoBuch,"Metro 2033");
-  		
-
-  		for(int i=0; i<1000; i++) {
-  			ArrayList<String> a= new ArrayList<>();
-//  	  		a = characterZuBuecherliste(randomString());
-//  	  		a = themaZuBuecherliste("Horror");
-//  	  		a = autorZuBuecherliste("Tolkien");
-//  	  		a = titleZuBuecherliste("Metro 2033", 5);
-  	  		for(String s: a)System.out.println(s);
-  		}
-  		
-  		//a = characterZuBuecherliste("Alexander");
-//  		a = themaZuBuecherliste("Horror");
-  			//printListofBooks(autorZuBuecherliste("Tolkien"));
-//  		a = titleZuBuecherliste("Metro 2033", 5);
-//
-  		
-  		
-  		//Hilfsfunktionen
-  			//fetchCharacterList();
-
+  			Datenbank.printBooklist(Datenbank.searchBook_sprache(("Deutsch")));
   	}
   	
   	public static void gebeausDatabase() throws FileNotFoundException, ClassNotFoundException, IOException {

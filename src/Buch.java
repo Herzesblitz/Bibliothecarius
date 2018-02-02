@@ -10,7 +10,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 //BUGLISTE
-//TODO: wenn Buch nicht in Datenbank -> suche online
 //TODO: quotes
 //TODO: inhaltszusammenfassung => alle fkt. database 
 public class Buch implements Serializable {
@@ -27,7 +26,7 @@ public class Buch implements Serializable {
         public double rating=Integer.MIN_VALUE;
         public List<String> awards =  new ArrayList<>();
         public List<String> shelves =  new ArrayList<>();
-        public ArrayList<String> similar_Books =  new ArrayList<>(); //FIXME speicher Titel und Autor
+        public ArrayList<String> similar_Books =  new ArrayList<>();
         public List<String> Characters =  new ArrayList<>();
         public List<String> Author =  new ArrayList<>();
 
@@ -42,8 +41,8 @@ public class Buch implements Serializable {
   
   	
 	public static void main(String[] args) throws UnsupportedEncodingException, IOException, InterruptedException, ClassNotFoundException {
-		//Datenbank.printBook(buchToinfosBuecher("Dante", "","", 10));
-			buchZuAehnlicheBuecher("Me and Him: A Guide to Recovery " , "", "", 10);
+		Datenbank.printBook(buchToinfosBuecher("Der Herr der Ringe. Anhänge und Register", "","", 10));
+			//buchZuAehnlicheBuecher("The Valentine Date: Long Distance, Billionaires and Former Bad Boy's Collection" , "", "", 10);
 				//Datenbank.printBook(buchToinfosBuecher("Lord of the Rings", "", "", 10));
 		//System.out.println(BuchIDZuURL("Platon"));
 		
@@ -216,11 +215,11 @@ public class Buch implements Serializable {
 				
 			//Suche Genres
 				Elements elements= doc.select("div.elementList").select("div.left");//select("a.ationLink right bookPageGenreLink__seeMoreLink").toString();
+				
 				for(Element el: elements) book.shelves.add(el.text());
 			
 			
 			//aehnlicheBuecher
-			//FIXME: prüfe ob bücher in datenbank sonst in fehlt list eintragen
 				book.similar_Books = buchZuAehnlicheBuecher("","",linkBuch, anz_ähnliche );
 				System.out.println("similar size"+book.similar_Books.size());
 				
@@ -248,8 +247,15 @@ public class Buch implements Serializable {
 		book.title = title; book.publisher = publisher; book.blurb = blurb; book.rating = rating;
 		return book;
 	}
+    
+    public static ArrayList<String> whatshouldireadnext_com(String isbn){
+    	//prüfe auf valide isbn
+    	if(true) {
+    		
+    	}
+    	return null;
+    }
 		
-    //FIXME: funktioniert das übergeben von book
 	public static ArrayList<String> buchZuAehnlicheBuecher(String title, String author, String url, int anz_ähnliche) throws UnsupportedEncodingException, IOException, InterruptedException, ClassNotFoundException {
 		ArrayList<String> results = new ArrayList<>();
 		int groeße = 0;
@@ -271,7 +277,8 @@ public class Buch implements Serializable {
 		//öffne similar link
 		org.jsoup.nodes.Document doc = Jsoup.connect(link_book).userAgent("bot101").get();
 		String similar_link = doc.getElementsMatchingText("Readers Also Enjoyed").attr("href");
-		if(similar_link.equals(null) || !similar_link.matches("https://www.goodreads.com/book/similar/[0-9]+(.)+")) {
+		System.out.println("similar: "+similar_link);
+		if(similar_link.equals(null) || !similar_link.matches("https://www.goodreads.com/book/similar/[0-9]+.+")) {
 			System.err.println("similar_link nicht gefunden! für"+link_book);
 			//"versuche die liste mit diesem Buch"-Funktion von goodreads.com zu nutzen
 //				Elements  a= doc.getElementsByClass("actionLink");
@@ -322,28 +329,21 @@ public class Buch implements Serializable {
 			titles.add(s.attr("title"));
 			groeße++;
 		}		
+		
 		for(Element a: similars_autor) {
-			if(uebersprungen.contains(anz_ähnliche-groeße))continue;
 			if(groeße == 0)break;
+			if(uebersprungen.contains(anz_ähnliche-groeße))continue;
 				//System.out.println(a.text());
 			if(a.text() != null)authors.add(a.text());
 			else authors.add("unbekannt");
 			groeße--;
 		}
-		if(similars_autor.size() != similars_title.size())return results;
-		for(int i=0; i<10; i++) {
+		
+		if(authors.size() != titles.size())return results;
+		
+		for(int i=0; i<authors.size(); i++) {
 			results.add(titles.get(i)+" von "+authors.get(i));
 		}
-		
-		for(String r: results)System.out.println(r);
-		
-		//FIXME: prüfe ob bücher in Datenbank (über urls) sind
-		
-		
-		//FIXME //wenn ja füge ähnliche zu similar von Book hinzu
-				//wenn nicht rufe infoToBuch für entsprechende Bücher auf
-				//- WICHTIG warte 50ms Thread.sleep(50);
-				// und füge ähnliche zu similar von Book hinzu
 		return results;
 	}
 		

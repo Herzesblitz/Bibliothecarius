@@ -33,16 +33,19 @@ import org.jsoup.select.Elements;
 public class Datenbank {
 	
 	static ArrayList<Buch> buecherliste = new ArrayList<>();
-	static ArrayList<Buch> dieBücherFehlen = new ArrayList<>();
+	static ArrayList<String> dieBücherFehlen = new ArrayList<>();
 
 
 	 public static void main(String args[]) throws Exception{  
-		//printAllTitles();
-		//save_Database();
-		// datenbankErweitern("https://www.goodreads.com/list/show/1.Best_Books_Ever");
+		//printBooklist(searchBook_title("ring"));
 		// buecher_similarBerechnen();
-		 printAllSimilar();
-		 //printBooklist(searchBook_title("Lord"));
+		 
+		
+		 //save_Database();
+		 //datenbankErweitern("https://www.goodreads.com/list/show/1.Best_Books_Ever");
+		// buecher_similarBerechnen();
+		 ArrayList<String> a = new ArrayList<String>(); a.add("Graphic Novels");
+		 printBooklist(searchBook_thema(a));
 		 //test();
 
 	 }
@@ -110,8 +113,6 @@ public class Datenbank {
 	  return eingabe;
 	 }
 	 
-	 //FIXME: 
-	 
 	 	/**
 	 	 * füge jedes buch hinzu was mind. einen awards
 	 	 * @param awards
@@ -120,12 +121,10 @@ public class Datenbank {
 	 	 * @throws ClassNotFoundException
 	 	 * @throws IOException
 	 	 */
-	 //TODO: sprache, klapptext, publisher, blurb()
-	 	
-	 	public static ArrayList<Buch> searchBook_ähnlich(Buch b){
-	 		//FIXME:
-	 		//return b.similar_Books;
-	 		return null;
+	 	//TODO: klapptext, publisher, blurb 	
+	 	public static ArrayList<String> searchBook_ähnlich(Buch b){
+	 		if(b.similar_Books != null) return b.similar_Books;
+	 		else return new ArrayList<String>();
 	 	}
 	
 	 	
@@ -468,7 +467,6 @@ public class Datenbank {
 	 	 * @param b
 	 	 * @param param
 	 	 */
-	 	//FIXME: klapptext
 	 	public static void printBook_param(Buch b, String param) {
 	 			if(param.equals("klapptext" ))
 	 			if(param.equals("sprache") && !b.sprache.equals(""))System.out.println("Sprache: "+b.sprache);
@@ -502,6 +500,10 @@ public class Datenbank {
 				if(param.equals("blurb") && !b.blurb.equals("")) {
 					System.out.println("Blurb of the Book: \n");
 					System.out.println(b.blurb);
+				}
+				if(param.equals("klapptext") && !b.covertext.equals("")) {
+					System.out.println("Covertext of the Book: \n");
+					System.out.println(b.covertext);
 				}
 		
 	 	}
@@ -576,7 +578,7 @@ public class Datenbank {
 	 
 	 public static void save_dieBücherFehlen() throws FileNotFoundException, IOException, ClassNotFoundException {
 		 ObjectInputStream ois = new ObjectInputStream(new FileInputStream("./src/source/el"));
-		 dieBücherFehlen = (ArrayList<Buch>) ois.readObject(); // cast is needed.
+		 dieBücherFehlen = (ArrayList<String>) ois.readObject(); // cast is needed.
 		 System.out.println("laenge: "+dieBücherFehlen.size());
 		 ois.close();
 	 }
@@ -605,7 +607,6 @@ public class Datenbank {
 			 if(b.similar_Books.size() == 0)continue;
 			 System.out.println(b.title);
 			 if(b.similar_Books.size() > 0) {
-				 //FIXME:
 				 for(String a: b.similar_Books)System.out.println(" "+a);
 			 }
 			 else System.out.println();
@@ -689,8 +690,11 @@ public class Datenbank {
 	    ArrayList<Buch> bl = new ArrayList<Buch>();
 	    buecherliste.removeAll(Collections.singleton(null));
 		for(Buch a: buecherliste) {
+			//diverse reperaturen
 			if(a.similar_Books == null) {a.similar_Books = new ArrayList<String>();}
 			if(!contains_duplicates(bl, a.title)) {bl.add(a); anz++;}
+			// thema x1 > x2 -> x2
+			
 		}
 		//System.out.println(bl.size()+" / "+buecherliste.size());
 		if(anz > 0) {
@@ -747,17 +751,6 @@ public class Datenbank {
 		    return cost[len0 - 1] / dif_len ;                                                          
 		}
 	 
-	 //TODO: testen
-	 public static void buecher_similarBerechnen() throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException {
-		 if(buecherliste.size() == 0)load_Database();
-		 repariere_database();
-		 for(Buch b: buecherliste) {
-			 if(b.similar_Books.size() == 0) {
-				System.out.println("ähnliche Bücher für "+b.title);
-				b.similar_Books =  Buch.buchZuAehnlicheBuecher("", "", b.url, 10);
-			 }
-		 }
-	 }
 	
 	/**
 	 * 
@@ -949,4 +942,44 @@ public class Datenbank {
 		 }
 		 return false;
 	 }
+	 
+	 //TODO: testen
+	 public static void buecher_similarBerechnen() throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException {
+		 if(buecherliste.size() == 0)load_Database();
+		 repariere_database();
+		 for(Buch b: buecherliste) {
+			 if(b.similar_Books.size() == 0) {
+				System.out.println("ähnliche Bücher für "+b.title+" "+buecherliste.indexOf(b)+"/"+buecherliste.size());
+				b.similar_Books =  Buch.buchZuAehnlicheBuecher("", "", b.url, 10);
+				if(buecherliste.indexOf(b) % 100 == 0)save_Database();
+			 }
+		 }
+		 save_Database();
+	 }
+	 
+	 public static void fehlendeBücher_ermitteln() throws FileNotFoundException, ClassNotFoundException, IOException {
+		 if(buecherliste.size() == 0)load_Database();
+		 if(dieBücherFehlen.size() == 0)load_dieBücherFehlen();
+		 for(Buch b: buecherliste) {
+			 for(String s: b.similar_Books) {
+				 if(searchBook_title(s).size() == 0)dieBücherFehlen.add(s);
+			 }
+		 }
+		 save_Database();
+		 save_dieBücherFehlen();
+	 }
+	 
+	 
+	 //FIXME: prüfe ob bücher in datenbank sonst in fehlt list eintragen
+	 public static void datenbank_erweitern_umfehlendeBücher(int anzahl) throws UnsupportedEncodingException, ClassNotFoundException, IOException, InterruptedException {
+		 if(buecherliste.size() == 0)load_Database();
+		 for(String s: dieBücherFehlen) {
+			 if(anzahl == 0)break;
+			 buecherliste.add(Buch.buchToinfosBuecher("", "", s, 0));
+			 dieBücherFehlen.remove(s);
+			 anzahl--;
+		 }
+		 save_Database();
+	 }
+	
 }
