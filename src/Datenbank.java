@@ -55,11 +55,11 @@ public class Datenbank {
 		 
 		// printBooklist(searchBook_title("Lord"));		 
 		// System.out.println("\n\nSORTIERT\n\n");
-		ArrayList<Buch> a = (relevanz_thema(searchBook_thema(new ArrayList<String>(Arrays.asList("Horror", "Science Fiction", "Short Stories"))), new ArrayList<String>(Arrays.asList("Humor", "Science Fiction"))));
-		for(Buch b: a)System.out.println(b.shelves);
+//		ArrayList<Buch> a = (relevanz_thema(searchBook_thema(new ArrayList<String>(Arrays.asList("Horror", "Science Fiction", "Short Stories"))), new ArrayList<String>(Arrays.asList("Humor", "Science Fiction"))));
+//		for(Buch b: a)System.out.println(b.shelves);
 		 
 		 //save_Database();
-		 //datenbankErweitern("https://www.goodreads.com/list/show/1.Best_Books_Ever");
+		 datenbankErweitern("https://www.goodreads.com/list/show/1.Best_Books_Ever");
 		 // buecher_similarBerechnen();
 		 // ArrayList<String> a = new ArrayList<String>(); a.add("Graphic Novels");
 		 // printBooklist(searchBook_thema(a));
