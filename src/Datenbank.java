@@ -59,51 +59,16 @@ public class Datenbank {
 //		for(Buch b: a)System.out.println(b.shelves);
 		 
 		 //save_Database();
-		 datenbankErweitern("https://www.goodreads.com/list/show/1.Best_Books_Ever");
+		
+		 printBooklist(searchBook_online_titel("Herr der Ringe"));
+		 
+		 
+		 //datenbankErweitern("https://www.goodreads.com/list/show/1.Best_Books_Ever");
 		 // buecher_similarBerechnen();
 		 // ArrayList<String> a = new ArrayList<String>(); a.add("Graphic Novels");
 		 // printBooklist(searchBook_thema(a));
 		 //test();
 
-	 }
-	 
-	 private static void test() throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException {
-		 //printAllSimilar();
-		 //printAllTitles();
-		//printBooklist(searchBook_title("The Dante Club"));
-		 
-		 printBooklist(searchBook_online_titel("Lord of the rings"));
-		 //printBooklist(searchBook_thema("Humor"));
-		 //printBooklist(searchBook_author("Funky Chicken"));
-		 
-		//ArrayList<String> genre = new ArrayList<String>(); genre.add("Humor");
-		 //printBooklist(Schnitt(searchBook_rating_höher(3), searchBook_thema(genre)));
-				
-		 //printBooklist(Schnitt(searchBook_title("A"), searchBook_title("The Road")));
-	 }
-	 
-	 
-	 /**
-	  * Benutze Listen aus:https://www.goodreads.com/list/popular_lists
-	  * @param url_liste
-	  * @throws ClassNotFoundException
-	  * @throws IOException
-	  * @throws InterruptedException
-	  * @throws ExecutionException
-	  */
-	 private static void datenbankErweitern(String url_liste) throws ClassNotFoundException, IOException, InterruptedException, ExecutionException {
-			load_Database();
-			refresh_Database_threading(20, url_liste,-1);
-	 }
-	 
-	 private static void datenbankErweitern() throws ClassNotFoundException, IOException, InterruptedException, ExecutionException {
-		load_Database();
-		while(true) {
-			refresh_Database_threading(20, 20);
-			repariere_database();
-			sort_database();
-			save_Database(); 
-		}
 	 }
 	 
 	 public static class BookCallable implements Callable {
@@ -461,8 +426,9 @@ public class Datenbank {
 	 	 * @throws FileNotFoundException
 	 	 * @throws ClassNotFoundException
 	 	 * @throws IOException
+	 	 * @throws InterruptedException 
 	 	 */
-	 	public static ArrayList<Buch> searchBook_title(String title) throws FileNotFoundException, ClassNotFoundException, IOException {
+	 	public static ArrayList<Buch> searchBook_title(String title) throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException {
 	 		 if(buecherliste.size() == 0)load_Database();
 	 		 ArrayList<Buch> results = new ArrayList<Buch>();
 	 		 //suche nach exaktem Titel
@@ -471,42 +437,7 @@ public class Datenbank {
 					 results.add(b);
 				 }
 			 }
-	 		 //wenn das fehlschlägt die besten n bücher
-	 		 ///if(results.size()==0) {
-//	 			 Buch min_b = buecherliste.get(0); 
-//	 			 for(Buch b: buecherliste) {
-//		 				 int levenshteinDistance_buch = levenshteinDistance(b.title,title);
-//						 int levenshteinDistance_min_b = levenshteinDistance(min_b.title,title);
-//						 if(levenshteinDistance_buch > levenshteinDistance_min_b) {
-//							 min_b = b;
-//						 }		
-//	 			 }
-//	 			 results.add(min_b);
-//	 		 }
-	 		 
-//	 			a: while(results.size() < 5) {
-//		 			 Buch min_b = buecherliste.get(0);
-//		 			 for(Buch b: buecherliste) {
-//		 				 int levenshteinDistance_buch = levenshteinDistance(b.title,title);
-//						 int levenshteinDistance_min_b = levenshteinDistance(min_b.title,title);
-//		 				 //System.out.println(b.title+" "+levenshteinDistance_buch+" "+levenshteinDistance_min_b);
-//						 if(levenshteinDistance_buch <=5) {
-//							 if(levenshteinDistance_buch < levenshteinDistance_min_b) {
-//								 results.add(b);
-//								 min_b = b;
-//							 }
-//						 }
-//						 //nach letztem buch: zufuegen?
-//						 if(buecherliste.indexOf(b) == buecherliste.size()-1) {
-//							 if(!results.contains(min_b))results.add(min_b);
-//						 }
-//		 			 }	
-//					 if(min_b == buecherliste.get(0))break a;
-//
-//				 }
-//	 		 }
-//	 		 ArrayList<Buch> r = new ArrayList<Buch>();
-//	 		 r.addAll(results);
+			 
 	 		 return relevanz_title(results, title);
 	 	}
 	 	
@@ -549,16 +480,45 @@ public class Datenbank {
 			 }
 	 	 }
 	 	
-	 	//TODO: titel von ersten Ergebnisseite https://www.goodreads.com/search+autor ausgeben
-	 	public static ArrayList<String> searchBook_online_autor(String autor) {
-	 		return null;	 		
+	 	
+	 	
+	 	/**
+ 	     * gibt die erste Seite von results zurueck
+ 	     * @param suchterm
+ 	     * @return
+ 	     * @throws IOException
+ 	     */
+	 	private static ArrayList<String> urlsErsteErgebnisSeite(String suchterm) throws IOException{	
+	 			org.jsoup.nodes.Document doc;
+	 			ArrayList<String> urls = new ArrayList<String>();
+	 	    	String search_1 = "https://www.goodreads.com/search?page=1&query=" + suchterm;
+	 		    doc = Jsoup.connect(search_1).ignoreHttpErrors(true).get();
+	 			if(doc.select("h3.searchSubNavContainer").toString().toLowerCase().contains("no results")) return new ArrayList<String>(); 
+	 			try {
+	 				Elements ele = doc.select("td").select("a.bookTitle");
+	 				for(Element el: ele) {
+	 					urls.add("https://www.goodreads.com/"+el.attr("href"));
+	 				}
+	 				return urls;
+	 			}
+	 			catch(NullPointerException e){
+	 				return new ArrayList<String>();
+	 			}
 	 	}
 	 	
-	 	public static ArrayList<Buch> searchBook_online_titel(String titel) throws UnsupportedEncodingException, ClassNotFoundException, IOException, InterruptedException {
+	 	public static ArrayList<Buch> searchBook_online_autor(String autor) throws UnsupportedEncodingException, ClassNotFoundException, IOException, InterruptedException, ExecutionException {
+	 		System.out.println("Autor in der Datenbank nicht gefunden. Suche Online danach ...");
+	 		ArrayList<String> urls = urlsErsteErgebnisSeite(autor);
+	 		ArrayList<Buch> ret = buchThreading(urls, 20); 	
+	 		ArrayList<String> autoren = new ArrayList<>(); autoren.add(autor);
+	 		return relevanz_autoren(ret, autoren);
+	 	}
+	 	
+	 	public static ArrayList<Buch> searchBook_online_titel(String titel) throws UnsupportedEncodingException, ClassNotFoundException, IOException, InterruptedException, ExecutionException {
 	 		System.out.println("Buch in der Datenbank nicht gefunden. Suche Online danach ...");
-	 		ArrayList<Buch> results = new ArrayList<Buch>();
-	 		results.add(Buch.buchToinfosBuecher(titel, "", "", 10));
-	 		return results;
+	 		ArrayList<String> urls = urlsErsteErgebnisSeite(titel);
+	 		ArrayList<Buch> ret = buchThreading(urls, 20);
+	 		return relevanz_title(ret, titel);
 	 	}
 	 	 
 	 	public static void printBook(Buch b) {
@@ -1102,7 +1062,7 @@ public class Datenbank {
 		 save_Database();
 	 }
 	 
-	 public static void fehlendeBücher_ermitteln() throws FileNotFoundException, ClassNotFoundException, IOException {
+	 public static void fehlendeBücher_ermitteln() throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException {
 		 if(buecherliste.size() == 0)load_Database();
 		 if(dieBücherFehlen.size() == 0)load_dieBücherFehlen();
 		 for(Buch b: buecherliste) {

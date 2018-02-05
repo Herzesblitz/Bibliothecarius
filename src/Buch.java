@@ -72,10 +72,11 @@ public class Buch implements Serializable {
     //wird durch Datenbank aufgerufen
 	
 	public static void ausgebenBücherliste(ArrayList<Buch> liste) {
-			for(Buch b: liste) {ausgebenBuch(b);System.out.println("\n------------------------------------------------------------------------------------------------\n");}
+			for(Buch b: liste) {ausgebenBuch(b); if(b.title.equals(""))continue; System.out.println("\n------------------------------------------------------------------------------------------------\n");}
 	}
 	
 	public static void ausgebenBuch(Buch Buchmeta) {
+	if(Buchmeta.title.equals(""))return;
 			if(!Buchmeta.url.equals(""))System.out.println("URL: "+Buchmeta.url);
 			if(!Buchmeta.title.equals(""))System.out.println("Title of the Book: "+Buchmeta.title); 
 			if(Buchmeta.Author.size() == 1) System.out.println("Author: "+Buchmeta.Author.get(0));
@@ -151,6 +152,9 @@ public class Buch implements Serializable {
 			return "";
 		}
     }
+    
+    
+    
 
     /**
      * Bestimmt alle Attribute eines Bookobjekt durch Webscrapping
@@ -173,6 +177,7 @@ public class Buch implements Serializable {
 		}
 		else {
 			linkBuch = url;
+			//System.out.println(linkBuch);
 		}
 		//link oeffnen und daten lesen
 		if(linkBuch == null)return new Buch();
@@ -230,7 +235,7 @@ public class Buch implements Serializable {
 			
 			//aehnlicheBuecher
 				book.similar_Books = buchZuAehnlicheBuecher("","",linkBuch, anz_ähnliche );
-				System.out.println("similar size"+book.similar_Books.size());
+				//System.out.println("similar size"+book.similar_Books.size());
 				
 			//ISBN	
 				String isbn= doc.select("div.infoBoxRowItem").select("span.greyText").text().toLowerCase();
@@ -252,7 +257,7 @@ public class Buch implements Serializable {
 			
 			//year
 				if(book.publisher.matches(".*\\d+.*")) book.year = Integer.valueOf(book.publisher.replaceAll("\\D+",""));
-				System.out.println("Title: "+title);
+				//System.out.println("Title: "+title);
 		book.title = title; book.publisher = publisher; book.blurb = blurb; book.rating = rating;
 		book.sortAuthors(); book.sortAwards(); book.sortCharacter(); book.sortSimilarBooks(); book.sortThemen();
 		return book;
@@ -280,16 +285,16 @@ public class Buch implements Serializable {
 		}
 		//prüfe ob url legal
 		if(!link_book.matches("https://www.goodreads.com/book/show/[0-9]+(\\.|-)(.)+?from_search=true") && !link_book.matches("https://www.goodreads.com/book/show/[0-9]+(\\.|-)(.)+")) {
-			System.err.println("link für Buch nicht gefunden!");
+			//System.err.println("link für Buch nicht gefunden!");
 			return new ArrayList<>();
 		}
 
 		//öffne similar link
 		org.jsoup.nodes.Document doc = Jsoup.connect(link_book).userAgent("bot101").get();
 		String similar_link = doc.getElementsMatchingText("Readers Also Enjoyed").attr("href");
-		System.out.println("similar: "+similar_link);
+		//System.out.println("similar: "+similar_link);
 		if(similar_link.equals(null) || !similar_link.matches("https://www.goodreads.com/book/similar/[0-9]+.+")) {
-			System.err.println("similar_link nicht gefunden! für"+link_book);
+			//System.err.println("similar_link nicht gefunden! für"+link_book);
 			//"versuche die liste mit diesem Buch"-Funktion von goodreads.com zu nutzen
 //				Elements  a= doc.getElementsByClass("actionLink");
 //				String url_more_lists="";
