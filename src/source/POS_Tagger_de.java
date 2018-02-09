@@ -18,7 +18,7 @@ public class POS_Tagger_de {
 	
   
    public static void main(String args[]) throws Exception{ 
-	   System.out.println(getFULLTags(getTaggedSentence("Ich w�rde diesen Computer gerne kaufen")));
+	   System.out.println(getTaggedSentence("Das Buch Herr der Ringe"));
       
    } 
    

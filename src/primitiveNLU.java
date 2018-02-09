@@ -15,7 +15,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import opennlp.tools.namefind.NameFinderME; 
-import opennlp.tools.namefind.TokenNameFinderModel; 
+import opennlp.tools.namefind.TokenNameFinderModel;
+import opennlp.tools.postag.POSModel;
+import opennlp.tools.postag.POSSample;
+import opennlp.tools.postag.POSTaggerME;
+import opennlp.tools.tokenize.WhitespaceTokenizer;
 import opennlp.tools.util.Span;  
 
 import org.jsoup.Jsoup;
@@ -28,7 +32,7 @@ public class primitiveNLU {
 	public static void main(String[] args) throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException, ExecutionException {
 		// TODO Auto-generated method stub
 		//System.out.println("return: "+searchForTitles_online("Der Name des Buchs ist Herr der Ringe"));
-		namen_finden("Das ist der Peter.");
+		System.out.println( namen_finden_POS_Tagger("Das Buch Herr der Ringe"));;
 	}
 	
 	
@@ -128,7 +132,43 @@ public class primitiveNLU {
 				return "";
 	}
 	
-	public static int[] namen_finden(String eingabe) throws IOException{
+	public static String namen_finden_POS_Tagger(String eingabe) throws IOException{
+		String author="";
+		
+		//Loading Parts of speech-maxent model       
+		InputStream inputStream = new FileInputStream("./src/source/de-pos-maxent.bin");
+	    POSModel model = new POSModel(inputStream); 
+	     
+	    //Instantiating POSTaggerME class 
+	    POSTaggerME tagger = new POSTaggerME(model); 
+	     
+	    String sentence = eingabe; 
+	     
+	    //Tokenizing the sentence using WhitespaceTokenizer class  
+	    WhitespaceTokenizer whitespaceTokenizer= WhitespaceTokenizer.INSTANCE; 
+	    String[] tokens = whitespaceTokenizer.tokenize(sentence); 
+	    
+	    
+	     
+	    //Generating tags 
+	    String[] tags = tagger.tag(tokens);
+	    	    
+	    //Instantiating the POSSample class 
+	    POSSample sample = new POSSample(tokens, tags); 
+	    
+	    for(String satzteile: sample.toString().split(" ")) {
+	    	if(satzteile.endsWith("_NE")) {
+	    		author+= satzteile.replaceAll("_NE", "").replace(".", "")+" ";
+	    	}
+	    }
+	    
+	     return author;  
+
+	}
+
+	
+	
+	public static String namen_finden_NER(String eingabe) throws IOException{
 		   InputStream inputStream = new FileInputStream("./src/source/en-ner-person.bin"); 
 		      TokenNameFinderModel model = new TokenNameFinderModel(inputStream);
 		      
@@ -136,8 +176,9 @@ public class primitiveNLU {
 		      NameFinderME nameFinder = new NameFinderME(model); 
 		    
 		      //Getting the sentence in the form of String array  
-		      String [] sentence = eingabe.split(" ");
-//		      new String[]{ 
+		      String [] sentence = eingabe.split(" ");     
+		       
+//		      sentence= new String[]{ 
 //		         "Mike", 
 //		         "and", 
 //		         "Smith", 
@@ -146,11 +187,11 @@ public class primitiveNLU {
 //		         "friends" 
 //		      }; 
 		      
-		      
-		       
 		      //Finding the names in the sentence 
 		      Span nameSpans[] = nameFinder.find(sentence); 
-		      if(nameSpans.length == 0)return null;
+		      if(nameSpans.length == 0) {
+		    	  return "";
+		      }
 		       
 		      //Printing the spans of the names in the sentence 
 		      String[] nameLocs = new String[nameSpans.length];
@@ -165,7 +206,10 @@ public class primitiveNLU {
 				  ret[f] = Integer.valueOf(matcher.group()); 
 		    	  f++;
 		      }
-		      return ret;
+		      
+		      String ausgabe = "";
+		      for(int pos: ret)ausgabe+=sentence[pos]+" ";
+		      return ausgabe;
 	   }
 	
 	public static String errateTitel(String input) throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException {
