@@ -37,33 +37,112 @@ public class primitiveNLU {
 		
 	}
 	
-	//TODO: wird durch Dialogmanager aufgerufen
+	public static String intend_search_mode(String eingabe) {
+		eingabe = Datenbank.toleranzEinbauen(eingabe);
+		if(Intent_begrüßung(eingabe))return "begrüßung";
+		if(eingabe.contains("erweitern") || eingabe.contains("erweitere") ||
+		eingabe.contains("suche") || eingabe.contains("empfehlung"))return "erweitern";
+		if(eingabe.contains("eingrenzen") || eingabe.contains("grenze ein"))return "einschränken";
+		if(eingabe.contains("ausgeben") || (eingabe.contains("gebe") && eingabe.contains("aus")
+		|| eingabe.contains("anzeigen") || (eingabe.contains("zeige") && eingabe.contains("an"))))return "ausgeben";
+
+	return "";	
+	}
 	
-	public static String getTitle(String eingabe) {
+	public static String intend_search(String eingabe) {
+		eingabe = Datenbank.toleranzEinbauen(eingabe);
+		if(eingabe.contains("titel"))return "titel";
+		if(eingabe.contains("autor"))return "autor";
+		if(eingabe.contains("charakter"))return "charakter";
+		if(eingabe.contains("thema"))return "thema";
+		if(eingabe.contains("award"))return "award";
+		if(eingabe.contains("reihe"))return "reihe";
+		if(eingabe.contains("jahr"))return "jahr";
+		if(eingabe.contains("rating"))return "rating";
+
+		return "unbekannt";
+	}
+	
+	public static String getAwards(String eingabe,  boolean anführungsstriche) {
+		if(anführungsstriche) return eingabe.substring(eingabe.indexOf("\""), eingabe.lastIndexOf("\""));
 		return "";
 	}
 	
-	public static String getAuthor(String eingabe) throws IOException {
+	public static String getAuthor(String eingabe,  boolean anführungsstriche) throws IOException {
+		if(anführungsstriche) return eingabe.substring(eingabe.indexOf("\""), eingabe.lastIndexOf("\""));
 		return namen_finden_NER(eingabe);
 	}
 	
-	public static String getYear(String eingabe) {
+	public static String getYear(String eingabe,  boolean anführungsstriche) {
+		if(anführungsstriche) return eingabe.substring(eingabe.indexOf("\"")+1, eingabe.lastIndexOf("\""));
+		else {
+			if(eingabe.matches(".+ [0-9]+ .+")) return eingabe.replaceAll("\\D+","");
+		}
 		return "";
 	}
 	
-	public static String getCharacters(String eingabe) {
+	public static String getRating(String eingabe,  boolean anführungsstriche) {
+		if(anführungsstriche) return eingabe.substring(eingabe.indexOf("\""), eingabe.lastIndexOf("\""));
+		else {
+			if(eingabe.matches(".+ [0-9]+ .+")) return eingabe.replaceAll("\\D+","");
+			if(eingabe.matches(".+ [0-9]+ .+")) return eingabe.replaceAll("\\D+","");
+		}
 		return "";
 	}
 	
-	public static String getTheme(String eingabe) {
+	public static String getCharacter(String eingabe, boolean anführungsstriche) throws IOException {
+		if(anführungsstriche) return eingabe.substring(eingabe.indexOf("\""), eingabe.lastIndexOf("\""));
+		return namen_finden_NER(eingabe);
+	}
+	
+	public static String getTheme(String eingabe,  boolean anführungsstriche) {
+		if(anführungsstriche) return eingabe.substring(eingabe.indexOf("\""), eingabe.lastIndexOf("\""));
 		return "";
 	}
 	
+	public static String getReihe(String eingabe, boolean anführungsstriche) {
+		if(anführungsstriche) return eingabe.substring(eingabe.indexOf("\""), eingabe.lastIndexOf("\""));
+		return "";
+	}
 	
+	public static String getTitle(String eingabe,  boolean anführungsstriche) {
+		if(anführungsstriche) return eingabe.substring(eingabe.indexOf("\""), eingabe.lastIndexOf("\""));
+		return "";
+	}
 	
-	public static boolean getCiao(String eingabe) {
+	public static String begrüßung() {
+		return "Hallo, bitte geben Sie Merkmale des Buches in Anführungszeichen \"\" ein. \n"
+				+ "Das kann der Titel, Autor, Charaktere, sprache, isbn, buecherreihe, publisher, mindestrating von 1-5 (von Internetnutzern), ein Thema sein";
+	}
+	
+	public static boolean Intent_begrüßung(String eingabe) {
+		eingabe = Datenbank.toleranzEinbauen(eingabe);
+		if(eingabe.contains("hallo")) return true;
+		if(eingabe.contains("servus")) return true;
+		if(eingabe.contains("guten tag")) return true;
+		if(eingabe.contains("hi")) return true;
+		if(eingabe.contains("hey")) return true;
+		if(eingabe.contains("na")) return true;
+		return false;
+	}
+	
+	public static boolean Intent_Ciao(String eingabe) {
 		eingabe = Datenbank.toleranzEinbauen(eingabe);
 		if(eingabe.contains("tschuess")) return true;
+		if(eingabe.contains("auf Wiedersehen")) return true;
+		if(eingabe.contains("ade, adieu")) return true;
+		if(eingabe.contains("bis bald")) return true;
+		if(eingabe.contains("bis dann")) return true;
+		if(eingabe.contains("bye")) return true;
+		if(eingabe.contains("arrivederci")) return true;
+		if(eingabe.contains("ciao")) return true;
+		if(eingabe.contains("mach's gut")) return true;
+		if(eingabe.contains("tschau")) return true;
+		if(eingabe.contains("cheerio")) return true;
+		if(eingabe.contains("tschau")) return true;
+		if(eingabe.contains("auf bald")) return true;
+		if(eingabe.contains("bis bald")) return true;
+		if(eingabe.contains("servus")) return true;
 		return false;
 	}
 	
@@ -150,7 +229,7 @@ public class primitiveNLU {
 						}
 						System.out.println(suche);
 						ArrayList<String> autor = new ArrayList<>(); autor.add(suche);
-						ergebnisse = Datenbank.searchBook_author(autor);
+						ergebnisse = Datenbank.searchBook_authors(autor);
 						//System.out.println("Suche nach:" +suche+" "+ergebnisse.size());
 						if(ergebnisse.size() > 0)return suche;
 					}

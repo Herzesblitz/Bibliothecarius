@@ -71,46 +71,50 @@ public class Buch implements Serializable {
     
     //wird durch Datenbank aufgerufen
 	
-	public static void ausgebenBücherliste(ArrayList<Buch> liste) {
-			for(Buch b: liste) {ausgebenBuch(b); if(b.title.equals(""))continue; System.out.println("\n------------------------------------------------------------------------------------------------\n");}
+	public static String ausgebenBücherliste(ArrayList<Buch> liste) {
+		String ausgabe="";
+			for(Buch b: liste) {ausgabe += ausgebenBuch(b); if(b.title.equals(""))continue; ausgabe+=("\n------------------------------------------------------------------------------------------------\n");}
+		return ausgabe;
 	}
 	
-	public static void ausgebenBuch(Buch Buchmeta) {
-	if(Buchmeta.title.equals(""))return;
-			if(!Buchmeta.url.equals(""))System.out.println("URL: "+Buchmeta.url);
-			if(!Buchmeta.title.equals(""))System.out.println("Title of the Book: "+Buchmeta.title); 
-			if(Buchmeta.Author.size() == 1) System.out.println("Author: "+Buchmeta.Author.get(0));
-			else if(Buchmeta.Author.size() > 1) {System.out.print("Authors: "); for (int i=0; i<Buchmeta.Author.size()-1; i++) System.out.print(Buchmeta.Author.get(i)+", "); System.out.println(Buchmeta.Author.get(Buchmeta.Author.size()-1));}
-			if(Buchmeta.year != Integer.MIN_VALUE)System.out.println("Publihsing year: "+Buchmeta.year);
+	public static String ausgebenBuch(Buch Buchmeta) {
+		String ausgabe="";
+	if(Buchmeta.title.equals(""))return "";
+			if(!Buchmeta.url.equals(""))ausgabe+="URL: "+Buchmeta.url+"\n";
+			if(!Buchmeta.title.equals(""))ausgabe+="Title of the Book: "+Buchmeta.title+"\n"; 
+			if(Buchmeta.Author.size() == 1) ausgabe="Author: "+Buchmeta.Author.get(0)+"\n";
+			else if(Buchmeta.Author.size() > 1) {ausgabe+=("Authors: "); for (int i=0; i<Buchmeta.Author.size()-1; i++) {ausgabe+=(Buchmeta.Author.get(i)+", ")+"\n";} ausgabe+=(Buchmeta.Author.get(Buchmeta.Author.size()-1))+"\n";}
+			if(Buchmeta.year != Integer.MIN_VALUE)ausgabe+="Publihsing year: "+Buchmeta.year+"\n";
 //			System.out.println("ISBN of the Book: "+Buchmeta.isbn);    	
-			if(!Buchmeta.publisher.equals(""))System.out.println("Publisher: "+Buchmeta.publisher);
-			if(Buchmeta.rating != Integer.MIN_VALUE)System.out.println("Rating: "+Buchmeta.rating);
-			System.out.println("________________________________________________");
+			if(!Buchmeta.publisher.equals(""))ausgabe+="Publisher: "+Buchmeta.publisher+"\n";
+			if(Buchmeta.rating != Integer.MIN_VALUE)ausgabe+="Rating: "+Buchmeta.rating+"\n";
+			ausgabe+=("________________________________________________")+"\n";
 			if(Buchmeta.Characters.size() > 0) {
-				System.out.println("Characters in the Book: \n");
+				ausgabe+=("Characters in the Book: \n");
 				for (String x: Buchmeta.Characters) System.out.println(x);
-				System.out.println("________________________________________________");
+				ausgabe+=("________________________________________________")+"\n";
 			}
 			if(Buchmeta.shelves.size() > 0) {
-				System.out.println("Genre of the Book: \n");
+				ausgabe+=("Genre of the Book: \n");
 				for (String x: Buchmeta.shelves)	System.out.println(x);
-				System.out.println("________________________________________________");
+				ausgabe+=("________________________________________________")+"\n";
 			}
 			if(Buchmeta.awards.size() > 0) {
-				System.out.println("Awards of the Book: \n");
+				ausgabe+=("Awards of the Book: \n");
 				for (String x: Buchmeta.awards)	System.out.println(x);
-				System.out.println("________________________________________________");
+				ausgabe+=("________________________________________________")+"\n";
 				
 			}
 			if(Buchmeta.similar_Books != null && Buchmeta.similar_Books.size()>0){
-				System.out.println("Ähnliche Bücher: \n");
+				ausgabe+=("Ähnliche Bücher: \n");
 				for (String x: Buchmeta.similar_Books)	System.out.println(x);
-				System.out.println("________________________________________________");
+				ausgabe+=("________________________________________________")+"\n";
 			}
 			if(!Buchmeta.blurb.equals("")) {
-				System.out.println("Blurb of the Book: \n");
-				System.out.println(Buchmeta.blurb);
+				ausgabe+=("Blurb of the Book: \n");
+				ausgabe+=(Buchmeta.blurb)+"\n";
 			}
+		return ausgabe;
 	}
     
     public static ArrayList<Buch> Schnitt(ArrayList<Buch> a, ArrayList<Buch> b){

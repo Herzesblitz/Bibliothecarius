@@ -143,7 +143,20 @@ public class Datenbank {
 	 		return sort_aufsteigend(dif);
 	 	}
 	 	
-	 	private static ArrayList<Buch> relevanz_thema(ArrayList<Buch>results, ArrayList<String> themen){
+	 	private static ArrayList<Buch> relevanz_thema(ArrayList<Buch>results, String thema){
+	 		HashMap<Buch, Integer> dif = new HashMap<Buch, Integer>();
+	 		//levenshteinDistance berechnen
+	 		for(Buch b: results) {
+	 			int autor_dif=0;
+	 			for(int i=0; i<b.shelves.size(); i++) {
+	 				autor_dif += levenshteinDistance(b.shelves.get(i),thema)*levenshteinDistance(b.shelves.get(i),thema);
+	 			}
+	 			dif.put(b, (int) Math.sqrt(autor_dif));
+	 		}
+	 		return sort_aufsteigend(dif);
+	 	}
+	 	
+	 	private static ArrayList<Buch> relevanz_themen(ArrayList<Buch>results, ArrayList<String> themen){
 	 		HashMap<Buch, Integer> dif = new HashMap<Buch, Integer>();
 	 		Collections.sort(themen);
 	 		//levenshteinDistance berechnen
@@ -157,7 +170,20 @@ public class Datenbank {
 	 		return sort_aufsteigend(dif);
 	 	}
 	 	
-	 	private static ArrayList<Buch> relevanz_character(ArrayList<Buch>results, ArrayList<String> characters){
+		private static ArrayList<Buch> relevanz_character(ArrayList<Buch>results, String character){
+	 		HashMap<Buch, Integer> dif = new HashMap<Buch, Integer>();
+	 		//levenshteinDistance berechnen
+	 		for(Buch b: results) {
+	 			int autor_dif=0;
+	 			for(int i=0; i<b.Characters.size(); i++) {
+	 				autor_dif += levenshteinDistance(b.Characters.get(i),character)*levenshteinDistance(b.Characters.get(i),character);
+	 			}
+	 			dif.put(b, (int) Math.sqrt(autor_dif));
+	 		}
+	 		return sort_aufsteigend(dif);
+	 	}
+	 	
+	 	private static ArrayList<Buch> relevanz_characters(ArrayList<Buch>results, ArrayList<String> characters){
 	 		HashMap<Buch, Integer> dif = new HashMap<Buch, Integer>();
 	 		//levenshteinDistance berechnen
 	 		for(Buch b: results) {
@@ -170,7 +196,7 @@ public class Datenbank {
 	 		return sort_aufsteigend(dif);
 	 	}
 	 	
-	 	private static ArrayList<Buch> relevanz_award(ArrayList<Buch>results, ArrayList<String> award){
+	 	private static ArrayList<Buch> relevanz_awards(ArrayList<Buch>results, ArrayList<String> award){
 	 		HashMap<Buch, Integer> dif = new HashMap<Buch, Integer>();
 	 		//levenshteinDistance berechnen
 	 		for(Buch b: results) {
@@ -183,8 +209,33 @@ public class Datenbank {
 	 		return sort_aufsteigend(dif);
 	 	}
 	 	
-	 	@SuppressWarnings("unused")
-		private static ArrayList<Buch> relevanz_autoren(ArrayList<Buch>results, ArrayList<String> authoren){
+	 	private static ArrayList<Buch> relevanz_award(ArrayList<Buch>results, String award){
+	 		HashMap<Buch, Integer> dif = new HashMap<Buch, Integer>();
+	 		//levenshteinDistance berechnen
+	 		for(Buch b: results) {
+	 			int autor_dif=0;
+	 			for(int i=0; i<b.awards.size(); i++) {
+	 				autor_dif += levenshteinDistance(b.awards.get(i), award)*levenshteinDistance(b.awards.get(i), award);
+	 			}
+	 			dif.put(b, (int) Math.sqrt(autor_dif));
+	 		}
+	 		return sort_aufsteigend(dif);
+	 	}
+	 	
+	 	private static ArrayList<Buch> relevanz_autor(ArrayList<Buch>results, String author){
+	 		HashMap<Buch, Integer> dif = new HashMap<Buch, Integer>();
+	 		//levenshteinDistance berechnen
+	 		for(Buch b: results) {
+	 			int autor_dif=0;
+	 			for(int i=0; i<b.Author.size(); i++) {
+	 				autor_dif += levenshteinDistance(b.Author.get(i), author)*levenshteinDistance(b.Author.get(i), author);
+	 			}
+	 			dif.put(b, (int) Math.sqrt(autor_dif));
+	 		}
+	 		return sort_aufsteigend(dif);
+	 	}
+	 	
+	 	private static ArrayList<Buch> relevanz_autoren(ArrayList<Buch>results, ArrayList<String> authoren){
 	 		HashMap<Buch, Integer> dif = new HashMap<Buch, Integer>();
 	 		//levenshteinDistance berechnen
 	 		for(Buch b: results) {
@@ -291,8 +342,24 @@ public class Datenbank {
 					}
 				}
 			 } 
-	 		return relevanz_award(results,awardliste);
+	 		return relevanz_awards(results,awardliste);
 		 }
+		 
+		 public static ArrayList<Buch> searchBook_award(String award) throws FileNotFoundException, ClassNotFoundException, IOException {
+				load_Database();
+		 		 ArrayList<Buch> results = new ArrayList<Buch>();
+		 		 //suche nach exaktem Autor
+				 for(Buch b: buecherliste) {
+					for(String thema_buch: b.awards) {
+							//kaiserin -> auf kindliche kaiserin matchen
+							if(toleranzEinbauen(thema_buch).contains(toleranzEinbauen(award))) {
+								results.add(b);
+								break;
+							}
+					}
+				 } 
+				 return relevanz_award(results, award);
+			}
 	 	
 		 /**
 		  * wird von mir benutzt ...
@@ -328,6 +395,22 @@ public class Datenbank {
 	 		 }
 	 		 return returnlist;
 		}
+		
+		public static ArrayList<Buch> searchBook_thema(String thema) throws FileNotFoundException, ClassNotFoundException, IOException {
+			load_Database();
+	 		 ArrayList<Buch> results = new ArrayList<Buch>();
+	 		 //suche nach exaktem Autor
+			 for(Buch b: buecherliste) {
+				for(String thema_buch: b.shelves) {
+						//kaiserin -> auf kindliche kaiserin matchen
+						if(toleranzEinbauen(thema_buch).contains(toleranzEinbauen(thema))) {
+							results.add(b);
+							break;
+						}
+				}
+			 } 
+			 return relevanz_thema(results, thema);
+		}	
 	 
 	    /**
 	  	* sucht nach ALLEN Buechern die dieses Thema haben
@@ -352,8 +435,33 @@ public class Datenbank {
 					}
 				}
 			 } 
-	 		return relevanz_thema(results, themenliste);
+	 		return relevanz_themen(results, themenliste);
 	 	 }
+		
+		/**
+	        * sucht nach ALLEN Buechern die diesen Charakter haben
+		    * @param character
+		    * @return
+		 	* @throws FileNotFoundException
+		 	* @throws ClassNotFoundException
+		    * @throws IOException
+		 	*/
+		    public static ArrayList<Buch> searchBook_character(String charakter) throws FileNotFoundException, ClassNotFoundException, IOException {
+		    	load_Database();
+		 		 ArrayList<Buch> results = new ArrayList<Buch>();
+		 		 //suche nach exaktem Autor
+				 for(Buch b: buecherliste) {
+					for(String charakter_buch: b.Characters) {
+							//kaiserin -> auf kindliche kaiserin matchen
+							if(toleranzEinbauen(charakter_buch).toLowerCase().contains(toleranzEinbauen(charakter))) {
+								results.add(b);
+								break;
+							}
+						
+					}
+				 } 
+		 		return relevanz_character(results, charakter);
+		 	 }
 	 
 	 	/**
         * sucht nach ALLEN Buechern die diesen Charakter haben
@@ -378,7 +486,7 @@ public class Datenbank {
 					}
 				}
 			 } 
-	 		return relevanz_character(results, charakterliste);
+	 		return relevanz_characters(results, charakterliste);
 	 	 }
 	 	 
 	 	/**
@@ -389,7 +497,7 @@ public class Datenbank {
 	 	 * @throws ClassNotFoundException
 	 	 * @throws IOException
 	 	 */
-	 	public static ArrayList<Buch> searchBook_author(ArrayList<String> authorliste) throws FileNotFoundException, ClassNotFoundException, IOException {
+	 	public static ArrayList<Buch> searchBook_authors(ArrayList<String> authorliste) throws FileNotFoundException, ClassNotFoundException, IOException {
 	 		load_Database();
 	 		 ArrayList<Buch> results = new ArrayList<Buch>();
 	 		 //suche nach exaktem Autor
@@ -406,6 +514,22 @@ public class Datenbank {
 			 } 
 	 		return relevanz_autoren(results, authorliste);
 	 	}
+	 	
+	 	public static ArrayList<Buch> searchBook_author(String author) throws FileNotFoundException, ClassNotFoundException, IOException {
+			load_Database();
+	 		 ArrayList<Buch> results = new ArrayList<Buch>();
+	 		 //suche nach exaktem Autor
+			 for(Buch b: buecherliste) {
+				for(String thema_buch: b.Author) {
+						//kaiserin -> auf kindliche kaiserin matchen
+						if(toleranzEinbauen(thema_buch).contains(toleranzEinbauen(author))) {
+							results.add(b);
+							break;
+						}
+				}
+			 } 
+			 return relevanz_autor(results, author);
+		}
 	 	
 	 	public static ArrayList<Buch> searchBook_rating_höher(double rating) throws FileNotFoundException, ClassNotFoundException, IOException {
 	 		 load_Database();
@@ -571,8 +695,8 @@ public class Datenbank {
 		
 	 	}
 	 	 
-	 	public static void printBooklist(ArrayList<Buch> b) {
-	 		 Buch.ausgebenBücherliste(b);
+	 	public static String printBooklist(ArrayList<Buch> b) {
+	 		return Buch.ausgebenBücherliste(b);
 	 	 }
 	 
 		public static ArrayList<Buch> Schnitt(ArrayList<Buch> a, ArrayList<Buch> b){

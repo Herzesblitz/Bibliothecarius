@@ -13,6 +13,8 @@ import java.awt.event.MouseMotionListener;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
@@ -28,25 +30,34 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 	static GUI frame = new GUI();
 	
 	static JTextField editTextArea_input = new JTextField();
-	static JTextField editTextArea_output = new JTextField();
+	static JTextArea   editTextArea_output = new JTextArea();
+	static JScrollPane scroller = new JScrollPane(editTextArea_output, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	
 	static String input ="";
 	static String output ="";
 	static boolean  eingabebereit=true;
 
 
-	public static void main(String[] args) {
-		frame.init_frame();
-		//setOutput("blbu");
-	}
-	
-	
-	public GUI() {
+	public static void main(String[] args) throws InterruptedException {
+		//frame = new GUI();
 
+		frame.init_frame();
+		mirrormode();
 	}
 	
+	
+	
+	//
+	private static void mirrormode() throws InterruptedException {
+		while(true) {
+			Thread.sleep(20);
+			String input = getInput();
+			if(!input.equals(""))setOutput(input);
+		}
+	}
 	
 	public void init_frame() {		
+
 		Dimension aufloesung= Toolkit.getDefaultToolkit().getScreenSize();
 
 		//System.out.println(aufloesung.width+" "+aufloesung.height);
@@ -80,10 +91,16 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 		
 		this.getContentPane().add(label_output);
 	
-		editTextArea_output = new JTextField(100);
-		editTextArea_output.setHorizontalAlignment(SwingConstants.LEFT);
+		editTextArea_output = new JTextArea("");
+		editTextArea_output.setSize(100, 200);
+		editTextArea_output.setAlignmentX(0);
 		cp.add(editTextArea_output);
-		 
+		
+		scroller =new JScrollPane(editTextArea_output, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		cp.add(scroller);
+		
+		frame.pack();
+		
 		this.setVisible(true);
 
 		//Listener
@@ -116,7 +133,7 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 	}
 	
 	public static void setOutput(String output) {
-		System.out.println("setOutput aufgerufen");
+		//System.out.println("setOutput aufgerufen");
 		GUI.output = output;
 			//umbrüche setzen
 			for(int pos=0; pos<GUI.output.length(); pos++) {
@@ -125,6 +142,8 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 		editTextArea_output.setText(GUI.output);
 		editTextArea_input.setText("");
 		eingabebereit = true;
+		frame.pack();
+
 	}
 	
 	@Override
