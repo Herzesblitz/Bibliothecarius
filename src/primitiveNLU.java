@@ -27,7 +27,8 @@ import org.jsoup.nodes.Document;
 
 
 public class primitiveNLU {
-
+	
+	
 		
 	public static void main(String[] args) throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException, ExecutionException {
 		// TODO Auto-generated method stub
@@ -35,6 +36,41 @@ public class primitiveNLU {
 		System.out.println(namen_finden_POS_Tagger("Guten Tag, kannst du mir ein gutes Buch suchen, das ich gerne lesen soll, des wurde von Harald Blauzahn geschrieben."));;
 		
 	}
+	
+	//TODO: wird durch Dialogmanager aufgerufen
+	
+	public static String getTitle(String eingabe) {
+		return "";
+	}
+	
+	public static String getAuthor(String eingabe) throws IOException {
+		return namen_finden_NER(eingabe);
+	}
+	
+	public static String getYear(String eingabe) {
+		return "";
+	}
+	
+	public static String getCharacters(String eingabe) {
+		return "";
+	}
+	
+	public static String getTheme(String eingabe) {
+		return "";
+	}
+	
+	
+	
+	public static boolean getCiao(String eingabe) {
+		eingabe = Datenbank.toleranzEinbauen(eingabe);
+		if(eingabe.contains("tschuess")) return true;
+		return false;
+	}
+	
+	
+	
+	
+	
 	
 	public static String searchForTitles_online(String input) throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException, ExecutionException {
 		System.out.println("wortsuche nach titel: "+input);
