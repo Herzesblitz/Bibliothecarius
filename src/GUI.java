@@ -37,7 +37,7 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 
 	public static void main(String[] args) {
 		frame.init_frame();
-		frame.setOutput("gbeiagrebou9gaudbgoodasbgouigdbodabguodbgouabguodaipävduioabgzibguoapbgöpiadbnugoidbasfu9bvgfigbeiagrebou9gaudbgoodasbgouigdbodabguodbgouabguodaipävduioabgzibguoapbgöpiadbnugoidbasfu9bvgfigbeiagrebou9gaudbgoodasbgouigdbodabguodbgouabguodaipävduioabgzibguoapbgöpiadbnugoidbasfu9bvgfigbeiagrebou9gaudbgoodasbgouigdbodabguodbgouabguodaipävduioabgzibguoapbgöpiadbnugoidbasfu9bvgfi");
+		//setOutput("blbu");
 	}
 	
 	
@@ -101,7 +101,6 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 				else editTextArea_input.setText("Bitte keine Eingabe tätigen!");
 			}
 		});	
-		setOutput("test");		 
 	}
 		
 	public static void eingabebereitschaft_setzen(boolean a) {
@@ -110,13 +109,14 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 	}
 	
 	public static String getInput() {
-		editTextArea_output.setText("Chatbot arbeitet, bitte warten.");
+		if(!input.equals("")) editTextArea_output.setText("Chatbot arbeitet, bitte warten.");
 		String kopie = input;
 		input = "";
 		return kopie;
 	}
 	
 	public static void setOutput(String output) {
+		System.out.println("setOutput aufgerufen");
 		GUI.output = output;
 			//umbrüche setzen
 			for(int pos=0; pos<GUI.output.length(); pos++) {
