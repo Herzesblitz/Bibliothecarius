@@ -29,14 +29,13 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 	
 	static JTextField editTextArea_input = new JTextField();
 	static JTextField editTextArea_output = new JTextField();
-
+	
 	static String input ="";
 	static String output ="";
 	static boolean  eingabebereit=true;
 
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		frame.init_frame();
 		frame.setOutput("gbeiagrebou9gaudbgoodasbgouigdbodabguodbgouabguodaipävduioabgzibguoapbgöpiadbnugoidbasfu9bvgfigbeiagrebou9gaudbgoodasbgouigdbodabguodbgouabguodaipävduioabgzibguoapbgöpiadbnugoidbasfu9bvgfigbeiagrebou9gaudbgoodasbgouigdbodabguodbgouabguodaipävduioabgzibguoapbgöpiadbnugoidbasfu9bvgfigbeiagrebou9gaudbgoodasbgouigdbodabguodbgouabguodaipävduioabgzibguoapbgöpiadbnugoidbasfu9bvgfi");
 	}
@@ -93,25 +92,27 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 			public void actionPerformed(ActionEvent e) {
 				if(eingabebereit) {
 					input = editTextArea_input.getText();
-					eingabebereit = false;
-					editTextArea_input.setText("Bitte keine Eingabe tätigen!");
+					if(!input.equals("")) {
+						eingabebereit = false;
+						editTextArea_input.setText("Bitte keine Eingabe tätigen!");
+					}	
 				}
 				else editTextArea_input.setText("Bitte keine Eingabe tätigen!");
 			}
-		});
-		
-		setOutput("test");
-			 
+		});	
+		setOutput("test");		 
 	}
-	
+		
 	public static void eingabebereitschaft_setzen(boolean a) {
 		eingabebereit = a;
 		editTextArea_input.setText("Bitte keine Eingabe tätigen!");
 	}
 	
 	public static String getInput() {
-		editTextArea_output.setText("Bitte warten");
-		return input;
+		editTextArea_input.setText("Chatbot arbeitet, bitte warten.");
+		String kopie = input;
+		input = "";
+		return kopie;
 	}
 	
 	public static void setOutput(String output) {
