@@ -95,6 +95,7 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 					if(!input.equals("")) {
 						eingabebereit = false;
 						editTextArea_input.setText("Bitte keine Eingabe tätigen!");
+						editTextArea_output.setText("Chatbot arbeitet, bitte warten.");
 					}	
 				}
 				else editTextArea_input.setText("Bitte keine Eingabe tätigen!");
@@ -109,7 +110,7 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 	}
 	
 	public static String getInput() {
-		editTextArea_input.setText("Chatbot arbeitet, bitte warten.");
+		editTextArea_output.setText("Chatbot arbeitet, bitte warten.");
 		String kopie = input;
 		input = "";
 		return kopie;
