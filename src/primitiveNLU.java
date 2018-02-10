@@ -32,9 +32,10 @@ public class primitiveNLU {
 	public static void main(String[] args) throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException, ExecutionException {
 		// TODO Auto-generated method stub
 		//System.out.println("return: "+searchForTitles_online("Der Name des Buchs ist Herr der Ringe"));
-		System.out.println( namen_finden_POS_Tagger("Das Buch Herr der Ringe"));;
+		System.out.println(namen_finden_POS_Tagger("Guten Tag, kannst du mir ein gutes Buch suchen, das ich gerne lesen soll, des wurde von Harald Blauzahn geschrieben."));;
+		System.out.println(namen_finden_NER("Guten Tag, kannst du mir ein gutes Buch suchen, das ich gerne lesen soll, des wurde von Harald Blauzahn geschrieben."));;
+
 	}
-	
 	
 	public static String searchForTitles_online(String input) throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException, ExecutionException {
 		System.out.println("wortsuche nach titel: "+input);

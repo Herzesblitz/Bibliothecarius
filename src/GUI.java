@@ -27,12 +27,12 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 	
 	static GUI frame = new GUI();
 	
-	JTextField editTextArea_input = new JTextField();
-	JTextField editTextArea_output = new JTextField();
+	static JTextField editTextArea_input = new JTextField();
+	static JTextField editTextArea_output = new JTextField();
 
-	String input ="";
-	String output ="";
-	boolean eingabebereit=true;
+	static String input ="";
+	static String output ="";
+	static boolean  eingabebereit=true;
 
 
 	public static void main(String[] args) {
@@ -96,23 +96,22 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 		});
 		
 		setOutput("test");
-		
-				
-		 
+			 
 }
 	
-	public void eingabebereitschaft_setzen(boolean a) {
+	public static void eingabebereitschaft_setzen(boolean a) {
 		eingabebereit = a;
 		editTextArea_input.setText("Bitte keine Eingabe tätigen!");
 	}
 	
-	public String getInput() {
+	public static String getInput() {
 		return input;
 	}
 	
-	public void setOutput(String output) {
-		this.output = output;
+	public static void setOutput(String output) {
+		GUI.output = output;
 		editTextArea_output.setText(output);
+		editTextArea_input.setText("");
 	}
 	
 	@Override
