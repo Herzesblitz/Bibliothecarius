@@ -241,17 +241,17 @@ public class Datenbank {
 	 	 * @throws FileNotFoundException 
 	 	 */
 	 	 public static ArrayList<Buch> searchBook_year(int year, int modus) throws FileNotFoundException, ClassNotFoundException, IOException{
-	 		 if(buecherliste.size() == 0)load_Database();
-	 		 if(modus < -1 || modus > 1) {
-	 			 System.err.println("falscher Wert für Parameter "+modus);
+	 	 	 if(buecherliste.size() == 0)load_Database();
+	 	 	 if(modus < -1 || modus > 1) {
+	 	 		 System.err.println("falscher Wert für Parameter "+modus);
 		 		 return null;
-	 		 }
-	 		 else {
-	 			 ArrayList<Buch> results = new ArrayList<Buch>();
+	 	 	 }
+	 	 	 else {
+	 	 		 ArrayList<Buch> results = new ArrayList<Buch>();
 		 		 //suche nach exaktem Titel
-	 			 switch(modus) {
-	 			 	case -1: {
-	 			 		 for(Buch b: buecherliste) {
+	 	 		 switch(modus) {
+	 	 		 	case -1: {
+	 	 		 		 for(Buch b: buecherliste) {
 	 						 if(b.year < year) {
 	 							 results.add(b);
 	 						 }

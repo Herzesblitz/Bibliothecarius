@@ -33,8 +33,7 @@ public class primitiveNLU {
 		// TODO Auto-generated method stub
 		//System.out.println("return: "+searchForTitles_online("Der Name des Buchs ist Herr der Ringe"));
 		System.out.println(namen_finden_POS_Tagger("Guten Tag, kannst du mir ein gutes Buch suchen, das ich gerne lesen soll, des wurde von Harald Blauzahn geschrieben."));;
-		System.out.println(namen_finden_NER("Guten Tag, kannst du mir ein gutes Buch suchen, das ich gerne lesen soll, des wurde von Harald Blauzahn geschrieben."));;
-
+		
 	}
 	
 	public static String searchForTitles_online(String input) throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException, ExecutionException {
@@ -99,16 +98,6 @@ public class primitiveNLU {
 	    }
 	    pool.shutdownNow();
 	    return liste;
- }
-	
-	
-	public static String randomGreet() {
-		ArrayList<String> pool = new ArrayList<String>();
-			pool.add("Hallo, mein Name ist Bibliothecarius!");
-			pool.add("Hallo, ich bin Bibliothecarius!");
-			pool.add("Grüße, mein Name ist Bibliothecarius!");
-			pool.add("Grüße, mein Name ist Bibliothecarius. Wie kann ich dir helfen?");
-		return pool.get((int) (Math.random()*pool.size()));
 	}
  
 	

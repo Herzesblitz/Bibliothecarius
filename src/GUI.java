@@ -38,6 +38,7 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		frame.init_frame();
+		frame.setOutput("gbeiagrebou9gaudbgoodasbgouigdbodabguodbgouabguodaipävduioabgzibguoapbgöpiadbnugoidbasfu9bvgfigbeiagrebou9gaudbgoodasbgouigdbodabguodbgouabguodaipävduioabgzibguoapbgöpiadbnugoidbasfu9bvgfigbeiagrebou9gaudbgoodasbgouigdbodabguodbgouabguodaipävduioabgzibguoapbgöpiadbnugoidbasfu9bvgfigbeiagrebou9gaudbgoodasbgouigdbodabguodbgouabguodaipävduioabgzibguoapbgöpiadbnugoidbasfu9bvgfi");
 	}
 	
 	
@@ -90,14 +91,18 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 		editTextArea_input.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(eingabebereit) input = editTextArea_input.getText();
+				if(eingabebereit) {
+					input = editTextArea_input.getText();
+					eingabebereit = false;
+					editTextArea_input.setText("Bitte keine Eingabe tätigen!");
+				}
 				else editTextArea_input.setText("Bitte keine Eingabe tätigen!");
 			}
 		});
 		
 		setOutput("test");
 			 
-}
+	}
 	
 	public static void eingabebereitschaft_setzen(boolean a) {
 		eingabebereit = a;
@@ -105,13 +110,19 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 	}
 	
 	public static String getInput() {
+		editTextArea_output.setText("Bitte warten");
 		return input;
 	}
 	
 	public static void setOutput(String output) {
 		GUI.output = output;
-		editTextArea_output.setText(output);
+			//umbrüche setzen
+			for(int pos=0; pos<GUI.output.length(); pos++) {
+				if(pos%100 ==0 && pos > 0)GUI.output = GUI.output.substring(0,pos-1)+'\n'+GUI.output.substring(pos,GUI.output.length());
+			}
+		editTextArea_output.setText(GUI.output);
 		editTextArea_input.setText("");
+		eingabebereit = true;
 	}
 	
 	@Override
