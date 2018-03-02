@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -45,6 +48,8 @@ public class Datenbank {
 	
 	static ArrayList<Buch> buecherliste = new ArrayList<>();
 	static ArrayList<String> dieBücherFehlen = new ArrayList<>();
+	static boolean goodreads_online = false;
+
 
 
 	 public static void main(String args[]) throws Exception{  
@@ -60,7 +65,7 @@ public class Datenbank {
 		 
 		 //save_Database();
 		
-		 printBooklist(searchBook_online_titel("Herr der Ringe"));
+		 printBooklist(Vereinigung(searchBook_online_autor("Tolkien"), searchBook_online_titel("Herr der Ringe")));
 		 
 		 
 		 //datenbankErweitern("https://www.goodreads.com/list/show/1.Best_Books_Ever");
@@ -94,6 +99,8 @@ public class Datenbank {
 		 eingabe = eingabe.replaceAll("ù", "u").replaceAll("è", "e").replaceAll("ò", "o").replaceAll("ì", "i").replaceAll("à", "a");
 	  return eingabe;
 	 }
+	 
+	
 	 
 	 	/**
 	 	 * füge jedes buch hinzu was mind. einen awards
@@ -631,17 +638,22 @@ public class Datenbank {
 	 	}
 	 	
 	 	public static ArrayList<Buch> searchBook_online_autor(String autor) throws UnsupportedEncodingException, ClassNotFoundException, IOException, InterruptedException, ExecutionException {
-	 		System.out.println("Autor in der Datenbank nicht gefunden. Suche Online danach ...");
+ 			goodreads_online = checkInternetConnection("https://www.goodreads.com/"); 		
+ 			if(!goodreads_online) {System.out.println("Keine Verbindung zu OnlineRessourcen möglich.");}
+ 			System.out.println("Autor in der Datenbank nicht gefunden. Suche Online danach ...");
 	 		ArrayList<String> urls = urlsErsteErgebnisSeite(autor);
-	 		ArrayList<Buch> ret = buchThreading(urls, 20); 	
+	 		ArrayList<Buch> ret = buchThreading(urls, 10); 	
 	 		ArrayList<String> autoren = new ArrayList<>(); autoren.add(autor);
 	 		return relevanz_autoren(ret, autoren);
 	 	}
 	 	
 	 	public static ArrayList<Buch> searchBook_online_titel(String titel) throws UnsupportedEncodingException, ClassNotFoundException, IOException, InterruptedException, ExecutionException {
+	 		goodreads_online = checkInternetConnection("https://www.goodreads.com/"); 		
+ 			if(!goodreads_online) {System.out.println("Keine Verbindung zu OnlineRessourcen möglich.");}
+	 		goodreads_online = checkInternetConnection("https://www.goodreads.com/"); 		
 	 		System.out.println("Buch in der Datenbank nicht gefunden. Suche Online danach ...");
 	 		ArrayList<String> urls = urlsErsteErgebnisSeite(titel);
-	 		ArrayList<Buch> ret = buchThreading(urls, 20);
+	 		ArrayList<Buch> ret = buchThreading(urls, 10);
 	 		return relevanz_title(ret, titel);
 	 	}
 	 	 
@@ -694,9 +706,13 @@ public class Datenbank {
 				}
 		
 	 	}
-	 	 
-	 	public static String printBooklist(ArrayList<Buch> b) {
-	 		return Buch.ausgebenBücherliste(b);
+	 	
+	 	public static void printBooklist(ArrayList<Buch> b) {
+	 		Buch.ausgebenBücherliste(b);
+	 	 }
+	 	
+	 	public static String printBooklist_s(ArrayList<Buch> b) {
+	 		return Buch.ausgebenBücherliste_s(b);
 	 	 }
 	 
 		public static ArrayList<Buch> Schnitt(ArrayList<Buch> a, ArrayList<Buch> b){
@@ -725,6 +741,7 @@ public class Datenbank {
 	 	 }
 	 
 	 	public static ArrayList<Buch> Vereinigung(ArrayList<Buch> a, ArrayList<Buch> b){
+	 		System.out.println("Vereinigung: "+a.size()+" "+b.size());
 	 		 Set<Buch> set = new HashSet<Buch>();
 		        set.addAll(a);
 		        set.addAll(b);
@@ -751,6 +768,7 @@ public class Datenbank {
 		    }
 		    ArrayList<Buch> liste = new ArrayList<>();
 		    for (Future<Buch> future : set) {
+		    	Thread.sleep(20);
 		    	liste.add(future.get());
 		    }
 		    pool.shutdownNow();
@@ -850,7 +868,7 @@ public class Datenbank {
 			            alt.add(index1, neu.get(index2++));
 			    }
 		 }
-		 //save_Database();
+		 save_Database();
 		return alt;
 	 }
 	 
@@ -1211,4 +1229,17 @@ public class Datenbank {
 		 save_Database();
 	 }
 	
+	 private static boolean checkInternetConnection(String url) throws UnknownHostException, IOException {
+			long currentTime = System.currentTimeMillis();
+			InetAddress address = InetAddress.getByName(new URL(url).getHost());
+			boolean isPinged = address.isReachable(5000); // 5 seconds
+			currentTime = System.currentTimeMillis() - currentTime;
+			if(isPinged) {
+			    //System.out.println("pinged successfully in "+ currentTime+ "millisecond");
+				return true;
+			} else {
+			    //System.out.println("PIng failed.");
+				return false;
+			}
+		}
 }

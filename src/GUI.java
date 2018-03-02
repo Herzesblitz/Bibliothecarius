@@ -42,7 +42,7 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 		//frame = new GUI();
 
 		frame.init_frame();
-		mirrormode();
+		//mirrormode();
 	}
 	
 	

@@ -20,7 +20,8 @@ import opennlp.tools.postag.POSModel;
 import opennlp.tools.postag.POSSample;
 import opennlp.tools.postag.POSTaggerME;
 import opennlp.tools.tokenize.WhitespaceTokenizer;
-import opennlp.tools.util.Span;  
+import opennlp.tools.util.Span;
+import source.Eingabe;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -33,8 +34,10 @@ public class primitiveNLU {
 	public static void main(String[] args) throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException, ExecutionException {
 		// TODO Auto-generated method stub
 		//System.out.println("return: "+searchForTitles_online("Der Name des Buchs ist Herr der Ringe"));
-		System.out.println(namen_finden_POS_Tagger("Guten Tag, kannst du mir ein gutes Buch suchen, das ich gerne lesen soll, des wurde von Harald Blauzahn geschrieben."));;
 		
+		//System.out.println(namen_finden_POS_Tagger("Guten Tag, kannst du mir ein gutes Buch suchen, das ich gerne lesen soll, des wurde von Harald Blauzahn geschrieben."));;
+		
+		System.out.println(intend_search("Ich suche ein Buch was von Tolkien geschrieben wurde."));
 	}
 	
 	public static String intend_search_mode(String eingabe) {
@@ -49,17 +52,33 @@ public class primitiveNLU {
 	return "";	
 	}
 	
-	public static String intend_search(String eingabe) {
+	/** Sucht nach Variable
+	 * ausgabe: String aus {"titel", "autor", "charakter", "thema", "award", "reihe", "jahr", "rating"}
+	 * @param eingabe
+	 * @return
+	 * @throws IOException
+	 */
+	public static String intend_search(String eingabe ) throws IOException {
 		eingabe = Datenbank.toleranzEinbauen(eingabe);
-		if(eingabe.contains("titel"))return "titel";
-		if(eingabe.contains("autor"))return "autor";
-		if(eingabe.contains("charakter"))return "charakter";
-		if(eingabe.contains("thema"))return "thema";
-		if(eingabe.contains("award"))return "award";
-		if(eingabe.contains("reihe"))return "reihe";
-		if(eingabe.contains("jahr"))return "jahr";
-		if(eingabe.contains("rating"))return "rating";
-
+		//am genausten
+			if(eingabe.contains("autor") || eingabe.contains("von"))return "autor";
+			else if(eingabe.contains("charakter"))return "charakter";
+			else if(eingabe.contains("thema"))return "thema";
+			else if(eingabe.contains("award"))return "award";
+			else if(eingabe.contains("reihe"))return "reihe";
+			else if(eingabe.contains("jahr"))return "jahr";
+			else if(eingabe.contains("rating"))return "rating";
+			else if(eingabe.contains("titel") || eingabe.matches(".* buch .* namen .*") || eingabe.contains("bezeichnung"))return "titel";
+		
+		//semigenau
+			else if(eingabe.contains("suche") && eingabe.contains("buch") && namen_finden_NER(eingabe).length() == 0) return "titel";
+			else if(eingabe.contains("von") && namen_finden_NER(eingabe).length() > 0 || 
+					eingabe.contains("verfasser") || eingabe.contains("verfasst") || eingabe.contains("schriftsteller") ||
+					eingabe.contains("schöpfer") || eingabe.contains("schrieben")) return "autor";
+			else if(eingabe.contains("mit") && namen_finden_NER(eingabe).length() > 0 ||
+					eingabe.contains("figur")) return "charakter";
+			else if(eingabe.contains("[0-9][0-9]")) return "jahr";
+			else if(eingabe.contains("bewertung") || eingabe.matches(".+[0-9].[0-9].+]") || eingabe.matches(".+[0-9].+")) return "rating";
 		return "unbekannt";
 	}
 	
@@ -112,26 +131,35 @@ public class primitiveNLU {
 	
 	public static String begrüßung() {
 		return "Hallo, bitte geben Sie Merkmale des Buches in Anführungszeichen \"\" ein. \n"
-				+ "Das kann der Titel, Autor, Charaktere, sprache, isbn, buecherreihe, publisher, mindestrating von 1-5 (von Internetnutzern), ein Thema sein";
+				+ "Das kann der Titel, Autor, Charakter, Sprache (Englisch oder Deutsch), ISBN, Buchreihe, Verleger, Mindestbewertung von 1-5 (von Internetnutzern), ein Thema sein";
 	}
 	
 	public static boolean Intent_begrüßung(String eingabe) {
 		eingabe = Datenbank.toleranzEinbauen(eingabe);
+		eingabe = satzzeichen_löschen(eingabe);
 		if(eingabe.contains("hallo")) return true;
 		if(eingabe.contains("servus")) return true;
 		if(eingabe.contains("guten tag")) return true;
 		if(eingabe.contains("hi")) return true;
 		if(eingabe.contains("hey")) return true;
 		if(eingabe.contains("na")) return true;
+		if(eingabe.contains("heiße")) return true;
 		return false;
 	}
 	
+	 public static String satzzeichen_löschen(String eingabe) {
+		 eingabe = eingabe.replaceAll(".", "").replaceAll(",", "").replaceAll("-", "").replaceAll(";", "");
+		 return eingabe;
+	 }
+	
 	public static boolean Intent_Ciao(String eingabe) {
 		eingabe = Datenbank.toleranzEinbauen(eingabe);
+		eingabe = satzzeichen_löschen(eingabe);
 		if(eingabe.contains("tschuess")) return true;
 		if(eingabe.contains("auf Wiedersehen")) return true;
 		if(eingabe.contains("ade, adieu")) return true;
 		if(eingabe.contains("bis bald")) return true;
+		if(eingabe.contains("bis später")) return true;
 		if(eingabe.contains("bis dann")) return true;
 		if(eingabe.contains("bye")) return true;
 		if(eingabe.contains("arrivederci")) return true;
@@ -143,6 +171,14 @@ public class primitiveNLU {
 		if(eingabe.contains("auf bald")) return true;
 		if(eingabe.contains("bis bald")) return true;
 		if(eingabe.contains("servus")) return true;
+		if(eingabe.contains("wir sehen uns")) return true;
+		if(eingabe.contains("man sieht sich")) return true;
+		if(eingabe.contains("pass gut auf dich auf")) return true;
+		if(eingabe.contains("bis morgen ")) return true; 
+		if(eingabe.contains("schönen tag")) return true;
+		if(eingabe.contains("schönen abend")) return true;
+		if(eingabe.contains("schönes wochenende")) return true;
+		if(eingabe.contains("schönen feierabend")) return true;
 		return false;
 	}
 	

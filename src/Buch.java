@@ -71,15 +71,58 @@ public class Buch implements Serializable {
     
     //wird durch Datenbank aufgerufen
 	
-	public static String ausgebenBücherliste(ArrayList<Buch> liste) {
+	public static void ausgebenBücherliste(ArrayList<Buch> liste) {
+			for(Buch b: liste) {ausgebenBuch(b); if(b.title.equals(""))continue; System.out.println(("\n------------------------------------------------------------------------------------------------\n"));}
+	}
+	
+	public static String ausgebenBücherliste_s(ArrayList<Buch> liste) {
 		String ausgabe="";
-			for(Buch b: liste) {ausgabe += ausgebenBuch(b); if(b.title.equals(""))continue; ausgabe+=("\n------------------------------------------------------------------------------------------------\n");}
+			for(Buch b: liste) {ausgabe += ausgebenBuch_s(b); if(b.title.equals(""))continue; ausgabe+=("\n------------------------------------------------------------------------------------------------\n");}
 		return ausgabe;
 	}
 	
-	public static String ausgebenBuch(Buch Buchmeta) {
-		String ausgabe="";
-	if(Buchmeta.title.equals(""))return "";
+	public static void ausgebenBuch(Buch Buchmeta) {
+		if(Buchmeta.title.equals(""))return;
+		if(!Buchmeta.url.equals(""))System.out.println("URL: "+Buchmeta.url+"\n");
+		if(!Buchmeta.title.equals(""))System.out.println("Title of the Book: "+Buchmeta.title+"\n"); 
+		if(Buchmeta.Author.size() == 1) System.out.println("Author: "+Buchmeta.Author.get(0)+"\n");
+		else if(Buchmeta.Author.size() > 1) {System.out.println(("Authors: ")); for (int i=0; i<Buchmeta.Author.size()-1; i++) {System.out.println((Buchmeta.Author.get(i)+", ")+"\n");} System.out.println((Buchmeta.Author.get(Buchmeta.Author.size()-1))+"\n");}
+		if(Buchmeta.year != Integer.MIN_VALUE)System.out.println("Publihsing year: "+Buchmeta.year+"\n");
+//		System.out.println("ISBN of the Book: "+Buchmeta.isbn);    	
+		if(!Buchmeta.publisher.equals(""))System.out.println("Publisher: "+Buchmeta.publisher+"\n");
+		if(Buchmeta.rating != Integer.MIN_VALUE)System.out.println("Rating: "+Buchmeta.rating+"\n");
+		System.out.println(("________________________________________________")+"\n");
+		if(Buchmeta.Characters.size() > 0) {
+			System.out.println(("Characters in the Book: \n"));
+			for (String x: Buchmeta.Characters) System.out.println(x);
+			System.out.println(("________________________________________________")+"\n");
+		}
+		if(Buchmeta.shelves.size() > 0) {
+			System.out.println(("Genre of the Book: \n"));
+			for (String x: Buchmeta.shelves)	System.out.println(x);
+			System.out.println(("________________________________________________")+"\n");
+		}
+		if(Buchmeta.awards.size() > 0) {
+			System.out.println(("Awards of the Book: \n"));
+			for (String x: Buchmeta.awards)	System.out.println(x);
+			System.out.println(("________________________________________________")+"\n");
+			
+		}
+		if(Buchmeta.similar_Books != null && Buchmeta.similar_Books.size()>0){
+			System.out.println(("Ähnliche Bücher: \n"));
+			for (String x: Buchmeta.similar_Books)	System.out.println(x);
+			System.out.println(("________________________________________________")+"\n");
+		}
+		if(!Buchmeta.blurb.equals("")) {
+			System.out.println(("Blurb of the Book: \n"));
+			System.out.println((Buchmeta.blurb)+"\n");
+		}
+	}
+
+	
+	public static String ausgebenBuch_s(Buch Buchmeta) {
+		String ausgabe="BUCH \n";
+			if(Buchmeta.title.equals(""))return "";
 			if(!Buchmeta.url.equals(""))ausgabe+="URL: "+Buchmeta.url+"\n";
 			if(!Buchmeta.title.equals(""))ausgabe+="Title of the Book: "+Buchmeta.title+"\n"; 
 			if(Buchmeta.Author.size() == 1) ausgabe="Author: "+Buchmeta.Author.get(0)+"\n";
@@ -185,7 +228,7 @@ public class Buch implements Serializable {
 		}
 		//link oeffnen und daten lesen
 		if(linkBuch == null)return new Buch();
-    	doc = Jsoup.connect(linkBuch).userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:5.0) Gecko/20100101 Firefox/5.0").referrer("http://www.google.com").timeout(20000).get();
+    	doc = Jsoup.connect(linkBuch).userAgent("Mozilla/5.0 (Windows NT 10.0; WOW64; rv:58.0) Gecko/20100101 Firefox/58.0").referrer("http://www.google.com").get();
  
 		//Infos aus doc lesen
     		book.url = linkBuch;

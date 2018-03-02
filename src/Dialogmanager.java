@@ -1,8 +1,14 @@
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.URL;
+import java.net.UnknownHostException;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+
+import source.Eingabe;
 
 
 public class Dialogmanager {
@@ -16,6 +22,8 @@ public class Dialogmanager {
 	static String chatbot_output="";
 	static boolean beende=false;
 	static ArrayList<Buch> ergebnisse= new ArrayList<Buch>();
+	
+	static boolean goodreads_online = false;
 	
 	//suchvariablen
 		public int year = Integer.MIN_VALUE;
@@ -40,6 +48,7 @@ public class Dialogmanager {
     
    	public static void main(String[] args) throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException, ExecutionException {
    		//db.load_Database();
+   		goodreads_online = checkInternetConnection("https://www.goodreads.com/");
    		gui.frame.init_frame();
    		gui.frame.setOutput(primitiveNLU.begrüßung());
    		
@@ -64,21 +73,26 @@ public class Dialogmanager {
    	   			}
    				if(zustand.contains("bücherliste_erweitern") || intend_mode.equals("erweitern")) {
    	   				System.out.println("Zustand: bücherliste_erweitern");
+
 	
    						String intend_search = primitiveNLU.intend_search(usr_input);
+   	   					System.out.println("intend: "+intend_search);
+
 
    						if(intend_search.equals("unbekannt"))chatbot_output="Entschuldigung, das habe ich nicht verstanden. Bitte Nutzen Sie Wörter wie Titel, Autor ... um mir das Wesen des Merkmals zu nennen.";
    						else {
    							if(usr_input.contains("\"")) {
    		 	 	   				if(intend_search.equals("titel")) {
    		 	 	   					String titel = primitiveNLU.getTitle(usr_input, true);
+		   							Datenbank.sortmerge(Datenbank.buecherliste, ergebnisse);
    		   							ergebnisse = Datenbank.Vereinigung(ergebnisse, Datenbank.searchBook_title(titel));
-   		   							if(ergebnisse.size() == 0) ergebnisse = Datenbank.searchBook_online_titel(titel);
+   		   							if(ergebnisse.size() == 0 && goodreads_online) ergebnisse = Datenbank.searchBook_online_titel(titel);
    		   						}
    		 	   					if(intend_search.equals("autor")) {
    			 	   					String autor = primitiveNLU.getAuthor(usr_input, true);
+		   							Datenbank.sortmerge(Datenbank.buecherliste, ergebnisse);
    		   							ergebnisse = Datenbank.Vereinigung(ergebnisse, Datenbank.searchBook_author(autor));
-   		   							if(ergebnisse.size() == 0) ergebnisse = Datenbank.searchBook_online_autor(autor);
+   		   							if(ergebnisse.size() == 0 && goodreads_online) ergebnisse = Datenbank.searchBook_online_autor(autor);
    		 	   					}
    		 	   					if(intend_search.equals("charakter")) {
    			 	   					String charakter = primitiveNLU.getCharacter(usr_input, true);
@@ -104,10 +118,32 @@ public class Dialogmanager {
    			 	 	   				String rating = primitiveNLU.getRating(usr_input, true);
    		   							ergebnisse = Datenbank.Vereinigung(ergebnisse, Datenbank.searchBook_rating_höher(Integer.valueOf(rating)));
    		 	 	   				}
-   		 	 	   				chatbot_output += " Anzahl Ergebnisse: "+ergebnisse.size();
+   		 	 	   				chatbot_output = " Anzahl Ergebnisse: "+ergebnisse.size();
    	 	 	   				}
    	 	 	   				else {
-   	 	 	   					chatbot_output = "Entschuldigung, das habe ich nicht verstanden. Bitte geben Sie Buchmerkmal mit \" ein.";
+   	 	 	   					String identity = primitiveNLU.getAuthor(usr_input, false);
+   	 	 	   					if(!identity.equals("")) {
+		   	 	 	   				if(intend_search.equals("autor")) {
+			   							ergebnisse = Datenbank.Vereinigung(ergebnisse, Datenbank.searchBook_author(identity));
+			   							if(ergebnisse.size() == 0 && goodreads_online) ergebnisse = Datenbank.searchBook_online_autor(identity);
+		   	 	 	   				}
+			 	   					if(intend_search.equals("charakter")) {
+			   							ergebnisse = Datenbank.Vereinigung(ergebnisse, Datenbank.searchBook_character(identity));
+			 	   					}
+   	 	 	   					}
+   	 	 	   					if (usr_input.contains("[0-9]")) {
+   	 	 	   						if(intend_search.equals("jahr")) {
+				 	   					String jahr = primitiveNLU.getYear(usr_input, true);
+			   							ergebnisse = Datenbank.Vereinigung(ergebnisse, Datenbank.searchBook_year(Integer.valueOf(jahr), 1)); //FIXME: davor, danach und genau erkennen
+			 	   					}
+			 	 	   				if(intend_search.equals("rating"))	{
+				 	 	   				String rating = primitiveNLU.getRating(usr_input, true);
+			   							ergebnisse = Datenbank.Vereinigung(ergebnisse, Datenbank.searchBook_rating_höher(Integer.valueOf(rating)));
+			 	 	   				} 
+   	 	 	   					}
+   	 	 	   					else {
+   	 	 	   						chatbot_output = "Entschuldigung, das habe ich nicht verstanden. Bitte geben Sie Buchmerkmal mit \" ein.";
+   	 	 	   					}
    							}
    						}
  	 	   		}
@@ -120,12 +156,14 @@ public class Dialogmanager {
 		 	 	   				if(intend_search.equals("titel")) {
 		 	 	   					String titel = primitiveNLU.getTitle(usr_input, true);
 		   							ergebnisse = Datenbank.Schnitt(ergebnisse, Datenbank.searchBook_title(titel));
-		   							if(ergebnisse.size() == 0) ergebnisse = Datenbank.searchBook_online_titel(titel);
+		   							Datenbank.sortmerge(Datenbank.buecherliste, ergebnisse);
+		   							if(ergebnisse.size() == 0 && goodreads_online) ergebnisse = Datenbank.searchBook_online_titel(titel);
 		   						}
 		 	   					if(intend_search.equals("autor")) {
 			 	   					String autor = primitiveNLU.getAuthor(usr_input, true);
 		   							ergebnisse = Datenbank.Schnitt(ergebnisse, Datenbank.searchBook_author(autor));
-		   							if(ergebnisse.size() == 0) ergebnisse = Datenbank.searchBook_online_autor(autor);
+		   							Datenbank.sortmerge(Datenbank.buecherliste, ergebnisse);
+		   							if(ergebnisse.size() == 0 && goodreads_online) ergebnisse = Datenbank.searchBook_online_autor(autor);
 		 	   					}
 		 	   					if(intend_search.equals("charakter")) {
 			 	   					String charakter = primitiveNLU.getCharacter(usr_input, true);
@@ -151,7 +189,7 @@ public class Dialogmanager {
 			 	 	   				String rating = primitiveNLU.getRating(usr_input, true);
 		   							ergebnisse = Datenbank.Schnitt(ergebnisse, Datenbank.searchBook_rating_höher(Integer.valueOf(rating)));
 		 	 	   				}
-		 	 	   				chatbot_output += " Anzahl Ergebnisse: "+ergebnisse.size();
+		 	 	   				chatbot_output = " Anzahl Ergebnisse: "+ergebnisse.size();
 	 	 	   				}
 	 	 	   				else {
 	 	 	   					chatbot_output = "Entschuldigung, das habe ich nicht verstanden. Bitte geben Sie Buchmerkmal mit \" ein.";
@@ -161,7 +199,7 @@ public class Dialogmanager {
    				}
    				if(zustand.contains("bücherlist_ausgeben") || intend_mode.equals("ausgeben")) {
    				System.out.println("Zustand: ausgeben");
-   					chatbot_output = Datenbank.printBooklist(ergebnisse);
+   					chatbot_output = Datenbank.printBooklist_s(ergebnisse);
    					
    				}
    	   			//beende = primitiveNLU.
@@ -171,11 +209,22 @@ public class Dialogmanager {
    		}
    		System.exit(0);
 	}
+   	
+   	
+	private static boolean checkInternetConnection(String url) throws UnknownHostException, IOException {
+		long currentTime = System.currentTimeMillis();
+		InetAddress address = InetAddress.getByName(new URL(url).getHost());
+		boolean isPinged = address.isReachable(2000); // 5 seconds
+		currentTime = System.currentTimeMillis() - currentTime;
+		if(isPinged) {
+		    //System.out.println("pinged successfully in "+ currentTime+ "millisecond");
+			return true;
+		} else {
+		    //System.out.println("PIng failed.");
+			return false;
+		}
+	}
 	
-	//TODO durch DFA der erkennt was eingeben werden soll ...
 	
-	//TODO ruft primititveNLU: get... auf
-	
-	//TODO: generiert ausgabe
 
 }
