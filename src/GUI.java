@@ -39,15 +39,11 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 
 
 	public static void main(String[] args) throws InterruptedException {
-		//frame = new GUI();
-
+		frame = new GUI();
 		frame.init_frame();
-		//mirrormode();
+		mirrormode();
 	}
-	
-	
-	
-	//
+		
 	private static void mirrormode() throws InterruptedException {
 		while(true) {
 			Thread.sleep(20);
@@ -134,10 +130,17 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 	
 	public static void setOutput(String output) {
 		//System.out.println("setOutput aufgerufen");
+		//output = output.replace('\n', '\0');
 		GUI.output = output;
 			//umbrüche setzen
-			for(int pos=0; pos<GUI.output.length(); pos++) {
-				if(pos%100 ==0 && pos > 0)GUI.output = GUI.output.substring(0,pos-1)+'\n'+GUI.output.substring(pos,GUI.output.length());
+			a: for(int pos=0; pos<GUI.output.length(); pos++) {
+				if(pos%100 ==0 && pos > 0) {
+					while(GUI.output.charAt(pos) != ' ') {
+						pos++;
+						if(pos == output.length()-1) break a;
+					}
+					GUI.output = GUI.output.substring(0,pos)+'\n'+GUI.output.substring(pos+1,GUI.output.length());
+				}
 			}
 		editTextArea_output.setText(GUI.output);
 		editTextArea_input.setText("");

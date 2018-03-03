@@ -61,6 +61,7 @@ public class primitiveNLU {
 		if(eingabe.contains("es ist genug")) return "nein";
 		if(eingabe.contains("will  nicht")) return "nein";
 		if(eingabe.contains("das lehne ich ab") || eingabe.contains("ablehn")) return "nein";
+		if(eingabe.contains("keine angaben")  || eingabe.contains("keine einschränkungen")) return "nein";
 	return "";
 	}
 	
