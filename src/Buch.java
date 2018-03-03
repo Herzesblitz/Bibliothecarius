@@ -81,6 +81,12 @@ public class Buch implements Serializable {
 		return ausgabe;
 	}
 	
+	public static String ausgebenBücherliste_s_param(ArrayList<Buch> liste, ArrayList<String> param) {
+		String ausgabe="";
+			for(Buch b: liste) {ausgabe += ausgebenBuch_s(b, param); if(b.title.equals(""))continue; ausgabe+=("\n------------------------------------------------------------------------------------------------\n");}
+		return ausgabe;
+	}
+	
 	public static void ausgebenBuch(Buch Buchmeta) {
 		if(Buchmeta.title.equals(""))return;
 		if(!Buchmeta.url.equals(""))System.out.println("URL: "+Buchmeta.url+"\n");
@@ -119,6 +125,45 @@ public class Buch implements Serializable {
 		}
 	}
 
+	public static String ausgebenBuch_s(Buch Buchmeta, ArrayList<String> param) {
+		String ausgabe="BUCH \n";
+			if(Buchmeta.title.equals(""))return "";
+			if(!Buchmeta.url.equals("") && param.contains("url"))ausgabe+="URL: "+Buchmeta.url+"\n";
+			if(!Buchmeta.title.equals("") && param.contains("titel"))ausgabe+="Title of the Book: "+Buchmeta.title+"\n"; 
+			if(Buchmeta.Author.size() == 1 && param.contains("autor")) ausgabe="Author: "+Buchmeta.Author.get(0)+"\n";
+			else if(Buchmeta.Author.size() > 1 && param.contains("autor")) {ausgabe+=("Authors: "); for (int i=0; i<Buchmeta.Author.size()-1; i++) {ausgabe+=(Buchmeta.Author.get(i)+", ")+"\n";} ausgabe+=(Buchmeta.Author.get(Buchmeta.Author.size()-1))+"\n";}
+			if(Buchmeta.year != Integer.MIN_VALUE && param.contains("jahr"))ausgabe+="Publihsing year: "+Buchmeta.year+"\n";
+//			System.out.println("ISBN of the Book: "+Buchmeta.isbn);    	
+			if(!Buchmeta.publisher.equals("") && param.contains("publisher") )ausgabe+="Publisher: "+Buchmeta.publisher+"\n";
+			if(Buchmeta.rating != Integer.MIN_VALUE && param.contains("publisher"))ausgabe+="Rating: "+Buchmeta.rating+"\n";
+			ausgabe+=("________________________________________________")+"\n";
+			if(Buchmeta.Characters.size() > 0 && param.contains("charaktere") ) {
+				ausgabe+=("Characters in the Book: \n");
+				for (String x: Buchmeta.Characters) System.out.println(x);
+				ausgabe+=("________________________________________________")+"\n";
+			}
+			if(Buchmeta.shelves.size() > 0  && param.contains("thema") ) {
+				ausgabe+=("Genre of the Book: \n");
+				for (String x: Buchmeta.shelves)	System.out.println(x);
+				ausgabe+=("________________________________________________")+"\n";
+			}
+			if(Buchmeta.awards.size() > 0 && param.contains("awards")) {
+				ausgabe+=("Awards of the Book: \n");
+				for (String x: Buchmeta.awards)	System.out.println(x);
+				ausgabe+=("________________________________________________")+"\n";
+				
+			}
+			if(Buchmeta.similar_Books != null && Buchmeta.similar_Books.size()>0  && param.contains("similar") ){
+				ausgabe+=("Ähnliche Bücher: \n");
+				for (String x: Buchmeta.similar_Books)	System.out.println(x);
+				ausgabe+=("________________________________________________")+"\n";
+			}
+			if(!Buchmeta.blurb.equals("") && param.contains("blurb") ) {
+				ausgabe+=("Blurb of the Book: \n");
+				ausgabe+=(Buchmeta.blurb)+"\n";
+			}
+		return ausgabe;
+	}
 	
 	public static String ausgebenBuch_s(Buch Buchmeta) {
 		String ausgabe="BUCH \n";

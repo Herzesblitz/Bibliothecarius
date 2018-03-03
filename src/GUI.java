@@ -143,7 +143,6 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 		editTextArea_input.setText("");
 		eingabebereit = true;
 		frame.pack();
-
 	}
 	
 	@Override

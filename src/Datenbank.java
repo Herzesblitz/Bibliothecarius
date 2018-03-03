@@ -50,9 +50,7 @@ public class Datenbank {
 	static ArrayList<String> dieBücherFehlen = new ArrayList<>();
 	static boolean goodreads_online = false;
 
-
-
-	 public static void main(String args[]) throws Exception{  
+	public static void main(String args[]) throws Exception{  
 		 //repariere_database();
 		//printBooklist(searchBook_title("Crimson Shell"));
 		// buecher_similarBerechnen();
@@ -713,13 +711,22 @@ public class Datenbank {
 	 	
 	 	public static String printBooklist_s(ArrayList<Buch> b) {
 	 		return Buch.ausgebenBücherliste_s(b);
-	 	 }
+	 	}
+	 	
+	 	/**
+	 	 * gibt Liste von Büchern als String repräsentiert aus, einschränkung auf in param genannte Variablen
+	 	 * @param b
+	 	 * @param param
+	 	 * @return
+	 	 */
+	 	public static String printBooklist_s_param(ArrayList<Buch> b, ArrayList<String> param) {
+	 		return Buch.ausgebenBücherliste_s_param(b, param);
+	 	}
 	 
 		public static ArrayList<Buch> Schnitt(ArrayList<Buch> a, ArrayList<Buch> b){
 //			for(Buch b1: b)System.out.println(b1.title);
 //			System.out.println();
 //			for(Buch b1: a)System.out.println(b1.title);
-
 			ArrayList<Buch> list = new ArrayList<Buch>();
 	        for (Buch buch : a) {
 		        for (Buch buch1 : b) {

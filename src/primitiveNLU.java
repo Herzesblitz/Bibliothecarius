@@ -42,14 +42,26 @@ public class primitiveNLU {
 	
 	public static String intend_search_mode(String eingabe) {
 		eingabe = Datenbank.toleranzEinbauen(eingabe);
-		if(Intent_begrüßung(eingabe))return "begrüßung";
+		if(Intent_begruessung(eingabe))return "begrüßung";
 		if(eingabe.contains("erweitern") || eingabe.contains("erweitere") ||
 		eingabe.contains("suche") || eingabe.contains("empfehlung"))return "erweitern";
 		if(eingabe.contains("eingrenzen") || eingabe.contains("grenze ein"))return "einschränken";
 		if(eingabe.contains("ausgeben") || (eingabe.contains("gebe") && eingabe.contains("aus")
 		|| eingabe.contains("anzeigen") || (eingabe.contains("zeige") && eingabe.contains("an"))))return "ausgeben";
-
 	return "";	
+	}
+	
+	public static String intend_ablehnung(String eingabe) {
+		eingabe = Datenbank.toleranzEinbauen(eingabe);
+		eingabe = satzzeichen_löschen(eingabe);
+		if(eingabe.contains("das reicht")) return "nein";
+		if(eingabe.contains("nein")) return "nein";
+		if(eingabe.contains("mehr nicht")) return "nein";
+		if(eingabe.contains("es reicht")) return "nein";
+		if(eingabe.contains("es ist genug")) return "nein";
+		if(eingabe.contains("will  nicht")) return "nein";
+		if(eingabe.contains("das lehne ich ab") || eingabe.contains("ablehn")) return "nein";
+	return "";
 	}
 	
 	/** Sucht nach Variable
@@ -134,7 +146,7 @@ public class primitiveNLU {
 				+ "Das kann der Titel, Autor, Charakter, Sprache (Englisch oder Deutsch), ISBN, Buchreihe, Verleger, Mindestbewertung von 1-5 (von Internetnutzern), ein Thema sein";
 	}
 	
-	public static boolean Intent_begrüßung(String eingabe) {
+	public static boolean Intent_begruessung(String eingabe) {
 		eingabe = Datenbank.toleranzEinbauen(eingabe);
 		eingabe = satzzeichen_löschen(eingabe);
 		if(eingabe.contains("hallo")) return true;
@@ -181,11 +193,6 @@ public class primitiveNLU {
 		if(eingabe.contains("schönen feierabend")) return true;
 		return false;
 	}
-	
-	
-	
-	
-	
 	
 	public static String searchForTitles_online(String input) throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException, ExecutionException {
 		System.out.println("wortsuche nach titel: "+input);
