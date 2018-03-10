@@ -36,7 +36,7 @@ class BackgroundPanel extends JPanel {
 
     public BackgroundPanel() {
         try {
-            img = ImageIO.read(getClass().getResource("./Bibliothecarius/src/bibliothecarius.jpg"));
+            img = ImageIO.read(getClass().getResource("bibliothecarius.jpg"));
             System.out.println("Picture loaded.");
         } catch (IOException e) {
             e.printStackTrace();
@@ -46,10 +46,8 @@ class BackgroundPanel extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
-        // TODO Auto-generated method stub
         super.paintComponent(g);
-        g.drawImage(img, 0, 0, this);
-
+        g.drawImage(img, 0, 0, getWidth(), getHeight(), this);
     }
 
     public Image getBackgroundImage() {
@@ -107,30 +105,26 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 		frame.addMouseListener(this);
 		frame.addKeyListener(this);
 		
-		Container cp = getContentPane();
-		cp.setLayout(new BoxLayout(cp, FlowLayout.CENTER));
-		
+//		Container cp = getContentPane();
+//		cp.setLayout(new BoxLayout(cp, FlowLayout.CENTER));
 		//BIld
-		
 		 setVisible(true);
-	        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-	        BackgroundPanel backgroundPanel = new BackgroundPanel();
-	        add(backgroundPanel);
-
-	        setSize(backgroundPanel.getBackgroundImage().getWidth(backgroundPanel), backgroundPanel.getBackgroundImage().getHeight(backgroundPanel));
+         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+         BackgroundPanel backgroundPanel = new BackgroundPanel();
+         frame.add(backgroundPanel);
+         setSize(backgroundPanel.getBackgroundImage().getWidth(backgroundPanel), backgroundPanel.getBackgroundImage().getHeight(backgroundPanel));
 		
 		//INPUT TEXT AREA
 		JLabel label_input = new JLabel("Nutzer: ");
 		label_input.setSize(100, 100);
 
-		BoxLayout layout = new BoxLayout(cp, BoxLayout.Y_AXIS);
-		cp.setLayout(layout);
+		BoxLayout layout = new BoxLayout(frame, BoxLayout.Y_AXIS);
+		//frame.setLayout(layout);
 		this.getContentPane().add(label_input);
 		 
 		editTextArea_input = new JTextField(100);
 		editTextArea_input.setHorizontalAlignment(SwingConstants.LEFT);
-		cp.add(editTextArea_input);
+		frame.add(editTextArea_input);
 		
 		JLabel label_output= new JLabel("Chatbot: ");
 		label_input.setSize(100, 100);
@@ -140,10 +134,10 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 		editTextArea_output = new JTextArea("");
 		editTextArea_output.setSize(100, 6);
 		editTextArea_output.setAlignmentX(0);
-		cp.add(editTextArea_output);
+		frame.add(editTextArea_output);
 		
 		scroller =new JScrollPane(editTextArea_output, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		cp.add(scroller);
+		frame.add(scroller);
 		
 		frame.pack();
 		
@@ -200,7 +194,9 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 	}
 	
 	private static String output_formatieren1(String output) {
-		output = output.replace('\n', '\0');
+		output = output.replaceAll("\n", " ");
+		output = output.replaceAll("°", "\n");
+
 		a: for(int pos=0; pos< output.length(); pos++) {
 			if(pos%100 == 0 && pos > 0) {
 				while(pos < output.length()-1 && output.charAt(pos) != ' ') {
