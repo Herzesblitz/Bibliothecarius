@@ -60,7 +60,7 @@ public class Datenbank {
 		 
 		 //save_Database();
 		
-		 printBooklist(searchBook_online_titel("Herr der Ringe"));
+		 printBooklist(searchBook_online_titel(""));
 		 
 		 
 		 //datenbankErweitern("https://www.goodreads.com/list/show/1.Best_Books_Ever");

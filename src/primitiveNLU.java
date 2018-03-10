@@ -19,7 +19,8 @@ public class primitiveNLU {
 		
 	public static void main(String[] args) throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException, ExecutionException {
 		// TODO Auto-generated method stub
-		System.out.println("return: "+searchForTitles_online("Der Name des Buchs ist Herr der Ringe"));
+		//System.out.println("return: "+searchForTitles_online("Der Name des Buchs ist Herr der Ringe"));
+		System.out.println(searchForTitles_online("Ich brauche eine Buchempfehlung zu die ewige Geschichte"));
 	}
 	
 	
