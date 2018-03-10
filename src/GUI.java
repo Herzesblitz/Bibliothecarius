@@ -72,6 +72,8 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 	static String input ="";
 	static String output ="";
 	static boolean  eingabebereit=true;
+	
+	private Image img;
 
 
 	public static void main(String[] args) throws InterruptedException {
@@ -91,6 +93,13 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 	}
 	
 	public void init_frame() {		
+		try {
+            img = ImageIO.read(getClass().getResource("bibliothecarius.jpg"));
+            System.out.println("Picture loaded.");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Picture was not found.");
+        }
 
 		Dimension aufloesung= Toolkit.getDefaultToolkit().getScreenSize();
 
@@ -105,26 +114,26 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 		frame.addMouseListener(this);
 		frame.addKeyListener(this);
 		
-//		Container cp = getContentPane();
-//		cp.setLayout(new BoxLayout(cp, FlowLayout.CENTER));
+		Container cp = getContentPane();
+		cp.setLayout(new BoxLayout(cp, FlowLayout.CENTER));
 		//BIld
 		 setVisible(true);
          setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
          BackgroundPanel backgroundPanel = new BackgroundPanel();
-         frame.add(backgroundPanel);
+         cp.add(backgroundPanel);
          setSize(backgroundPanel.getBackgroundImage().getWidth(backgroundPanel), backgroundPanel.getBackgroundImage().getHeight(backgroundPanel));
 		
 		//INPUT TEXT AREA
 		JLabel label_input = new JLabel("Nutzer: ");
 		label_input.setSize(100, 100);
 
-		BoxLayout layout = new BoxLayout(frame, BoxLayout.Y_AXIS);
-		//frame.setLayout(layout);
+		BoxLayout layout = new BoxLayout(cp, BoxLayout.Y_AXIS);
+		cp.setLayout(layout);
 		this.getContentPane().add(label_input);
 		 
 		editTextArea_input = new JTextField(100);
 		editTextArea_input.setHorizontalAlignment(SwingConstants.LEFT);
-		frame.add(editTextArea_input);
+		cp.add(editTextArea_input);
 		
 		JLabel label_output= new JLabel("Chatbot: ");
 		label_input.setSize(100, 100);
@@ -134,10 +143,10 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 		editTextArea_output = new JTextArea("");
 		editTextArea_output.setSize(100, 6);
 		editTextArea_output.setAlignmentX(0);
-		frame.add(editTextArea_output);
+		cp.add(editTextArea_output);
 		
 		scroller =new JScrollPane(editTextArea_output, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		frame.add(scroller);
+		cp.add(scroller);
 		
 		frame.pack();
 		
