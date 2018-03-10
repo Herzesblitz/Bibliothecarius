@@ -32,9 +32,6 @@ public class primitiveNLU {
 	public static void main(String[] args) throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException, ExecutionException {
 		// TODO Auto-generated method stub
 		//System.out.println("return: "+searchForTitles_online("Der Name des Buchs ist Herr der Ringe"));
-<<<<<<< HEAD
-		System.out.println(searchForTitles_online("Ich brauche eine Buchempfehlung zu die ewige Geschichte"));
-=======
 		
 		//System.out.println(namen_finden_POS_Tagger("Guten Tag, kannst du mir ein gutes Buch suchen, das ich gerne lesen soll, des wurde von Harald Blauzahn geschrieben."));;
 		
@@ -64,7 +61,6 @@ public class primitiveNLU {
 		if(eingabe.contains("das lehne ich ab") || eingabe.contains("ablehn")) return "nein";
 		if(eingabe.contains("keine angaben")  || eingabe.contains("keine einschränkungen")) return "nein";
 	return "";
->>>>>>> 4b67d6cea9a71ed249b57400158db4c3734ce9a0
 	}
 	
 	/** Sucht nach Variable
