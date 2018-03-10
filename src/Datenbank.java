@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -45,9 +48,9 @@ public class Datenbank {
 	
 	static ArrayList<Buch> buecherliste = new ArrayList<>();
 	static ArrayList<String> dieBücherFehlen = new ArrayList<>();
+	static boolean goodreads_online = false;
 
-
-	 public static void main(String args[]) throws Exception{  
+	public static void main(String args[]) throws Exception{  
 		 //repariere_database();
 		//printBooklist(searchBook_title("Crimson Shell"));
 		// buecher_similarBerechnen();
@@ -60,7 +63,11 @@ public class Datenbank {
 		 
 		 //save_Database();
 		
+<<<<<<< HEAD
 		 printBooklist(searchBook_online_titel(""));
+=======
+		 printBooklist(Vereinigung(searchBook_online_autor("Tolkien"), searchBook_online_titel("Herr der Ringe")));
+>>>>>>> 4b67d6cea9a71ed249b57400158db4c3734ce9a0
 		 
 		 
 		 //datenbankErweitern("https://www.goodreads.com/list/show/1.Best_Books_Ever");
@@ -94,6 +101,8 @@ public class Datenbank {
 		 eingabe = eingabe.replaceAll("ù", "u").replaceAll("è", "e").replaceAll("ò", "o").replaceAll("ì", "i").replaceAll("à", "a");
 	  return eingabe;
 	 }
+	 
+	
 	 
 	 	/**
 	 	 * füge jedes buch hinzu was mind. einen awards
@@ -143,7 +152,20 @@ public class Datenbank {
 	 		return sort_aufsteigend(dif);
 	 	}
 	 	
-	 	private static ArrayList<Buch> relevanz_thema(ArrayList<Buch>results, ArrayList<String> themen){
+	 	private static ArrayList<Buch> relevanz_thema(ArrayList<Buch>results, String thema){
+	 		HashMap<Buch, Integer> dif = new HashMap<Buch, Integer>();
+	 		//levenshteinDistance berechnen
+	 		for(Buch b: results) {
+	 			int autor_dif=0;
+	 			for(int i=0; i<b.shelves.size(); i++) {
+	 				autor_dif += levenshteinDistance(b.shelves.get(i),thema)*levenshteinDistance(b.shelves.get(i),thema);
+	 			}
+	 			dif.put(b, (int) Math.sqrt(autor_dif));
+	 		}
+	 		return sort_aufsteigend(dif);
+	 	}
+	 	
+	 	private static ArrayList<Buch> relevanz_themen(ArrayList<Buch>results, ArrayList<String> themen){
 	 		HashMap<Buch, Integer> dif = new HashMap<Buch, Integer>();
 	 		Collections.sort(themen);
 	 		//levenshteinDistance berechnen
@@ -157,7 +179,20 @@ public class Datenbank {
 	 		return sort_aufsteigend(dif);
 	 	}
 	 	
-	 	private static ArrayList<Buch> relevanz_character(ArrayList<Buch>results, ArrayList<String> characters){
+		private static ArrayList<Buch> relevanz_character(ArrayList<Buch>results, String character){
+	 		HashMap<Buch, Integer> dif = new HashMap<Buch, Integer>();
+	 		//levenshteinDistance berechnen
+	 		for(Buch b: results) {
+	 			int autor_dif=0;
+	 			for(int i=0; i<b.Characters.size(); i++) {
+	 				autor_dif += levenshteinDistance(b.Characters.get(i),character)*levenshteinDistance(b.Characters.get(i),character);
+	 			}
+	 			dif.put(b, (int) Math.sqrt(autor_dif));
+	 		}
+	 		return sort_aufsteigend(dif);
+	 	}
+	 	
+	 	private static ArrayList<Buch> relevanz_characters(ArrayList<Buch>results, ArrayList<String> characters){
 	 		HashMap<Buch, Integer> dif = new HashMap<Buch, Integer>();
 	 		//levenshteinDistance berechnen
 	 		for(Buch b: results) {
@@ -170,7 +205,7 @@ public class Datenbank {
 	 		return sort_aufsteigend(dif);
 	 	}
 	 	
-	 	private static ArrayList<Buch> relevanz_award(ArrayList<Buch>results, ArrayList<String> award){
+	 	private static ArrayList<Buch> relevanz_awards(ArrayList<Buch>results, ArrayList<String> award){
 	 		HashMap<Buch, Integer> dif = new HashMap<Buch, Integer>();
 	 		//levenshteinDistance berechnen
 	 		for(Buch b: results) {
@@ -183,8 +218,33 @@ public class Datenbank {
 	 		return sort_aufsteigend(dif);
 	 	}
 	 	
-	 	@SuppressWarnings("unused")
-		private static ArrayList<Buch> relevanz_autoren(ArrayList<Buch>results, ArrayList<String> authoren){
+	 	private static ArrayList<Buch> relevanz_award(ArrayList<Buch>results, String award){
+	 		HashMap<Buch, Integer> dif = new HashMap<Buch, Integer>();
+	 		//levenshteinDistance berechnen
+	 		for(Buch b: results) {
+	 			int autor_dif=0;
+	 			for(int i=0; i<b.awards.size(); i++) {
+	 				autor_dif += levenshteinDistance(b.awards.get(i), award)*levenshteinDistance(b.awards.get(i), award);
+	 			}
+	 			dif.put(b, (int) Math.sqrt(autor_dif));
+	 		}
+	 		return sort_aufsteigend(dif);
+	 	}
+	 	
+	 	private static ArrayList<Buch> relevanz_autor(ArrayList<Buch>results, String author){
+	 		HashMap<Buch, Integer> dif = new HashMap<Buch, Integer>();
+	 		//levenshteinDistance berechnen
+	 		for(Buch b: results) {
+	 			int autor_dif=0;
+	 			for(int i=0; i<b.Author.size(); i++) {
+	 				autor_dif += levenshteinDistance(b.Author.get(i), author)*levenshteinDistance(b.Author.get(i), author);
+	 			}
+	 			dif.put(b, (int) Math.sqrt(autor_dif));
+	 		}
+	 		return sort_aufsteigend(dif);
+	 	}
+	 	
+	 	private static ArrayList<Buch> relevanz_autoren(ArrayList<Buch>results, ArrayList<String> authoren){
 	 		HashMap<Buch, Integer> dif = new HashMap<Buch, Integer>();
 	 		//levenshteinDistance berechnen
 	 		for(Buch b: results) {
@@ -241,17 +301,17 @@ public class Datenbank {
 	 	 * @throws FileNotFoundException 
 	 	 */
 	 	 public static ArrayList<Buch> searchBook_year(int year, int modus) throws FileNotFoundException, ClassNotFoundException, IOException{
-	 		 if(buecherliste.size() == 0)load_Database();
-	 		 if(modus < -1 || modus > 1) {
-	 			 System.err.println("falscher Wert für Parameter "+modus);
+	 	 	 if(buecherliste.size() == 0)load_Database();
+	 	 	 if(modus < -1 || modus > 1) {
+	 	 		 System.err.println("falscher Wert für Parameter "+modus);
 		 		 return null;
-	 		 }
-	 		 else {
-	 			 ArrayList<Buch> results = new ArrayList<Buch>();
+	 	 	 }
+	 	 	 else {
+	 	 		 ArrayList<Buch> results = new ArrayList<Buch>();
 		 		 //suche nach exaktem Titel
-	 			 switch(modus) {
-	 			 	case -1: {
-	 			 		 for(Buch b: buecherliste) {
+	 	 		 switch(modus) {
+	 	 		 	case -1: {
+	 	 		 		 for(Buch b: buecherliste) {
 	 						 if(b.year < year) {
 	 							 results.add(b);
 	 						 }
@@ -291,8 +351,24 @@ public class Datenbank {
 					}
 				}
 			 } 
-	 		return relevanz_award(results,awardliste);
+	 		return relevanz_awards(results,awardliste);
 		 }
+		 
+		 public static ArrayList<Buch> searchBook_award(String award) throws FileNotFoundException, ClassNotFoundException, IOException {
+				load_Database();
+		 		 ArrayList<Buch> results = new ArrayList<Buch>();
+		 		 //suche nach exaktem Autor
+				 for(Buch b: buecherliste) {
+					for(String thema_buch: b.awards) {
+							//kaiserin -> auf kindliche kaiserin matchen
+							if(toleranzEinbauen(thema_buch).contains(toleranzEinbauen(award))) {
+								results.add(b);
+								break;
+							}
+					}
+				 } 
+				 return relevanz_award(results, award);
+			}
 	 	
 		 /**
 		  * wird von mir benutzt ...
@@ -328,6 +404,22 @@ public class Datenbank {
 	 		 }
 	 		 return returnlist;
 		}
+		
+		public static ArrayList<Buch> searchBook_thema(String thema) throws FileNotFoundException, ClassNotFoundException, IOException {
+			load_Database();
+	 		 ArrayList<Buch> results = new ArrayList<Buch>();
+	 		 //suche nach exaktem Autor
+			 for(Buch b: buecherliste) {
+				for(String thema_buch: b.shelves) {
+						//kaiserin -> auf kindliche kaiserin matchen
+						if(toleranzEinbauen(thema_buch).contains(toleranzEinbauen(thema))) {
+							results.add(b);
+							break;
+						}
+				}
+			 } 
+			 return relevanz_thema(results, thema);
+		}	
 	 
 	    /**
 	  	* sucht nach ALLEN Buechern die dieses Thema haben
@@ -352,8 +444,33 @@ public class Datenbank {
 					}
 				}
 			 } 
-	 		return relevanz_thema(results, themenliste);
+	 		return relevanz_themen(results, themenliste);
 	 	 }
+		
+		/**
+	        * sucht nach ALLEN Buechern die diesen Charakter haben
+		    * @param character
+		    * @return
+		 	* @throws FileNotFoundException
+		 	* @throws ClassNotFoundException
+		    * @throws IOException
+		 	*/
+		    public static ArrayList<Buch> searchBook_character(String charakter) throws FileNotFoundException, ClassNotFoundException, IOException {
+		    	load_Database();
+		 		 ArrayList<Buch> results = new ArrayList<Buch>();
+		 		 //suche nach exaktem Autor
+				 for(Buch b: buecherliste) {
+					for(String charakter_buch: b.Characters) {
+							//kaiserin -> auf kindliche kaiserin matchen
+							if(toleranzEinbauen(charakter_buch).toLowerCase().contains(toleranzEinbauen(charakter))) {
+								results.add(b);
+								break;
+							}
+						
+					}
+				 } 
+		 		return relevanz_character(results, charakter);
+		 	 }
 	 
 	 	/**
         * sucht nach ALLEN Buechern die diesen Charakter haben
@@ -378,7 +495,7 @@ public class Datenbank {
 					}
 				}
 			 } 
-	 		return relevanz_character(results, charakterliste);
+	 		return relevanz_characters(results, charakterliste);
 	 	 }
 	 	 
 	 	/**
@@ -389,7 +506,7 @@ public class Datenbank {
 	 	 * @throws ClassNotFoundException
 	 	 * @throws IOException
 	 	 */
-	 	public static ArrayList<Buch> searchBook_author(ArrayList<String> authorliste) throws FileNotFoundException, ClassNotFoundException, IOException {
+	 	public static ArrayList<Buch> searchBook_authors(ArrayList<String> authorliste) throws FileNotFoundException, ClassNotFoundException, IOException {
 	 		load_Database();
 	 		 ArrayList<Buch> results = new ArrayList<Buch>();
 	 		 //suche nach exaktem Autor
@@ -406,6 +523,22 @@ public class Datenbank {
 			 } 
 	 		return relevanz_autoren(results, authorliste);
 	 	}
+	 	
+	 	public static ArrayList<Buch> searchBook_author(String author) throws FileNotFoundException, ClassNotFoundException, IOException {
+			load_Database();
+	 		 ArrayList<Buch> results = new ArrayList<Buch>();
+	 		 //suche nach exaktem Autor
+			 for(Buch b: buecherliste) {
+				for(String thema_buch: b.Author) {
+						//kaiserin -> auf kindliche kaiserin matchen
+						if(toleranzEinbauen(thema_buch).contains(toleranzEinbauen(author))) {
+							results.add(b);
+							break;
+						}
+				}
+			 } 
+			 return relevanz_autor(results, author);
+		}
 	 	
 	 	public static ArrayList<Buch> searchBook_rating_höher(double rating) throws FileNotFoundException, ClassNotFoundException, IOException {
 	 		 load_Database();
@@ -507,17 +640,22 @@ public class Datenbank {
 	 	}
 	 	
 	 	public static ArrayList<Buch> searchBook_online_autor(String autor) throws UnsupportedEncodingException, ClassNotFoundException, IOException, InterruptedException, ExecutionException {
-	 		System.out.println("Autor in der Datenbank nicht gefunden. Suche Online danach ...");
+ 			goodreads_online = checkInternetConnection("https://www.goodreads.com/"); 		
+ 			if(!goodreads_online) {System.out.println("Keine Verbindung zu OnlineRessourcen möglich.");}
+ 			System.out.println("Autor in der Datenbank nicht gefunden. Suche Online danach ...");
 	 		ArrayList<String> urls = urlsErsteErgebnisSeite(autor);
-	 		ArrayList<Buch> ret = buchThreading(urls, 20); 	
+	 		ArrayList<Buch> ret = buchThreading(urls, 10); 	
 	 		ArrayList<String> autoren = new ArrayList<>(); autoren.add(autor);
 	 		return relevanz_autoren(ret, autoren);
 	 	}
 	 	
 	 	public static ArrayList<Buch> searchBook_online_titel(String titel) throws UnsupportedEncodingException, ClassNotFoundException, IOException, InterruptedException, ExecutionException {
+	 		goodreads_online = checkInternetConnection("https://www.goodreads.com/"); 		
+ 			if(!goodreads_online) {System.out.println("Keine Verbindung zu OnlineRessourcen möglich.");}
+	 		goodreads_online = checkInternetConnection("https://www.goodreads.com/"); 		
 	 		System.out.println("Buch in der Datenbank nicht gefunden. Suche Online danach ...");
 	 		ArrayList<String> urls = urlsErsteErgebnisSeite(titel);
-	 		ArrayList<Buch> ret = buchThreading(urls, 20);
+	 		ArrayList<Buch> ret = buchThreading(urls, 10);
 	 		return relevanz_title(ret, titel);
 	 	}
 	 	 
@@ -570,16 +708,29 @@ public class Datenbank {
 				}
 		
 	 	}
-	 	 
+	 	
 	 	public static void printBooklist(ArrayList<Buch> b) {
-	 		 Buch.ausgebenBücherliste(b);
+	 		Buch.ausgebenBücherliste(b);
 	 	 }
+	 	
+	 	public static String printBooklist_s(ArrayList<Buch> b) {
+	 		return Buch.ausgebenBücherliste_s(b);
+	 	}
+	 	
+	 	/**
+	 	 * gibt Liste von Büchern als String repräsentiert aus, einschränkung auf in param genannte Variablen
+	 	 * @param b
+	 	 * @param param
+	 	 * @return
+	 	 */
+	 	public static String printBooklist_s_param(ArrayList<Buch> b, ArrayList<String> param) {
+	 		return Buch.ausgebenBücherliste_s_param(b, param);
+	 	}
 	 
 		public static ArrayList<Buch> Schnitt(ArrayList<Buch> a, ArrayList<Buch> b){
 //			for(Buch b1: b)System.out.println(b1.title);
 //			System.out.println();
 //			for(Buch b1: a)System.out.println(b1.title);
-
 			ArrayList<Buch> list = new ArrayList<Buch>();
 	        for (Buch buch : a) {
 		        for (Buch buch1 : b) {
@@ -601,6 +752,7 @@ public class Datenbank {
 	 	 }
 	 
 	 	public static ArrayList<Buch> Vereinigung(ArrayList<Buch> a, ArrayList<Buch> b){
+	 		System.out.println("Vereinigung: "+a.size()+" "+b.size());
 	 		 Set<Buch> set = new HashSet<Buch>();
 		        set.addAll(a);
 		        set.addAll(b);
@@ -627,6 +779,7 @@ public class Datenbank {
 		    }
 		    ArrayList<Buch> liste = new ArrayList<>();
 		    for (Future<Buch> future : set) {
+		    	Thread.sleep(20);
 		    	liste.add(future.get());
 		    }
 		    pool.shutdownNow();
@@ -726,7 +879,7 @@ public class Datenbank {
 			            alt.add(index1, neu.get(index2++));
 			    }
 		 }
-		 //save_Database();
+		 save_Database();
 		return alt;
 	 }
 	 
@@ -1087,4 +1240,17 @@ public class Datenbank {
 		 save_Database();
 	 }
 	
+	 private static boolean checkInternetConnection(String url) throws UnknownHostException, IOException {
+			long currentTime = System.currentTimeMillis();
+			InetAddress address = InetAddress.getByName(new URL(url).getHost());
+			boolean isPinged = address.isReachable(5000); // 5 seconds
+			currentTime = System.currentTimeMillis() - currentTime;
+			if(isPinged) {
+			    //System.out.println("pinged successfully in "+ currentTime+ "millisecond");
+				return true;
+			} else {
+			    //System.out.println("PIng failed.");
+				return false;
+			}
+		}
 }
