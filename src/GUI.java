@@ -131,32 +131,32 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 		
 		
 		//LAYOUT
-		BoxLayout layout = new BoxLayout(cp, BoxLayout.Y_AXIS);
-		cp.setLayout(layout);
-		
+			BoxLayout layout = new BoxLayout(cp, BoxLayout.Y_AXIS);
+			cp.setLayout(layout);
+			
 		//INPUT LABEL
-		label_input = new JLabel("Nutzer: ");
-		label_input.setSize(100, 100);
-		cp.add(label_input);
+			label_input = new JLabel("Nutzer: ", SwingConstants.LEFT);
+			label_input.setSize(100, 100);
+			cp.add(label_input);
 
 		//INPUT TEXT AREA
-		editTextArea_input = new JTextField(100);
-		editTextArea_input.setHorizontalAlignment(SwingConstants.LEFT);
-		cp.add(editTextArea_input);
-		
+			editTextArea_input = new JTextField(100);
+			editTextArea_input.setHorizontalAlignment(SwingConstants.LEFT);
+			cp.add(editTextArea_input);
+			
 		//OUTPUT LABEL
-		label_output= new JLabel("Chatbot: ");
-		label_input.setSize(100, 100);
-		cp.add(label_output);
+			label_output= new JLabel("Chatbot: ");
+			label_input.setSize(100, 100);
+			cp.add(label_output);
 		
 		//OUTPUT TEXT AREA
-		editTextArea_output = new JTextArea("");
-		editTextArea_output.setSize(100, 6);
-		editTextArea_output.setAlignmentX(0);
-		cp.add(editTextArea_output);
-		scroller =new JScrollPane(editTextArea_output, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		cp.add(scroller);
-		
+			editTextArea_output = new JTextArea("");
+			editTextArea_output.setSize(100, 6);
+			editTextArea_output.setAlignmentX(0);
+			cp.add(editTextArea_output);
+			scroller =new JScrollPane(editTextArea_output, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			cp.add(scroller);
+			
 		frame.pack();
 		
 		this.setVisible(true);
