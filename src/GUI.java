@@ -1,5 +1,6 @@
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -68,7 +69,7 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 		frame.addKeyListener(this);
 		
 		Container cp = getContentPane();
-		cp.setLayout(new BoxLayout(cp, BoxLayout.PAGE_AXIS));
+		cp.setLayout(new BoxLayout(cp, FlowLayout.CENTER));
 		
 		//INPUT TEXT AREA
 		JLabel label_input = new JLabel("Nutzer: ");
@@ -88,7 +89,7 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 		this.getContentPane().add(label_output);
 	
 		editTextArea_output = new JTextArea("");
-		editTextArea_output.setSize(100, 100);
+		editTextArea_output.setSize(100, 6);
 		editTextArea_output.setAlignmentX(0);
 		cp.add(editTextArea_output);
 		
@@ -128,22 +129,53 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 		return kopie;
 	}
 	
-	public static void setOutput(String output) {
-		//System.out.println("setOutput aufgerufen");
-		output = output.replace('\n', '\0');
-		GUI.output = output;
-			//umbrüche setzen
-			a: for(int pos=0; pos<GUI.output.length(); pos++) {
-				if(pos%100 ==0 && pos > 0) {
-					while(GUI.output.charAt(pos) != ' ') {
-						pos++;
+	private static String output_formatieren2(String output) {
+		int counter_last_ZU=0;
+		a: for(int pos=0; pos< output.length(); pos++) {
+				if(output.charAt(pos) == '\n') {
+					counter_last_ZU = 0;
+					continue;
+				}
+				if(counter_last_ZU >= 100) {
+					counter_last_ZU = 0;
+					while(pos < output.length()-1 && output.charAt(pos) != ' ') {
+						++pos;
 						if(pos == output.length()-1) break a;
 					}
-					GUI.output = GUI.output.substring(0,pos-1)+'\n'+GUI.output.substring(pos+1,GUI.output.length());
+					if(pos == output.length()-1) break a;
+					output = output.substring(0,pos)+'\n'+output.substring(pos+1,output.length());
 				}
+				++counter_last_ZU;
+		}
+	return output;
+	}
+	
+	private static String output_formatieren1(String output) {
+		output = output.replace('\n', '\0');
+		a: for(int pos=0; pos< output.length(); pos++) {
+			if(pos%100 == 0 && pos > 0) {
+				while(pos < output.length()-1 && output.charAt(pos) != ' ') {
+					++pos;
+					if(pos == output.length()-1) break a;
+				}
+				if(pos == output.length()-1) break a;
+				output = output.substring(0,pos)+'\n'+output.substring(pos+1,output.length());
 			}
-		System.out.println(GUI.output);
-		editTextArea_output.setText(GUI.output);
+		}
+	return output;
+	}
+	
+	public static void setOutput(String output) {
+		//System.out.println("setOutput aufgerufen");
+		GUI.output = output;
+			//umbrüche setzen
+		
+		output = output_formatieren2(output);
+		
+		System.out.println(output);
+		editTextArea_output.setText(output);
+
+
 		editTextArea_input.setText("");
 		eingabebereit = true;
 		frame.pack();

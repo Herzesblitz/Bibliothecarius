@@ -5,6 +5,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
@@ -126,29 +127,61 @@ public class Buch implements Serializable {
 	}
 
 	public static String ausgebenBuch_s(Buch Buchmeta, ArrayList<String> param) {
-		String ausgabe="BUCH \n";
+		//BUG1
+		for (Iterator<String> iterator = Buchmeta.Characters.iterator(); iterator.hasNext(); ) {
+		    String value = iterator.next();
+		    if (value.contains("[a-zA-Z]+") == false) {
+		        iterator.remove();
+		    }
+		}
+		for (Iterator<String> iterator = Buchmeta.Author.iterator(); iterator.hasNext(); ) {
+		    String value = iterator.next();
+		    if (value.contains("[a-zA-Z]+") == false) {
+		        iterator.remove();
+		    }
+		}
+		for (Iterator<String> iterator = Buchmeta.shelves.iterator(); iterator.hasNext(); ) {
+		    String value = iterator.next();
+		    if (value.contains("[a-zA-Z]+") == false) {
+		        iterator.remove();
+		    }
+		}
+		for (Iterator<String> iterator = Buchmeta.similar_Books.iterator(); iterator.hasNext(); ) {
+		    String value = iterator.next();
+		    if (value.contains("[a-zA-Z]+") == false) {
+		        iterator.remove();
+		    }
+		}
+		for (Iterator<String> iterator = Buchmeta.awards.iterator(); iterator.hasNext(); ) {
+		    String value = iterator.next();
+		    if (value.contains("[a-zA-Z]+") == false) {
+		        iterator.remove();
+		    }
+		}
+		
+		String ausgabe="";
 			if(Buchmeta.title.equals(""))return "";
-			if(!Buchmeta.url.equals("") && param.contains("url"))ausgabe+="URL: "+Buchmeta.url+"\n";
-			if(!Buchmeta.title.equals("") && param.contains("titel"))ausgabe+="Title of the Book: "+Buchmeta.title+"\n"; 
-			if(Buchmeta.Author.size() == 1 && param.contains("autor")) ausgabe="Author: "+Buchmeta.Author.get(0)+"\n";
-			else if(Buchmeta.Author.size() > 1 && param.contains("autor")) {ausgabe+=("Authors: "); for (int i=0; i<Buchmeta.Author.size()-1; i++) {ausgabe+=(Buchmeta.Author.get(i)+", ")+"\n";} ausgabe+=(Buchmeta.Author.get(Buchmeta.Author.size()-1))+"\n";}
-			if(Buchmeta.year != Integer.MIN_VALUE && param.contains("jahr"))ausgabe+="Publihsing year: "+Buchmeta.year+"\n";
+			//if(!Buchmeta.url.equals("") && param.contains("url"))ausgabe+="URL: "+Buchmeta.url+"\n";
+			if(!Buchmeta.title.equals("") && param.contains("titel"))ausgabe+="Titel: "+Buchmeta.title+"\n"; 
+			if(Buchmeta.Author.size() == 1 && param.contains("autor")) ausgabe="Autor: "+Buchmeta.Author.get(0)+"\n";
+			else if(Buchmeta.Author.size() > 1 && param.contains("autor")) {ausgabe+=("Autoren: "); for (int i=0; i<Buchmeta.Author.size()-1; i++) {ausgabe+=(Buchmeta.Author.get(i)+", ")+"\n";} ausgabe+=(Buchmeta.Author.get(Buchmeta.Author.size()-1))+"\n";}
+			if(Buchmeta.year != Integer.MIN_VALUE && param.contains("jahr"))ausgabe+="Veröffentlichungsjahr: "+Buchmeta.year+"\n";
 //			System.out.println("ISBN of the Book: "+Buchmeta.isbn);    	
-			if(!Buchmeta.publisher.equals("") && param.contains("publisher") )ausgabe+="Publisher: "+Buchmeta.publisher+"\n";
-			if(Buchmeta.rating != Integer.MIN_VALUE && param.contains("publisher"))ausgabe+="Rating: "+Buchmeta.rating+"\n";
+			if(!Buchmeta.publisher.equals("") && param.contains("publisher") )ausgabe+="Veröffentlichungsdaten: "+Buchmeta.publisher+"\n";
+			if(Buchmeta.rating != Integer.MIN_VALUE && param.contains("publisher"))ausgabe+="Bewertung: "+Buchmeta.rating+"\n";
 			ausgabe+=("________________________________________________")+"\n";
 			if(Buchmeta.Characters.size() > 0 && param.contains("charaktere") ) {
-				ausgabe+=("Characters in the Book: \n");
+				ausgabe+=("Charaktere: \n");
 				for (String x: Buchmeta.Characters) System.out.println(x);
 				ausgabe+=("________________________________________________")+"\n";
 			}
 			if(Buchmeta.shelves.size() > 0  && param.contains("thema") ) {
-				ausgabe+=("Genre of the Book: \n");
+				ausgabe+=("Genres: \n");
 				for (String x: Buchmeta.shelves)	System.out.println(x);
 				ausgabe+=("________________________________________________")+"\n";
 			}
 			if(Buchmeta.awards.size() > 0 && param.contains("awards")) {
-				ausgabe+=("Awards of the Book: \n");
+				ausgabe+=("Auszeichnungen: \n");
 				for (String x: Buchmeta.awards)	System.out.println(x);
 				ausgabe+=("________________________________________________")+"\n";
 				
@@ -159,36 +192,69 @@ public class Buch implements Serializable {
 				ausgabe+=("________________________________________________")+"\n";
 			}
 			if(!Buchmeta.blurb.equals("") && param.contains("blurb") ) {
-				ausgabe+=("Blurb of the Book: \n");
+				ausgabe+=("Klappentext: \n");
 				ausgabe+=(Buchmeta.blurb)+"\n";
 			}
 		return ausgabe;
 	}
 	
 	public static String ausgebenBuch_s(Buch Buchmeta) {
-		String ausgabe="BUCH \n";
+		//BUG1
+			for (Iterator<String> iterator = Buchmeta.Characters.iterator(); iterator.hasNext(); ) {
+			    String value = iterator.next();
+			    if (value.contains("[a-zA-Z]+") == false) {
+			        iterator.remove();
+			    }
+			}
+			for (Iterator<String> iterator = Buchmeta.Author.iterator(); iterator.hasNext(); ) {
+			    String value = iterator.next();
+			    if (value.contains("[a-zA-Z]+") == false) {
+			        iterator.remove();
+			    }
+			}
+			for (Iterator<String> iterator = Buchmeta.shelves.iterator(); iterator.hasNext(); ) {
+			    String value = iterator.next();
+			    if (value.contains("[a-zA-Z]+") == false) {
+			        iterator.remove();
+			    }
+			}
+			for (Iterator<String> iterator = Buchmeta.similar_Books.iterator(); iterator.hasNext(); ) {
+			    String value = iterator.next();
+			    if (value.contains("[a-zA-Z]+") == false) {
+			        iterator.remove();
+			    }
+			}
+			for (Iterator<String> iterator = Buchmeta.awards.iterator(); iterator.hasNext(); ) {
+			    String value = iterator.next();
+			    if (value.contains("[a-zA-Z]+") == false) {
+			        iterator.remove();
+			    }
+			}
+			
+		
+		String ausgabe="";
 			if(Buchmeta.title.equals(""))return "";
-			if(!Buchmeta.url.equals(""))ausgabe+="URL: "+Buchmeta.url+"\n";
-			if(!Buchmeta.title.equals(""))ausgabe+="Title of the Book: "+Buchmeta.title+"\n"; 
-			if(Buchmeta.Author.size() == 1) ausgabe="Author: "+Buchmeta.Author.get(0)+"\n";
-			else if(Buchmeta.Author.size() > 1) {ausgabe+=("Authors: "); for (int i=0; i<Buchmeta.Author.size()-1; i++) {ausgabe+=(Buchmeta.Author.get(i)+", ")+"\n";} ausgabe+=(Buchmeta.Author.get(Buchmeta.Author.size()-1))+"\n";}
-			if(Buchmeta.year != Integer.MIN_VALUE)ausgabe+="Publihsing year: "+Buchmeta.year+"\n";
+			//if(!Buchmeta.url.equals(""))ausgabe+="URL: "+Buchmeta.url+"\n";
+			if(!Buchmeta.title.equals(""))ausgabe+="Titel: "+Buchmeta.title+"\n"; 
+			if(Buchmeta.Author.size() == 1) ausgabe="Autor: "+Buchmeta.Author.get(0)+"\n";
+			else if(Buchmeta.Author.size() > 1) {ausgabe+=("Autoren: "); for (int i=0; i<Buchmeta.Author.size()-1; i++) {ausgabe+=(Buchmeta.Author.get(i)+", ")+"\n";} ausgabe+=(Buchmeta.Author.get(Buchmeta.Author.size()-1))+"\n";}
+			if(Buchmeta.year != Integer.MIN_VALUE)ausgabe+="Veröffentlichungsjahr: "+Buchmeta.year+"\n";
 //			System.out.println("ISBN of the Book: "+Buchmeta.isbn);    	
-			if(!Buchmeta.publisher.equals(""))ausgabe+="Publisher: "+Buchmeta.publisher+"\n";
-			if(Buchmeta.rating != Integer.MIN_VALUE)ausgabe+="Rating: "+Buchmeta.rating+"\n";
+			if(!Buchmeta.publisher.equals(""))ausgabe+="Veröffentlichungsdaten: "+Buchmeta.publisher+"\n";
+			if(Buchmeta.rating != Integer.MIN_VALUE)ausgabe+="Bewertung (1-5): "+Buchmeta.rating+"\n";
 			ausgabe+=("________________________________________________")+"\n";
 			if(Buchmeta.Characters.size() > 0) {
-				ausgabe+=("Characters in the Book: \n");
+				ausgabe+=("Charaktere: \n");
 				for (String x: Buchmeta.Characters) System.out.println(x);
 				ausgabe+=("________________________________________________")+"\n";
 			}
 			if(Buchmeta.shelves.size() > 0) {
-				ausgabe+=("Genre of the Book: \n");
+				ausgabe+=("Genres: \n");
 				for (String x: Buchmeta.shelves)	System.out.println(x);
 				ausgabe+=("________________________________________________")+"\n";
 			}
 			if(Buchmeta.awards.size() > 0) {
-				ausgabe+=("Awards of the Book: \n");
+				ausgabe+=("Auszeichnungen: \n");
 				for (String x: Buchmeta.awards)	System.out.println(x);
 				ausgabe+=("________________________________________________")+"\n";
 				
@@ -199,7 +265,7 @@ public class Buch implements Serializable {
 				ausgabe+=("________________________________________________")+"\n";
 			}
 			if(!Buchmeta.blurb.equals("")) {
-				ausgabe+=("Blurb of the Book: \n");
+				ausgabe+=("Klappentext: \n");
 				ausgabe+=(Buchmeta.blurb)+"\n";
 			}
 		return ausgabe;
@@ -352,6 +418,20 @@ public class Buch implements Serializable {
 				//System.out.println("Title: "+title);
 		book.title = title; book.publisher = publisher; book.blurb = blurb; book.rating = rating;
 		book.sortAuthors(); book.sortAwards(); book.sortCharacter(); book.sortSimilarBooks(); book.sortThemen();
+		//zeilenumbrüche löschen
+		 	book.url = book.url.replace("\n", ""); 
+		 	book.sprache = book.sprache.replaceAll("\n",""); 
+		 	book.isbn = book.isbn.replaceAll("\n",""); 
+		 	book.buecherreihe = book.buecherreihe.replaceAll("\n",""); 
+		 	book.title = book.title.replaceAll("\n",""); 
+		 	book.publisher = book.publisher.replaceAll("\n",""); 
+		 	book.covertext = book.covertext.replaceAll("\n",""); 
+		 	book.blurb = book.blurb.replaceAll("\n",""); 
+		 	for(String a: book.awards)a = a.replaceAll("\n",""); 
+		 	for(String a: book.shelves)a = a.replaceAll("\n",""); 
+		 	for(String a: book.similar_Books)a = a.replaceAll("\n",""); 
+		 	for(String a: book.Characters)a = a.replaceAll("\n",""); 
+		 	for(String a: book.Author)a = a.replaceAll("\n",""); 
 		return book;
 	}
     
