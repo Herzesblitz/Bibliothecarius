@@ -311,6 +311,9 @@ public class Buch implements Serializable {
 		}
     }
     
+    
+    
+
     /**
      * Bestimmt alle Attribute eines Bookobjekt durch Webscrapping
      * @param title

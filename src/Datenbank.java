@@ -51,30 +51,28 @@ public class Datenbank {
 	static boolean goodreads_online = false;
 
 	public static void main(String args[]) throws Exception{  
-		
-		refresh_Database(10000);
-	 }
-	
-	private static  void test() {
-		//repariere_database();
-		
-		
-		//printBooklist(searchBook_title("Crimson"));
+		 //repariere_database();
+		//printBooklist(searchBook_title("Crimson Shell"));
+		// buecher_similarBerechnen();
+		 //printAllTitles();
 		 
-		 //printBooklist(searchBook_title("Lord"));		 
-
-		//		ArrayList<Buch> a = (relevanz_thema(searchBook_thema(new ArrayList<String>(Arrays.asList("Horror", "Science Fiction", "Short Stories"))), new ArrayList<String>(Arrays.asList("Humor", "Science Fiction"))));
+		// printBooklist(searchBook_title("Lord"));		 
+		// System.out.println("\n\nSORTIERT\n\n");
+//		ArrayList<Buch> a = (relevanz_thema(searchBook_thema(new ArrayList<String>(Arrays.asList("Horror", "Science Fiction", "Short Stories"))), new ArrayList<String>(Arrays.asList("Humor", "Science Fiction"))));
 //		for(Buch b: a)System.out.println(b.shelves);
 		 
 		 //save_Database();
-		// printBooklist(Vereinigung(searchBook_online_autor("Tolkien"), searchBook_online_titel("Herr der Ringe")));
+		
+		 printBooklist(Vereinigung(searchBook_online_autor("Tolkien"), searchBook_online_titel("Herr der Ringe")));
 		 
 		 
+		 //datenbankErweitern("https://www.goodreads.com/list/show/1.Best_Books_Ever");
 		 // buecher_similarBerechnen();
 		 // ArrayList<String> a = new ArrayList<String>(); a.add("Graphic Novels");
 		 // printBooklist(searchBook_thema(a));
-		 
-	}
+		 //test();
+
+	 }
 	 
 	 public static class BookCallable implements Callable {
 		 private String url;
@@ -1019,8 +1017,7 @@ public class Datenbank {
 	 */
 	 public static void refresh_Database_threading(int books_nr, int anz_threads) throws IOException, ClassNotFoundException, InterruptedException, ExecutionException {
 		if(buecherliste != null) load_Database();
-		int speicherschritt = 0; 
-		
+		 
 		 int books=0;
 		 int page_lists =(int) (Math.random()*1000);
 		 b: while(true) {
@@ -1061,14 +1058,8 @@ public class Datenbank {
 						 			
 						 			books+=i+1; 
 						 			List<Buch> tmp = buchThreading(urlS_teil,anz_threads);
-						 			speicherschritt +=tmp.size();
 						 			buecherliste.addAll(tmp);
 							 		if(books >= books_nr)break b;
-							 		if(speicherschritt >= 100) {
-							 			save_Database();
-							 			System.out.println("LÄnge DB: "+buecherliste.size());
-							 			speicherschritt = 0;
-							 		}
 							 	}
 						 page_books++;
 			 		}
@@ -1168,10 +1159,7 @@ public class Datenbank {
 						 		System.out.println("   "+books+" "+book.text());books++;
 						 		addBookToDatabase("https://www.goodreads.com/"+book.attr("href"));
 						 		if(books >= books_nr)break b;
-						 		if(books%10==0) {
-						 			save_Database();
-						 			System.out.println(buecherliste.size());
-						 		}
+						 		if(books%10==0)save_Database();
 						 	}
 						 page_books++;
 			 		}
@@ -1251,7 +1239,7 @@ public class Datenbank {
 	 private static boolean checkInternetConnection(String url) throws UnknownHostException, IOException {
 			long currentTime = System.currentTimeMillis();
 			InetAddress address = InetAddress.getByName(new URL(url).getHost());
-			boolean isPinged = address.isReachable(1000); // 5 seconds
+			boolean isPinged = address.isReachable(5000); // 5 seconds
 			currentTime = System.currentTimeMillis() - currentTime;
 			if(isPinged) {
 			    //System.out.println("pinged successfully in "+ currentTime+ "millisecond");
