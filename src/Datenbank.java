@@ -64,7 +64,7 @@ public class Datenbank {
 		 
 		 //save_Database();
 
-		 printBooklist_s(searchBook_online_titel("der kleine Prinz"));
+		 printBooklist(searchBook_online_titel("der kleine Prinz"));
 		 //printBooklist(Vereinigung(searchBook_online_autor("Tolkien"), searchBook_online_titel("Herr der Ringe")));
 		 
 		 
@@ -637,14 +637,43 @@ public class Datenbank {
 	 			}
 	 	}
 	 	
-	 	public static ArrayList<Buch> searchBook_online_autor(String autor) throws UnsupportedEncodingException, ClassNotFoundException, IOException, InterruptedException, ExecutionException {
- 			goodreads_online = checkInternetConnection("https://www.goodreads.com/"); 		
+
+	 	private static ArrayList<Buch> searchBook_online_author_retr(String titel, int retr) throws UnsupportedEncodingException, ClassNotFoundException, IOException, InterruptedException, ExecutionException {
+	 		ArrayList<Buch> ret = new ArrayList<Buch>();
+	 		goodreads_online = checkInternetConnection("https://www.goodreads.com/"); 		
  			if(!goodreads_online) {System.out.println("Keine Verbindung zu OnlineRessourcen möglich.");}
- 			System.out.println("Autor in der Datenbank nicht gefunden. Suche Online danach ...");
-	 		ArrayList<String> urls = urlsErsteErgebnisSeite(autor);
-	 		ArrayList<Buch> ret = buchThreading(urls, 10); 	
-	 		ArrayList<String> autoren = new ArrayList<>(); autoren.add(autor);
-	 		return relevanz_autoren(ret, autoren);
+	 		try {
+	 			goodreads_online = checkInternetConnection("https://www.goodreads.com/"); 		
+		 		System.out.println("Buch in der Datenbank nicht gefunden. Suche Online danach ...");
+		 		System.out.println(retr);
+		 		ArrayList<String> urls = urlsErsteErgebnisSeite(titel);
+		 		ret = buchThreading(urls, 10);
+		 		return ret;
+	 		}
+	 		catch (ExecutionException e) {
+	            //e.printStackTrace();
+	 			System.out.println("Timeout"+retr);
+	            try {
+	                Thread.sleep(3000);
+	            } catch (InterruptedException e1) {
+	                e1.printStackTrace();
+	            }
+	            return searchBook_online_titel_retr(titel, retr-1);
+	        }
+	 	}
+	 	
+	 
+	 	
+	 	public static ArrayList<Buch> searchBook_online_autor(String autor) throws UnsupportedEncodingException, ClassNotFoundException, IOException, InterruptedException, ExecutionException {
+	 		ArrayList<Buch> ret = new ArrayList<Buch>();
+	 		ret = searchBook_online_author_retr(autor, 5);
+	 		System.out.println("größe: "+ret.size());
+	 		//printBooklist(ret);
+	 		
+	 		ArrayList<Buch> ret_rel = relevanz_title(ret, autor);	 		
+	 		System.out.println("größe rel: "+ret_rel.size());
+	 		printBooklist(ret_rel);
+	 		return ret_rel;
 	 	}
 	 	
 	 	private static ArrayList<Buch> searchBook_online_titel_retr(String titel, int retr) throws UnsupportedEncodingException, ClassNotFoundException, IOException, InterruptedException, ExecutionException {
@@ -654,14 +683,16 @@ public class Datenbank {
 	 		try {
 	 			goodreads_online = checkInternetConnection("https://www.goodreads.com/"); 		
 		 		System.out.println("Buch in der Datenbank nicht gefunden. Suche Online danach ...");
+		 		System.out.println(retr);
 		 		ArrayList<String> urls = urlsErsteErgebnisSeite(titel);
 		 		ret = buchThreading(urls, 10);
 		 		return ret;
 	 		}
-	 		catch (RemoteException e) {
-	            e.printStackTrace();
+	 		catch (ExecutionException e) {
+	            //e.printStackTrace();
+	 			System.out.println("Timeout"+retr);
 	            try {
-	                Thread.sleep(5000);
+	                Thread.sleep(3000);
 	            } catch (InterruptedException e1) {
 	                e1.printStackTrace();
 	            }
@@ -677,7 +708,6 @@ public class Datenbank {
 	 		
 	 		ArrayList<Buch> ret_rel = relevanz_title(ret, titel);	 		
 	 		System.out.println("größe rel: "+ret_rel.size());
-
 	 		return ret_rel;
 	 	}
 	 	 
