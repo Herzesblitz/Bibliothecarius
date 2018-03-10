@@ -1,3 +1,4 @@
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -85,9 +86,9 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 		
 		frame = new GUI();
 		frame.init_frame();
-		mirrormode();
+		//mirrormode();
 	}
-		
+	
 	private static void mirrormode() throws InterruptedException {
 		while(true) {
 			Thread.sleep(20);
@@ -132,7 +133,7 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 		
 		//LAYOUT
 			BoxLayout layout = new BoxLayout(cp, BoxLayout.Y_AXIS);
-			cp.setLayout(layout);
+			cp.setLayout(layout);			
 			
 		//INPUT LABEL
 			label_input = new JLabel("Nutzer: ", SwingConstants.LEFT);
@@ -235,7 +236,7 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 		GUI.output = output;
 			//umbrüche setzen
 		
-		output = output_formatieren2(output);
+		output = output_formatieren1(output);
 		
 		editTextArea_output.setText(output);
 
