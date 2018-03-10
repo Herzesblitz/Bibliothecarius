@@ -62,12 +62,9 @@ public class Datenbank {
 //		for(Buch b: a)System.out.println(b.shelves);
 		 
 		 //save_Database();
-		
-<<<<<<< HEAD
+
 		 printBooklist(searchBook_online_titel(""));
-=======
 		 printBooklist(Vereinigung(searchBook_online_autor("Tolkien"), searchBook_online_titel("Herr der Ringe")));
->>>>>>> 4b67d6cea9a71ed249b57400158db4c3734ce9a0
 		 
 		 
 		 //datenbankErweitern("https://www.goodreads.com/list/show/1.Best_Books_Ever");
