@@ -88,7 +88,7 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 		this.getContentPane().add(label_output);
 	
 		editTextArea_output = new JTextArea("");
-		editTextArea_output.setSize(100, 200);
+		editTextArea_output.setSize(100, 100);
 		editTextArea_output.setAlignmentX(0);
 		cp.add(editTextArea_output);
 		
@@ -130,7 +130,7 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 	
 	public static void setOutput(String output) {
 		//System.out.println("setOutput aufgerufen");
-		//output = output.replace('\n', '\0');
+		output = output.replace('\n', '\0');
 		GUI.output = output;
 			//umbrüche setzen
 			a: for(int pos=0; pos<GUI.output.length(); pos++) {
@@ -139,9 +139,10 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 						pos++;
 						if(pos == output.length()-1) break a;
 					}
-					GUI.output = GUI.output.substring(0,pos)+'\n'+GUI.output.substring(pos+1,GUI.output.length());
+					GUI.output = GUI.output.substring(0,pos-1)+'\n'+GUI.output.substring(pos+1,GUI.output.length());
 				}
 			}
+		System.out.println(GUI.output);
 		editTextArea_output.setText(GUI.output);
 		editTextArea_input.setText("");
 		eingabebereit = true;

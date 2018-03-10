@@ -49,8 +49,8 @@ public class Dialogmanager {
    	public static void main(String[] args) throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException, ExecutionException {
    		//db.load_Database();
    		goodreads_online = checkInternetConnection("https://www.goodreads.com/");
-   		gui.frame.init_frame();
-   		gui.frame.setOutput(primitiveNLU.begrüßung());
+   		GUI.frame.init_frame();
+   		GUI.setOutput(primitiveNLU.begrüßung());
    		
    		while(!beende) {
    			Thread.sleep(20);
