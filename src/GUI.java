@@ -65,6 +65,10 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 	
 	static GUI frame = new GUI();
 	
+	static JLabel label_input = new JLabel("Nutzer: ");
+	static JLabel label_output = new JLabel("Chatbot: ");
+
+	
 	static JTextField editTextArea_input = new JTextField();
 	static JTextArea   editTextArea_output = new JTextArea();
 	static JScrollPane scroller = new JScrollPane(editTextArea_output, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -81,7 +85,7 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 		
 		frame = new GUI();
 		frame.init_frame();
-		//mirrormode();
+		mirrormode();
 	}
 		
 	private static void mirrormode() throws InterruptedException {
@@ -116,35 +120,40 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 		
 		Container cp = getContentPane();
 		cp.setLayout(new BoxLayout(cp, FlowLayout.CENTER));
-		//BIld
-		 setVisible(true);
-         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-         BackgroundPanel backgroundPanel = new BackgroundPanel();
-         cp.add(backgroundPanel);
-         setSize(backgroundPanel.getBackgroundImage().getWidth(backgroundPanel), backgroundPanel.getBackgroundImage().getHeight(backgroundPanel));
 		
-		//INPUT TEXT AREA
-		JLabel label_input = new JLabel("Nutzer: ");
-		label_input.setSize(100, 100);
-
+		
+		//BIld
+//		 setVisible(true);
+//         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//         BackgroundPanel backgroundPanel = new BackgroundPanel();
+//         cp.add(backgroundPanel);
+//         setSize(backgroundPanel.getBackgroundImage().getWidth(backgroundPanel), backgroundPanel.getBackgroundImage().getHeight(backgroundPanel));
+		
+		
+		//LAYOUT
 		BoxLayout layout = new BoxLayout(cp, BoxLayout.Y_AXIS);
 		cp.setLayout(layout);
-		this.getContentPane().add(label_input);
-		 
+		
+		//INPUT LABEL
+		label_input = new JLabel("Nutzer: ");
+		label_input.setSize(100, 100);
+		cp.add(label_input);
+
+		//INPUT TEXT AREA
 		editTextArea_input = new JTextField(100);
 		editTextArea_input.setHorizontalAlignment(SwingConstants.LEFT);
 		cp.add(editTextArea_input);
 		
-		JLabel label_output= new JLabel("Chatbot: ");
+		//OUTPUT LABEL
+		label_output= new JLabel("Chatbot: ");
 		label_input.setSize(100, 100);
+		cp.add(label_output);
 		
-		this.getContentPane().add(label_output);
-	
+		//OUTPUT TEXT AREA
 		editTextArea_output = new JTextArea("");
 		editTextArea_output.setSize(100, 6);
 		editTextArea_output.setAlignmentX(0);
 		cp.add(editTextArea_output);
-		
 		scroller =new JScrollPane(editTextArea_output, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		cp.add(scroller);
 		
@@ -167,6 +176,8 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 				else editTextArea_input.setText("Bitte keine Eingabe tätigen!");
 			}
 		});	
+		
+		setOutput("");
 	}
 		
 	public static void eingabebereitschaft_setzen(boolean a) {
@@ -226,12 +237,18 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 		
 		output = output_formatieren2(output);
 		
-		System.out.println(output);
 		editTextArea_output.setText(output);
 
+		
 
 		editTextArea_input.setText("");
 		eingabebereit = true;
+		
+		editTextArea_input.setMaximumSize(new Dimension(1200, 30));
+		
+		frame.setPreferredSize(new Dimension(700,700));
+		editTextArea_output.setMinimumSize(new Dimension(100,5));
+		
 		frame.pack();
 	}
 	
