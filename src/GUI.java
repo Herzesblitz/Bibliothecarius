@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -81,7 +82,7 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 		
 		frame = new GUI();
 		frame.init_frame();
-		//mirrormode();
+		mirrormode();
 	}
 		
 	private static void mirrormode() throws InterruptedException {
@@ -91,6 +92,11 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 			if(!input.equals(""))setOutput(input);
 		}
 	}
+	
+	public void paint( Graphics g ) { 
+	    super.paint(g);
+	    g.drawImage(img, 0, 0, null);
+	  }
 	
 	public void init_frame() {		
 		try {
@@ -117,15 +123,17 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 		Container cp = getContentPane();
 		cp.setLayout(new BoxLayout(cp, FlowLayout.CENTER));
 		//BIld
-		 setVisible(true);
-         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-         BackgroundPanel backgroundPanel = new BackgroundPanel();
-         cp.add(backgroundPanel);
-         setSize(backgroundPanel.getBackgroundImage().getWidth(backgroundPanel), backgroundPanel.getBackgroundImage().getHeight(backgroundPanel));
+//		 setVisible(true);
+//         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//         BackgroundPanel backgroundPanel = new BackgroundPanel();
+//         cp.add(backgroundPanel);
+//         setSize(backgroundPanel.getBackgroundImage().getWidth(backgroundPanel), backgroundPanel.getBackgroundImage().getHeight(backgroundPanel));
 		
 		//INPUT TEXT AREA
 		JLabel label_input = new JLabel("Nutzer: ");
 		label_input.setSize(100, 100);
+		label_input.setOpaque(false);
+		label_input.setBackground(new Color(0,0,0,0));
 
 		BoxLayout layout = new BoxLayout(cp, BoxLayout.Y_AXIS);
 		cp.setLayout(layout);
@@ -133,19 +141,29 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 		 
 		editTextArea_input = new JTextField(100);
 		editTextArea_input.setHorizontalAlignment(SwingConstants.LEFT);
+		editTextArea_input.setOpaque(false);
+		editTextArea_input.setBackground(new Color(0,0,0,0));
+	    
 		cp.add(editTextArea_input);
 		
 		JLabel label_output= new JLabel("Chatbot: ");
-		label_input.setSize(100, 100);
-		
+		label_output.setSize(100, 100);
+		label_output.setOpaque(false);
+		label_output.setBackground(new Color(0,0,0,0));
+
 		this.getContentPane().add(label_output);
 	
 		editTextArea_output = new JTextArea("");
 		editTextArea_output.setSize(100, 6);
 		editTextArea_output.setAlignmentX(0);
+		editTextArea_output.setOpaque(false);
+		editTextArea_output.setBackground(new Color(0,0,0,0));
+		editTextArea_output.setEditable(false);
 		cp.add(editTextArea_output);
 		
 		scroller =new JScrollPane(editTextArea_output, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scroller.setOpaque(false);
+		scroller.setBackground(new Color(0,0,0,0));
 		cp.add(scroller);
 		
 		frame.pack();
@@ -224,9 +242,9 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 		GUI.output = output;
 			//umbrüche setzen
 		
-		output = output_formatieren2(output);
+		output = output_formatieren1(output);
 		
-		System.out.println(output);
+		//System.out.println(output);
 		editTextArea_output.setText(output);
 
 
