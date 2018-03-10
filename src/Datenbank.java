@@ -67,7 +67,16 @@ public class Datenbank {
 //		for(Buch b: a)System.out.println(b.shelves);
 		 
 		 //save_Database();
+<<<<<<< HEAD
 		// printBooklist(Vereinigung(searchBook_online_autor("Tolkien"), searchBook_online_titel("Herr der Ringe")));
+=======
+		
+<<<<<<< HEAD
+		 printBooklist(searchBook_online_titel(""));
+=======
+		 printBooklist(Vereinigung(searchBook_online_autor("Tolkien"), searchBook_online_titel("Herr der Ringe")));
+>>>>>>> 4b67d6cea9a71ed249b57400158db4c3734ce9a0
+>>>>>>> b433ebd42e852e9b38c59ae30f53351e608f4f0d
 		 
 		 
 		 // buecher_similarBerechnen();
