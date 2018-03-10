@@ -2,6 +2,8 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Frame;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,16 +12,51 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
 
+import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import javafx.scene.shape.Path;
 
+//klasse für hintergrundbild
+class BackgroundPanel extends JPanel {
+
+    private static final long serialVersionUID = 1L;
+    private Image img;
+
+    public BackgroundPanel() {
+        try {
+            img = ImageIO.read(getClass().getResource("./Bibliothecarius/src/bibliothecarius.jpg"));
+            System.out.println("Picture loaded.");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Picture was not found.");
+        }
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        // TODO Auto-generated method stub
+        super.paintComponent(g);
+        g.drawImage(img, 0, 0, this);
+
+    }
+
+    public Image getBackgroundImage() {
+        return img;
+    }
+
+}
 
 
 public class GUI extends JFrame implements MouseMotionListener, MouseListener, KeyListener{
@@ -40,9 +77,11 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 
 
 	public static void main(String[] args) throws InterruptedException {
+	
+		
 		frame = new GUI();
 		frame.init_frame();
-		mirrormode();
+		//mirrormode();
 	}
 		
 	private static void mirrormode() throws InterruptedException {
@@ -70,6 +109,16 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 		
 		Container cp = getContentPane();
 		cp.setLayout(new BoxLayout(cp, FlowLayout.CENTER));
+		
+		//BIld
+		
+		 setVisible(true);
+	        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+	        BackgroundPanel backgroundPanel = new BackgroundPanel();
+	        add(backgroundPanel);
+
+	        setSize(backgroundPanel.getBackgroundImage().getWidth(backgroundPanel), backgroundPanel.getBackgroundImage().getHeight(backgroundPanel));
 		
 		//INPUT TEXT AREA
 		JLabel label_input = new JLabel("Nutzer: ");
