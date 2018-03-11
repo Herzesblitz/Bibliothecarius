@@ -72,7 +72,7 @@ public class Buch implements Serializable {
     //wird durch Datenbank aufgerufen
 	
 	public static void ausgebenBücherliste(ArrayList<Buch> liste) {
-			for(Buch b: liste) {ausgebenBuch(b); if(b.title.equals(""))continue; System.out.println(("\n------------------------------------------------------------------------------------------------\n"));}
+			for(Buch b: liste) {ausgebenBuch(b); if(b.title.equals(""))continue; System.out.println(("\n\n\n\n\n"));}
 	}
 	
 	public static String ausgebenBücherliste_s(ArrayList<Buch> liste) {
@@ -88,40 +88,57 @@ public class Buch implements Serializable {
 	}
 	
 	public static void ausgebenBuch(Buch Buchmeta) {
-		if(Buchmeta.title.equals(""))return;
-		if(!Buchmeta.url.equals(""))System.out.println("URL: "+Buchmeta.url+"°\n");
-		if(!Buchmeta.title.equals(""))System.out.println("Title of the Book: "+Buchmeta.title+"°\n"); 
-		if(Buchmeta.Author.size() == 1) System.out.println("Author: "+Buchmeta.Author.get(0)+"°\n");
-		else if(Buchmeta.Author.size() > 1) {System.out.println(("Authors: ")); for (int i=0; i<Buchmeta.Author.size()-1; i++) {System.out.println((Buchmeta.Author.get(i)+", ")+"°\n");} System.out.println((Buchmeta.Author.get(Buchmeta.Author.size()-1))+"°\n");}
-		if(Buchmeta.year != Integer.MIN_VALUE)System.out.println("Publihsing year: "+Buchmeta.year+"°\n");
-//		System.out.println("ISBN of the Book: "+Buchmeta.isbn);    	
-		if(!Buchmeta.publisher.equals(""))System.out.println("Publisher: "+Buchmeta.publisher+"°\n");
-		if(Buchmeta.rating != Integer.MIN_VALUE)System.out.println("Rating: "+Buchmeta.rating+"°\n");
-		System.out.println(("°________________________________________________°")+"\n");
-		if(Buchmeta.Characters.size() > 0) {
-			System.out.println(("Characters in the Book: \n"));
-			for (String x: Buchmeta.Characters) System.out.println(x);
-			System.out.println(("°________________________________________________°")+"\n");
+		if (Buchmeta.title.equals(""))
+			return;
+		if (!Buchmeta.url.equals(""))
+			System.out.println("URL: " + Buchmeta.url);
+		if (!Buchmeta.title.equals(""))
+			System.out.println("Title of the Book: " + Buchmeta.title);
+		if (Buchmeta.Author.size() == 1)
+			System.out.println("Author: " + Buchmeta.Author.get(0));
+		else if (Buchmeta.Author.size() > 1) {
+			System.out.println(("Authors: "));
+			for (int i = 0; i < Buchmeta.Author.size() - 1; i++) {
+				System.out.println((Buchmeta.Author.get(i) + ", "));
+			}
+			System.out.println((Buchmeta.Author.get(Buchmeta.Author.size() - 1)));
 		}
-		if(Buchmeta.shelves.size() > 0) {
-			System.out.println(("Genre of the Book: \n"));
-			for (String x: Buchmeta.shelves)	System.out.println(x);
-			System.out.println(("°________________________________________________°")+"\n");
+		if (Buchmeta.year != Integer.MIN_VALUE)
+			System.out.println("Publihsing year: " + Buchmeta.year);
+		// System.out.println("ISBN of the Book: "+Buchmeta.isbn);
+		if (!Buchmeta.publisher.equals(""))
+			System.out.println("Publisher: " + Buchmeta.publisher);
+		if (Buchmeta.rating != Integer.MIN_VALUE)
+			System.out.println("Rating: " + Buchmeta.rating);
+		System.out.println(("") + "\n");
+		if (Buchmeta.Characters.size() > 0) {
+			System.out.println(("Characters in the Book:"));
+			for (String x : Buchmeta.Characters)
+				System.out.println(x);
+			System.out.println(("") + "\n");
 		}
-		if(Buchmeta.awards.size() > 0) {
-			System.out.println(("Awards of the Book: \n"));
-			for (String x: Buchmeta.awards)	System.out.println(x);
-			System.out.println(("°________________________________________________°")+"\n");
-			
+		if (Buchmeta.shelves.size() > 0) {
+			System.out.println(("Genre of the Book:"));
+			for (String x : Buchmeta.shelves)
+				System.out.println(x);
+			System.out.println(("") + "\n");
 		}
-		if(Buchmeta.similar_Books != null && Buchmeta.similar_Books.size()>0){
-			System.out.println(("Ähnliche Bücher: \n"));
-			for (String x: Buchmeta.similar_Books)	System.out.println(x);
-			System.out.println(("°________________________________________________°")+"\n");
+		if (Buchmeta.awards.size() > 0) {
+			System.out.println(("Awards of the Book: "));
+			for (String x : Buchmeta.awards)
+				System.out.println(x);
+			System.out.println(("") + "\n");
+
 		}
-		if(!Buchmeta.blurb.equals("")) {
-			System.out.println(("Blurb of the Book: °\n"));
-			System.out.println((Buchmeta.blurb)+"°\n");
+		if (Buchmeta.similar_Books != null && Buchmeta.similar_Books.size() > 0) {
+			System.out.println(("Ähnliche Bücher:"));
+			for (String x : Buchmeta.similar_Books)
+				System.out.println(x);
+			System.out.println(("") + "\n");
+		}
+		if (!Buchmeta.blurb.equals("")) {
+			System.out.println(("Blurb of the Book:"));
+			System.out.println((Buchmeta.blurb) + "\n");
 		}
 	}
 
@@ -172,22 +189,22 @@ public class Buch implements Serializable {
 			if(Buchmeta.Characters.size() > 0 && param.contains("charaktere") ) {
 				ausgabe+=("Charaktere: °");
 				for (String x: Buchmeta.Characters) System.out.println(x);
-				ausgabe+=("°°");
+				ausgabe+=("°");
 			}
 			if(Buchmeta.shelves.size() > 0  && param.contains("thema") ) {
 				ausgabe+=("Genres: °");
 				for (String x: Buchmeta.shelves)	System.out.println(x);
-				ausgabe+=("°°");
+				ausgabe+=("°");
 			}
 			if(Buchmeta.awards.size() > 0 && param.contains("awards")) {
 				ausgabe+=("Auszeichnungen: °");
 				for (String x: Buchmeta.awards)	System.out.println(x);
-				ausgabe+=("°°");
+				ausgabe+=("°");
 			}
 			if(Buchmeta.similar_Books != null && Buchmeta.similar_Books.size()>0  && param.contains("similar") ){
 				ausgabe+=("Ähnliche Bücher: \n");
 				for (String x: Buchmeta.similar_Books)	System.out.println(x);
-				ausgabe+=("°°");
+				ausgabe+=("°");
 			}
 			if(!Buchmeta.blurb.equals("") && param.contains("blurb") ) {
 				ausgabe+=("Klappentext: °");
@@ -239,27 +256,27 @@ public class Buch implements Serializable {
 			if(Buchmeta.year != Integer.MIN_VALUE)ausgabe+="Veröffentlichungsjahr: "+Buchmeta.year+"°";
 //			System.out.println("ISBN of the Book: "+Buchmeta.isbn);    	
 			if(!Buchmeta.publisher.equals(""))ausgabe+="Veröffentlichungsdaten:"+Buchmeta.publisher+"°";
-			if(Buchmeta.rating != Integer.MIN_VALUE)ausgabe+="Bewertung(1-5):"+Buchmeta.rating+"°°";
+			if(Buchmeta.rating != Integer.MIN_VALUE)ausgabe+="Bewertung(1-5):"+Buchmeta.rating+"°";
 			if(Buchmeta.Characters.size() > 0) {
 				ausgabe+=("Charaktere: ");
 				for (String x: Buchmeta.Characters) System.out.println(x);
-				ausgabe+=("°°");
+				ausgabe+=("°");
 			}
 			if(Buchmeta.shelves.size() > 0) {
 				ausgabe+=("Genres: °");
 				for (String x: Buchmeta.shelves)	System.out.println(x);
-				ausgabe+=("°°");
+				ausgabe+=("°");
 			}
 			if(Buchmeta.awards.size() > 0) {
 				ausgabe+=("Auszeichnungen: °");
 				for (String x: Buchmeta.awards)	System.out.println(x);
-				ausgabe+=("°°");
+				ausgabe+=("°");
 				
 			}
 			if(Buchmeta.similar_Books != null && Buchmeta.similar_Books.size()>0){
 				ausgabe+=("Ähnliche Bücher: °");
 				for (String x: Buchmeta.similar_Books)	System.out.println(x);
-				ausgabe+=("°°");
+				ausgabe+=("°");
 			}
 			if(!Buchmeta.blurb.equals("")) {
 				ausgabe+=("Klappentext: °");

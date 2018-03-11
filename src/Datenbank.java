@@ -52,12 +52,12 @@ public class Datenbank {
 	static boolean goodreads_online = false;
 
 	public static void main(String args[]) throws Exception{  
-
+		test1();
 
 	  //Datenbank ohne Threading erweitern
 		//refresh_Database(10000);
 	  //Datenbank mit Threading erweitern
-		refresh_Database_threading(20, "https://www.goodreads.com/list/show/1.Best_Books_Ever", 204);
+		//refresh_Database_threading(20, "https://www.goodreads.com/list/show/1.Best_Books_Ever", 204);
 	 }
 	 
 	 public static class BookCallable implements Callable {
@@ -70,9 +70,9 @@ public class Datenbank {
 		 }
 	 }
 	 
-	 private void test1() {
+	 private static void test1() throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException, ExecutionException {
 		 //repariere_database();
-		//printBooklist(searchBook_title("Crimson Shell"));
+		printBooklist(searchBook_online_titel("Harry Potter"));
 		// buecher_similarBerechnen();
 		 //printAllTitles();
 		 
@@ -712,11 +712,9 @@ public class Datenbank {
 	 	public static ArrayList<Buch> searchBook_online_titel(String titel) throws UnsupportedEncodingException, ClassNotFoundException, IOException, InterruptedException, ExecutionException {
 	 		ArrayList<Buch> ret = new ArrayList<Buch>();
 	 		ret = searchBook_online_titel_retr(titel, 5);
-	 		System.out.println("größe: "+ret.size());
 	 		//printBooklist(ret);
 	 		
 	 		ArrayList<Buch> ret_rel = relevanz_title(ret, titel);	 		
-	 		System.out.println("größe rel: "+ret_rel.size());
 	 		return ret_rel;
 	 	}
 	 	 
@@ -724,51 +722,6 @@ public class Datenbank {
 	 		 Buch.ausgebenBuch(b);
 	 	}
 	 	
-	 	/**
-	 	 * richtigen Parameter zur Auswahl benutzen
-	 	 * @param b
-	 	 * @param param
-	 	 */
-	 	public static void printBook_param(Buch b, String param) {
-	 			if(param.equals("klapptext" ))
-	 			if(param.equals("sprache") && !b.sprache.equals(""))System.out.println("Sprache: "+b.sprache);
-				if(param.equals("isbn") && !b.isbn.equals(""))System.out.println("ISBN: "+b.isbn);
-	 			if(param.equals("url") && !b.url.equals(""))System.out.println("URL: "+b.url);
-				if(param.equals("title") && !b.title.equals(""))System.out.println("Title of the Book: "+b.title); 
-				if(param.equals("bücherreihe") && !b.buecherreihe.equals(""))System.out.println("buecherreihe of the Book: "+b.title); 
-				if(param.equals("author") && b.Author.size() == 1) System.out.println("Author: "+b.Author.get(0));
-				else if (param.equals("author") && b.Author.size() != 1) {System.out.print("Authors: "); for (int i=0; i<b.Author.size()-1; i++) System.out.print(b.Author.get(i)+", "); System.out.println(b.Author.get(b.Author.size()-1));}
-				if(param.equals("year") && b.year != Integer.MIN_VALUE)System.out.println("Publihsing year: "+b.year);
-//				System.out.println("ISBN of the Book: "+Buchmeta.isbn);    	
-				if(param.equals("publisher") && !b.publisher.equals(""))System.out.println("Publisher: "+b.publisher);
-				if(param.equals("rating") && b.rating != Integer.MIN_VALUE)System.out.println("Rating: "+b.rating);
-				System.out.println("________________________________________________");
-				if(param.equals("character") && b.Characters.size() > 0) {
-					System.out.println("Characters in the Book: \n");
-					for (String x: b.Characters) System.out.println(x);
-					System.out.println("________________________________________________");
-				}
-				if(param.equals("thema") && b.shelves.size() > 0) {
-					System.out.println("Thema of the Book: \n");
-					for (String x: b.shelves)	System.out.println(x);
-					System.out.println("________________________________________________");
-				}
-				if(param.equals("awards") && b.awards.size() > 0) {
-					System.out.println("Awards of the Book: \n");
-					for (String x: b.awards)	System.out.println(x);
-					System.out.println("________________________________________________");
-					
-				}
-				if(param.equals("blurb") && !b.blurb.equals("")) {
-					System.out.println("Blurb of the Book: \n");
-					System.out.println(b.blurb);
-				}
-				if(param.equals("klapptext") && !b.covertext.equals("")) {
-					System.out.println("Covertext of the Book: \n");
-					System.out.println(b.covertext);
-				}
-		
-	 	}
 	 	
 	 	public static void printBooklist(ArrayList<Buch> b) {
 	 		if(b.size() == 0 )return;
