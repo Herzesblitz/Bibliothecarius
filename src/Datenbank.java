@@ -57,7 +57,7 @@ public class Datenbank {
 	  //Datenbank ohne Threading erweitern
 		//refresh_Database(10000);
 	  //Datenbank mit Threading erweitern
-		refresh_Database_threading(20, "https://www.goodreads.com/list/show/1.Best_Books_Ever", -1);
+		refresh_Database_threading(20, "https://www.goodreads.com/list/show/1.Best_Books_Ever", 204);
 	 }
 	 
 	 public static class BookCallable implements Callable {

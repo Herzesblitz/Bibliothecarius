@@ -195,6 +195,9 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 	}
 	
 	private static String output_formatieren2(String output) {
+		output = output.replaceAll("\n", " ");
+		output = output.replaceAll("°", "\n");
+		
 		int counter_last_ZU=0;
 		a: for(int pos=0; pos< output.length(); pos++) {
 				if(output.charAt(pos) == '\n') {
@@ -233,11 +236,14 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 	}
 	
 	public static void setOutput(String output) {
+		//BUG Umlaute 
+		output = output.replaceAll("Ã¤", "ä").replaceAll("Ã„", "Ä").replaceAll("Ã¶", "ö").replaceAll("Ã–", "Ö").replaceAll("Ã¼", "ü").replaceAll("Ãœ", "Ü").replaceAll("ÃŸ", "ß");
+		
 		//System.out.println("setOutput aufgerufen");
 		GUI.output = output;
 			//umbrüche setzen
 		
-		output = output_formatieren1(output);
+		output = output_formatieren2(output);
 		
 		editTextArea_output.setText(output);
 
