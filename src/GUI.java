@@ -154,6 +154,7 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 			editTextArea_output = new JTextArea("");
 			editTextArea_output.setSize(100, 6);
 			editTextArea_output.setAlignmentX(0);
+			editTextArea_output.setEditable(false);
 			cp.add(editTextArea_output);
 			scroller =new JScrollPane(editTextArea_output, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 			cp.add(scroller);

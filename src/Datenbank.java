@@ -52,6 +52,25 @@ public class Datenbank {
 	static boolean goodreads_online = false;
 
 	public static void main(String args[]) throws Exception{  
+
+
+	  //Datenbank ohne Threading erweitern
+		//refresh_Database(10000);
+	  //Datenbank mit Threading erweitern
+		refresh_Database_threading(20, "https://www.goodreads.com/list/show/1.Best_Books_Ever", -1);
+	 }
+	 
+	 public static class BookCallable implements Callable {
+		 private String url;
+		 public BookCallable(String url) throws UnsupportedEncodingException, IOException {
+			 this.url = url; 
+		 }
+		 public Buch call() throws UnsupportedEncodingException, IOException, InterruptedException, ClassNotFoundException {
+			 return Buch.buchToinfosBuecher("", "", url, 10);
+		 }
+	 }
+	 
+	 private void test1() {
 		 //repariere_database();
 		//printBooklist(searchBook_title("Crimson Shell"));
 		// buecher_similarBerechnen();
@@ -64,7 +83,7 @@ public class Datenbank {
 		 
 		 //save_Database();
 
-		 printBooklist(searchBook_online_titel("der kleine Prinz"));
+		// printBooklist(searchBook_online_autor("tolkien"));
 		 //printBooklist(Vereinigung(searchBook_online_autor("Tolkien"), searchBook_online_titel("Herr der Ringe")));
 		 
 		 
@@ -73,17 +92,6 @@ public class Datenbank {
 		 // ArrayList<String> a = new ArrayList<String>(); a.add("Graphic Novels");
 		 // printBooklist(searchBook_thema(a));
 		 //test();
-
-	 }
-	 
-	 public static class BookCallable implements Callable {
-		 private String url;
-		 public BookCallable(String url) throws UnsupportedEncodingException, IOException {
-			 this.url = url; 
-		 }
-		 public Buch call() throws UnsupportedEncodingException, IOException, InterruptedException, ClassNotFoundException {
-			 return Buch.buchToinfosBuecher("", "", url, 10);
-		 }
 	 }
 	 
 	 //Kann durch RASA aufgerufen werden: 
@@ -677,6 +685,7 @@ public class Datenbank {
 	 	}
 	 	
 	 	private static ArrayList<Buch> searchBook_online_titel_retr(String titel, int retr) throws UnsupportedEncodingException, ClassNotFoundException, IOException, InterruptedException, ExecutionException {
+	 		if(retr == 0)return new ArrayList<Buch>();
 	 		ArrayList<Buch> ret = new ArrayList<Buch>();
 	 		goodreads_online = checkInternetConnection("https://www.goodreads.com/"); 		
  			if(!goodreads_online) {System.out.println("Keine Verbindung zu OnlineRessourcen möglich.");}
@@ -762,10 +771,12 @@ public class Datenbank {
 	 	}
 	 	
 	 	public static void printBooklist(ArrayList<Buch> b) {
+	 		if(b.size() == 0 )return;
 	 		Buch.ausgebenBücherliste(b);
 	 	 }
 	 	
 	 	public static String printBooklist_s(ArrayList<Buch> b) {
+	 		if(b.size() == 0)return "";
 	 		return Buch.ausgebenBücherliste_s(b);
 	 	}
 	 	
@@ -776,6 +787,7 @@ public class Datenbank {
 	 	 * @return
 	 	 */
 	 	public static String printBooklist_s_param(ArrayList<Buch> b, ArrayList<String> param) {
+	 		if(b.size() == 0) return "";
 	 		return Buch.ausgebenBücherliste_s_param(b, param);
 	 	}
 	 
@@ -1127,9 +1139,9 @@ public class Datenbank {
 	 
 	 /**
 	  * traegt alle buecher dieser liste ein
-	  * @param books_nr
 	  * @param anz_threads
 	  * @param url
+	  * @param pageoffset: {zufällig, falls -1, sonst von dieser Seite aus starten
 	  * @throws IOException
 	  * @throws ClassNotFoundException
 	  * @throws InterruptedException

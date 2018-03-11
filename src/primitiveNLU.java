@@ -35,10 +35,14 @@ public class primitiveNLU {
 		// TODO Auto-generated method stub
 		//System.out.println("return: "+searchForTitles_online("Der Name des Buchs ist Herr der Ringe"));
 
+		System.out.println(intend_search("Das Buch wurde vor 2000 geschrieben."));
+		System.out.println(intend_search("Das Buch wurde mit 4.8 bewertet."));
+
 		
-		//System.out.println(namen_finden_POS_Tagger("Guten Tag, kannst du mir ein gutes Buch suchen, das ich gerne lesen soll, des wurde von Harald Blauzahn geschrieben."));;
+		System.out.println(namen_finden_POS_Tagger("Guten Tag, kannst du mir ein gutes Buch suchen, das ich gerne lesen soll, des wurde von Harald Blauzahn geschrieben."));;
 		
 		System.out.println(intend_search("Ich suche ein Buch was von Tolkien geschrieben wurde."));
+		
 	}
 	
 	public static String intend_search_mode(String eingabe) {
@@ -85,14 +89,14 @@ public class primitiveNLU {
 			else if(eingabe.contains("titel") || eingabe.matches(".* buch .* namen .*") || eingabe.contains("bezeichnung"))return "titel";
 		
 		//semigenau
+			else if(eingabe.matches(".*\\d\\d\\d\\d.*")) return "jahr";
 			else if(eingabe.contains("suche") && eingabe.contains("buch") && namen_finden_NER(eingabe).length() == 0) return "titel";
 			else if(eingabe.contains("von") && namen_finden_NER(eingabe).length() > 0 || 
 					eingabe.contains("verfasser") || eingabe.contains("verfasst") || eingabe.contains("schriftsteller") ||
 					eingabe.contains("schöpfer") || eingabe.contains("schrieben")) return "autor";
 			else if(eingabe.contains("mit") && namen_finden_NER(eingabe).length() > 0 ||
 					eingabe.contains("figur")) return "charakter";
-			else if(eingabe.contains("[0-9][0-9]")) return "jahr";
-			else if(eingabe.contains("bewertung") || eingabe.matches(".+[0-9].[0-9].+]") || eingabe.matches(".+[0-9].+")) return "rating";
+			else if(eingabe.contains("bewertung") || eingabe.matches(".+\\d.\\d.+]") || eingabe.matches(".+[0-9].+")) return "rating";
 		return "unbekannt";
 	}
 	
@@ -196,34 +200,6 @@ public class primitiveNLU {
 		return false;
 	}
 	
-	public static String searchForTitles_online(String input) throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException, ExecutionException {
-		System.out.println("wortsuche nach titel: "+input);
-		ArrayList<String> suchurl = new ArrayList<>();
-		ArrayList<String> suchterm = new ArrayList<>();
-		String[] wörter = input.split(" ");
-		for(int laenge = wörter.length ; laenge >= 0; laenge--) {
-			for(int startpos=0; startpos+laenge <= wörter.length-1; startpos++) {
-				String suche = "";
-				for(int pos=startpos; pos<=startpos+laenge; pos++) {
-					suche += wörter[pos];
-					if(pos < startpos+laenge)suche+=" ";
-				}
-				suchterm.add(suche);
-				suchurl.add("https://www.goodreads.com/search?q="+suche);
-			}
-		}
-		ArrayList<String> results = searchThreading(suchurl, 20);
-		for(int i=0; i<results.size(); i++) {
-			if(results.get(i).length()==0)continue;
-			String a =results.get(i).substring(results.get(i).indexOf("of")+3, results.get(i).lastIndexOf(" ")-1);
-			if(!a.matches("[0-9]+"))continue;
-			int res_nr = Integer.valueOf(a);
-			System.out.println("max: "+a+" von "+results.get(i));
-			if(res_nr > 10) return results.get(i).substring(results.get(i).indexOf("\"")+1,results.get(i).lastIndexOf("\""));
-		}	
-		return "";
-	}
-	
 	private static String checkForSearchTerm(String url) throws IOException {
 		System.out.println("suche: "+url);
 		Document doc = Jsoup.connect(url).userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:5.0) Gecko/20100101 Firefox/5.0").referrer("http://www.google.com").timeout(20000).get();
@@ -259,28 +235,6 @@ public class primitiveNLU {
 	    pool.shutdownNow();
 	    return liste;
 	}
- 
-	
-	public static String errateAutor(String input) throws FileNotFoundException, ClassNotFoundException, IOException {
-		System.out.println("verzweifelte Suche nach autor: "+input);
-				ArrayList<Buch> ergebnisse = new ArrayList<Buch>();
-				String[] wörter = input.split(" ");
-				for(int laenge = 3; laenge >= 0; laenge--) {
-					for(int startpos=0; startpos+laenge <= wörter.length-1; startpos++) {
-						String suche = "";
-						for(int pos=startpos; pos<=startpos+laenge; pos++) {
-							suche += wörter[pos];
-							if(pos < startpos+laenge)suche+=" ";
-						}
-						System.out.println(suche);
-						ArrayList<String> autor = new ArrayList<>(); autor.add(suche);
-						ergebnisse = Datenbank.searchBook_authors(autor);
-						//System.out.println("Suche nach:" +suche+" "+ergebnisse.size());
-						if(ergebnisse.size() > 0)return suche;
-					}
-				}
-				return "";
-	}
 	
 	public static String namen_finden_POS_Tagger(String eingabe) throws IOException{
 		String author="";
@@ -298,8 +252,6 @@ public class primitiveNLU {
 	    WhitespaceTokenizer whitespaceTokenizer= WhitespaceTokenizer.INSTANCE; 
 	    String[] tokens = whitespaceTokenizer.tokenize(sentence); 
 	    
-	    
-	     
 	    //Generating tags 
 	    String[] tags = tagger.tag(tokens);
 	    	    
