@@ -143,36 +143,36 @@ public class Buch implements Serializable {
 	}
 
 	public static String ausgebenBuch_s(Buch Buchmeta, ArrayList<String> param) {
-			for (Iterator<String> iterator = Buchmeta.Characters.iterator(); iterator.hasNext(); ) {
-			    String value = iterator.next();
-			    if (value.equals("") == true) {
-			        iterator.remove();
-			    }
-			}
-			for (Iterator<String> iterator = Buchmeta.Author.iterator(); iterator.hasNext(); ) {
-			    String value = iterator.next();
-			    if (value.equals("") == false) {
-			        iterator.remove();
-			    }
-			}
-			for (Iterator<String> iterator = Buchmeta.shelves.iterator(); iterator.hasNext(); ) {
-			    String value = iterator.next();
-			    if (value.equals("") == false) {
-			        iterator.remove();
-			    }
-			}
-			for (Iterator<String> iterator = Buchmeta.similar_Books.iterator(); iterator.hasNext(); ) {
-			    String value = iterator.next();
-			    if (value.equals("") == false) {
-			        iterator.remove();
-			    }
-			}
-			for (Iterator<String> iterator = Buchmeta.awards.iterator(); iterator.hasNext(); ) {
-			    String value = iterator.next();
-			    if (value.equals("") == false) {
-			        iterator.remove();
-			    }
-			}
+//			for (Iterator<String> iterator = Buchmeta.Characters.iterator(); iterator.hasNext(); ) {
+//			    String value = iterator.next();
+//			    if (value.equals("") == true) {
+//			        iterator.remove();
+//			    }
+//			}
+//			for (Iterator<String> iterator = Buchmeta.Author.iterator(); iterator.hasNext(); ) {
+//			    String value = iterator.next();
+//			    if (value.equals("") == false) {
+//			        iterator.remove();
+//			    }
+//			}
+//			for (Iterator<String> iterator = Buchmeta.shelves.iterator(); iterator.hasNext(); ) {
+//			    String value = iterator.next();
+//			    if (value.equals("") == false) {
+//			        iterator.remove();
+//			    }
+//			}
+//			for (Iterator<String> iterator = Buchmeta.similar_Books.iterator(); iterator.hasNext(); ) {
+//			    String value = iterator.next();
+//			    if (value.equals("") == false) {
+//			        iterator.remove();
+//			    }
+//			}
+//			for (Iterator<String> iterator = Buchmeta.awards.iterator(); iterator.hasNext(); ) {
+//			    String value = iterator.next();
+//			    if (value.equals("") == false) {
+//			        iterator.remove();
+//			    }
+//			}
 		
 		String ausgabe="";
 			if(Buchmeta.title.equals(""))return "";
