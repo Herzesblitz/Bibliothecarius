@@ -74,7 +74,6 @@ public class Datenbank {
 		 //repariere_database();
 		 
 		ArrayList<String> param = new ArrayList<String>(); param.add("titel"); param.add("autor"); param.add("jahr"); param.add("publisher"); param.add("charaktere"); param.add("thema"); param.add("similar"); param.add("blurb");
-		for(String s: param)System.out.println(s);
 		System.out.println(GUI.output_formatieren2(printBooklist_s_param(searchBook_online_titel("Harry Potter"), param)));
 
 		// printBooklist(searchBook_online_titel("Harry Potter"));
