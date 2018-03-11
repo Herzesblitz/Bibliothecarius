@@ -194,7 +194,7 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 		return kopie;
 	}
 	
-	private static String output_formatieren2(String output) {
+	static String output_formatieren2(String output) {
 		output = output.replaceAll("\n", " ");
 		output = output.replaceAll("°", "\n");
 		
