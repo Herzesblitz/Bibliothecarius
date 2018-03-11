@@ -824,12 +824,13 @@ public class Datenbank {
 	 	}
 	 
 	 	public static ArrayList<String> removeDoubles(ArrayList<String> a){
-		 	ArrayList<String> b = new ArrayList<>();
-		 	for(String s: a) {
-		 		if(b.contains(s))continue;
-		 		else b.add(s);
-		 	}
-		 	return b;
+	 		List<String> al = new ArrayList<>();
+	 		al.addAll(a);
+	 		Set<String> hs = new HashSet<>();
+		 	hs.addAll(al);
+		 	al.clear();
+		 	al.addAll(hs);
+		return (ArrayList<String>) al;
 	 	}  
 
 	 
