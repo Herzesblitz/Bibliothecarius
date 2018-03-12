@@ -52,12 +52,12 @@ public class Datenbank {
 	static boolean goodreads_online = false;
 
 	public static void main(String args[]) throws Exception{  
-		test1();
+		//test1();
 
 	  //Datenbank ohne Threading erweitern
 		//refresh_Database(10000);
 	  //Datenbank mit Threading erweitern
-		//refresh_Database_threading(20, "https://www.goodreads.com/list/show/1.Best_Books_Ever", 204);
+		refresh_Database_threading(20, "https://www.goodreads.com/list/show/1.Best_Books_Ever", 500);
 	 }
 	 
 	 public static class BookCallable implements Callable {
@@ -73,10 +73,8 @@ public class Datenbank {
 	 private static void test1() throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException, ExecutionException {
 		 //repariere_database();
 		 
-		ArrayList<String> param = new ArrayList<String>(); param.add("titel"); param.add("autor"); param.add("jahr"); param.add("publisher"); param.add("charaktere"); param.add("thema"); param.add("similar"); param.add("blurb");
-		System.out.println(GUI.output_formatieren2(printBooklist_s_param(searchBook_online_titel("Harry Potter"), param)));
-
-		// printBooklist(searchBook_online_titel("Harry Potter"));
+		
+		 printBooklist(searchBook_online_titel("Der kleine Prinz"));
 		 
 		 
 		// buecher_similarBerechnen();

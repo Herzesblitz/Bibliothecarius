@@ -146,7 +146,7 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 			cp.add(editTextArea_input);
 			
 		//OUTPUT LABEL
-			label_output= new JLabel("Chatbot: ");
+			label_output= new JLabel("Bibliothecarius: ");
 			label_input.setSize(100, 100);
 			cp.add(label_output);
 		
