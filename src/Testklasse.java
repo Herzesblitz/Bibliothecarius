@@ -300,4 +300,42 @@ public class Testklasse {
   		Datenbank.printBooklist(Datenbank.buecherliste);
 		Datenbank.printAllTitles();
   	}
+  	
+  //testfunktionen
+	
+  		private static String randomBookURL() throws IOException {
+  			//greife auf liste der aktualisierten buecherlisten zu
+  				int random_page = ((int) (Math.random()*1000)) % 1000;
+  				String url_allLists= "https://www.goodreads.com/list/recently_active_lists?page=" + random_page;
+  				 org.jsoup.nodes.Document doc_List_page_n = Jsoup.connect(url_allLists).get();
+  				 if(doc_List_page_n.html().toString().contains("No lists yet...")) {
+  					 System.out.println("Ende"); return"";
+  				 } 
+  		 	
+  			//gehe durch 1. buecherliste 
+  				Element firstList = doc_List_page_n.select("a.listTitle").first();
+  		 		String url_list_x_page_n= "https://www.goodreads.com/"+firstList.attr("href")+"?page="+1;		
+  				
+  		 		org.jsoup.nodes.Document doc_list_X_page_x = Jsoup.connect(url_list_x_page_n).get();
+  				if(!doc_list_X_page_x.html().toString().contains("bookTitle")) {
+  					 return "";
+  				} 
+  			 	
+  				Elements url_Books_list_x_page_n=  doc_list_X_page_x.select("a.bookTitle");
+  			
+  			//greife auf 1. ELement zu
+  				return "https://www.goodreads.com"+url_Books_list_x_page_n.first().attr("href");
+  		}
+  		
+  		private static String randomString() {
+  				String randomString ="";
+  				int length = ((int) (Math.random()*1000)) % 20;
+  				for(int pos=0; pos < length; pos++) {
+  					 int rnd = (int) (Math.random() * 52); // or use Random or whatever
+  				    char base = (rnd < 26) ? 'A' : 'a';
+  				    randomString += (char) (base + rnd % 26);
+  				}
+  				return randomString;
+  		}
+
 }

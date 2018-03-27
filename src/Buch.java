@@ -34,7 +34,6 @@ public class Buch implements Serializable {
         public List<String> Author =  new ArrayList<>();
 
     public Buch() {
-    	
 	}    
         
     public Buch (String title, String author) throws UnsupportedEncodingException, IOException, InterruptedException, ClassNotFoundException {
@@ -284,24 +283,7 @@ public class Buch implements Serializable {
 		return ausgabe;
 	}
     
-    public static ArrayList<Buch> Schnitt(ArrayList<Buch> a, ArrayList<Buch> b){
-    	ArrayList<Buch> results = new ArrayList<>();
-    	for(Buch q: a) {
-    		if(b.contains(q))results.add(q);
-    	}
-    	return results;
-    }
     
-    public static ArrayList<Buch> Vereinigung(ArrayList<Buch> a, ArrayList<Buch> b){
-    	ArrayList<Buch> results = new ArrayList<>();
-    	for(Buch q: a) {
-    		results.add(q);
-    	}
-    	for(Buch p: b) {
-    		if(!results.contains(p))results.add(p);
-    	}
-    	return results;
-    }
     
     public static ArrayList<String> singularisierung(ArrayList<String> a){
     	ArrayList<String> b = new ArrayList<>();
@@ -447,15 +429,7 @@ public class Buch implements Serializable {
 		 	for(String a: book.Author)a = a.replaceAll("\n",""); 
 		return book;
 	}
-    
-    public static ArrayList<String> whatshouldireadnext_com(String isbn){
-    	//prüfe auf valide isbn
-    	if(true) {
     		
-    	}
-    	return null;
-    }
-		
 	public static ArrayList<String> buchZuAehnlicheBuecher(String title, String author, String url, int anz_ähnliche) throws UnsupportedEncodingException, IOException, InterruptedException, ClassNotFoundException {
 		ArrayList<String> results = new ArrayList<>();
 		int groeße = 0;
@@ -569,42 +543,6 @@ public class Buch implements Serializable {
 		 Collections.sort(this.Author);		
 	}
 		
-	//testfunktionen
-		
-		private static String randomBookURL() throws IOException {
-			//greife auf liste der aktualisierten buecherlisten zu
-				int random_page = ((int) (Math.random()*1000)) % 1000;
-				String url_allLists= "https://www.goodreads.com/list/recently_active_lists?page=" + random_page;
-				 org.jsoup.nodes.Document doc_List_page_n = Jsoup.connect(url_allLists).get();
-				 if(doc_List_page_n.html().toString().contains("No lists yet...")) {
-					 System.out.println("Ende"); return"";
-				 } 
-		 	
-			//gehe durch 1. buecherliste 
-				Element firstList = doc_List_page_n.select("a.listTitle").first();
-		 		String url_list_x_page_n= "https://www.goodreads.com/"+firstList.attr("href")+"?page="+1;		
-				
-		 		org.jsoup.nodes.Document doc_list_X_page_x = Jsoup.connect(url_list_x_page_n).get();
-				if(!doc_list_X_page_x.html().toString().contains("bookTitle")) {
-					 return "";
-				} 
-			 	
-				Elements url_Books_list_x_page_n=  doc_list_X_page_x.select("a.bookTitle");
-			
-			//greife auf 1. ELement zu
-				return "https://www.goodreads.com"+url_Books_list_x_page_n.first().attr("href");
-		}
-		
-		private static String randomString() {
-				String randomString ="";
-				int length = ((int) (Math.random()*1000)) % 20;
-				for(int pos=0; pos < length; pos++) {
-					 int rnd = (int) (Math.random() * 52); // or use Random or whatever
-				    char base = (rnd < 26) ? 'A' : 'a';
-				    randomString += (char) (base + rnd % 26);
-				}
-				return randomString;
-		}
-
+	
 }
 
