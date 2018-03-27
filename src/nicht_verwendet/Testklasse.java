@@ -1,3 +1,4 @@
+package nicht_verwendet;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -12,6 +13,9 @@ import java.util.Set;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import verwendet.Buch;
+import verwendet.Datenbank;
 
 /**
  * Klasse zum Testen der anderen Klassen und mit Funktionen die nicht dort gebraucht worden

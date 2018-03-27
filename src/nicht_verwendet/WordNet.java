@@ -1,4 +1,4 @@
-package source;
+package nicht_verwendet;
 import java.io.IOException;
 
 public class WordNet {

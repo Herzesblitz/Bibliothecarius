@@ -1,3 +1,4 @@
+package nicht_verwendet;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -8,7 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import source.Eingabe;
+import verwendet.Buch;
+import verwendet.Datenbank;
+import verwendet.GUI;
+import verwendet.primitiveNLU;
 
 
 public class Dialogmanager {

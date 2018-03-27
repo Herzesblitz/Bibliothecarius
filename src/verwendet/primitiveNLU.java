@@ -1,3 +1,4 @@
+package verwendet;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -24,11 +25,12 @@ import opennlp.tools.postag.POSSample;
 import opennlp.tools.postag.POSTaggerME;
 import opennlp.tools.tokenize.WhitespaceTokenizer;
 import opennlp.tools.util.Span;
-import source.Eingabe;
-import source.POS_Tagger_de;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+
+import nicht_verwendet.Eingabe;
+import nicht_verwendet.POS_Tagger_de;
 
 
 public class primitiveNLU {

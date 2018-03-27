@@ -1,6 +1,9 @@
+package nicht_verwendet;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import verwendet.Buch;
 
 public class Bücherliste {
 //Liste von Book aehnliche Buecher

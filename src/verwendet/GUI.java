@@ -1,3 +1,4 @@
+package verwendet;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -64,7 +65,7 @@ public class GUI extends JFrame implements MouseMotionListener, MouseListener, K
 	static int deltaX; static int deltaY;
 	char keyTyped;
 	
-	static GUI frame = new GUI();
+	public static GUI frame = new GUI();
 	
 	static JLabel label_input = new JLabel("Nutzer: ");
 	static JLabel label_output = new JLabel("Chatbot: ");

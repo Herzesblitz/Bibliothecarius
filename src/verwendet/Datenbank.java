@@ -1,3 +1,4 @@
+package verwendet;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -47,7 +48,7 @@ class Benutzer{
 
 public class Datenbank {
 	
-	static ArrayList<Buch> buecherliste = new ArrayList<>();
+	public static ArrayList<Buch> buecherliste = new ArrayList<>();
 	static ArrayList<String> dieBücherFehlen = new ArrayList<>();
 	static boolean goodreads_online = false;
 

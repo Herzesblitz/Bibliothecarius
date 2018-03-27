@@ -1,5 +1,5 @@
 eclipse.preferences.version=1
-encoding//src/Buch.java=UTF-8
-encoding//src/Datenbank.java=UTF-8
-encoding//src/source/Charaktere.txt=UTF-8
-encoding//src/source/scrapWebsite.java=UTF-8
+encoding//src/nicht_verwendet/Charaktere.txt=UTF-8
+encoding//src/nicht_verwendet/scrapWebsite.java=UTF-8
+encoding//src/verwendet/Buch.java=UTF-8
+encoding//src/verwendet/Datenbank.java=UTF-8
